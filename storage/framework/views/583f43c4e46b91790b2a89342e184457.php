@@ -32,4 +32,4 @@
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/colors/default.css')); ?>" id="colorSkinCSS">
 </head>
 <body class="crm_body_bg">
-    <?php /**PATH C:\Projects\Trimly\resources\views/includes/header.blade.php ENDPATH**/ ?>
+    <?php /**PATH D:\Trimly\resources\views/includes/header.blade.php ENDPATH**/ ?>

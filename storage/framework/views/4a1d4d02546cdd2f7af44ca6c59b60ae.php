@@ -50,4 +50,4 @@
 <script src="<?php echo e(asset('assets/js/custom.js')); ?>"></script>
 </body>
 </html>
-<?php /**PATH C:\Projects\Trimly\resources\views/includes/footer.blade.php ENDPATH**/ ?>
+<?php /**PATH D:\Trimly\resources\views/includes/footer.blade.php ENDPATH**/ ?>

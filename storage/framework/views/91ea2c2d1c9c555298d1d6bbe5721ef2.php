@@ -361,4 +361,4 @@
 
 
       </ul>
-</nav><?php /**PATH C:\Projects\Trimly\resources\views/includes/sidebar.blade.php ENDPATH**/ ?>
+</nav><?php /**PATH D:\Trimly\resources\views/includes/sidebar.blade.php ENDPATH**/ ?>
