@@ -8,19 +8,15 @@
     </div>
     <ul id="sidebar_menu">
         <li class="">
-            <a class="has-arrow" href="#" aria-expanded="false">
+            <a href="{{ route('view.customers') }}">
                 <div class="nav_icon_small">
                     <img src="{{ asset('assets/img/menu-icon/dashboard.svg') }}" alt="">
                 </div>
                 <div class="nav_title">
-                    <span>User Management </span>
+                    <span>Customer Management </span>
                 </div>
             </a>
-            <ul>
-                <li><a href="index_2.html">Default</a></li>
-              <li><a href="index_3.html">Dark Sidebar</a></li>
-              <li><a href="index-2.html">Light Sidebar</a></li>
-            </ul>
+
         </li>
         <li class="">
             <a class="has-arrow" href="#" aria-expanded="false">
@@ -236,7 +232,7 @@
                 <li><a href="wow_animation.html">Animate</a></li>
                 <li><a href="Scroll_Reveal.html">Scroll Reveal</a></li>
                 <li><a href="tilt.html">Tilt Animation</a></li>
-                
+
             </ul>
           </li>
           <li class="">
@@ -342,7 +338,7 @@
             <li><a href="profilebox.html">Profile Box</a></li>
           </ul>
         </li>
-        
+
 
         <li class="">
           <a   class="has-arrow" href="#" aria-expanded="false">
