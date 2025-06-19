@@ -1,4 +1,4 @@
-<script src="{{ asset('assets/js/jquery1-3.4.1.min.js') }}"></script> 
+<script src="{{ asset('assets/js/jquery1-3.4.1.min.js') }}"></script>
 <script src="{{ asset('assets/js/popper1.min.js') }}"></script>
 <script src="{{ asset('assets/js/bootstrap1.min.js') }}"></script>
 <script src="{{ asset('assets/js/metisMenu.js') }}"></script>
@@ -48,5 +48,18 @@
 
 <script src="{{ asset('assets/js/dashboard_init.js') }}"></script>
 <script src="{{ asset('assets/js/custom.js') }}"></script>
+
+<!-- jQuery (Required for Bootstrap 4 alerts) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap Bundle (includes Popper.js for dismiss functionality) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  setTimeout(() => {
+    $('.alert').alert('close');
+  }, 5000);
+</script>
+
+
 </body>
 </html>
