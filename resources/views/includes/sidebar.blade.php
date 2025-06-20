@@ -479,7 +479,12 @@
                                 <div class="profile_info_details">
                                     <a href="#">My Profile </a>
                                     <a href="#">Settings</a>
-                                    <a href="#">Log Out</a>
+                                    <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                                        @csrf
+                                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            Log Out
+                                        </a>
+                                    </form>
 
                                 </div>
                             </div>
@@ -489,4 +494,3 @@
             </div>
         </div>
     </div>
-
