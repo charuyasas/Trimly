@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>LOGIN</title>
     
-    <!-- CSS Files -->
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap1.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendors/themefy_icon/themify-icons.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendors/font_awesome/css/all.min.css') }}" />
