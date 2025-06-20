@@ -1,3 +1,23 @@
+@import './vendor/bootstrap1.min.css';
+@import './vendor/niceselect/css/nice-select.css';
+@import './vendor/themefy_icon/themify-icons.css';
+@import './vendor/owl_carousel/css/owl.carousel.css';
+@import './vendor/gijgo/gijgo.min.css';
+@import './vendor/font_awesome/css/all.min.css';
+@import './vendor/tagsinput/tagsinput.css';
+@import './vendor/datepicker/date-picker.css';
+@import './vendor/vectormap-home/vectormap-2.0.2.css';
+@import './vendor/scroll/scrollable.css';
+@import './vendor/datatable/css/jquery.dataTables.min.css';
+@import './vendor/datatable/css/responsive.dataTables.min.css';
+@import './vendor/datatable/css/buttons.dataTables.min.css';
+@import './vendor/text_editor/summernote-bs4.css';
+@import './vendor/morris/morris.css';
+@import './vendor/material_icon/material-icons.css';
+@import './vendor/metisMenu.css';
+@import './vendor/style1.css';
+@import './vendor/colors/default.css';
+
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';

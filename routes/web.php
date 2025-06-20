@@ -1,12 +1,84 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 
-Route::get('/login', function () {
-    return view('auth.login');
-});
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/', function () {
-    return view('index');
-});
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+// --- Automatically generated routes from sidebar ---
+Route::get('/dashboard-alternative', function() { return 'This is the Index-2 page. Route name: dashboard.alternative'; })->name('dashboard.alternative');
+Route::get('/dashboard-default', function() { return 'This is the Index 2 page. Route name: dashboard.default'; })->name('dashboard.default');
+Route::get('/dashboard-dark', function() { return 'This is the Index 3 page. Route name: dashboard.dark'; })->name('dashboard.dark');
+Route::get('/page/editor', function() { return 'This is the Editor page. Route name: application.editor'; })->name('application.editor');
+Route::get('/page/mail-box', function() { return 'This is the Mail Box page. Route name: application.mailbox'; })->name('application.mailbox');
+Route::get('/page/chat', function() { return 'This is the Chat page. Route name: application.chat'; })->name('application.chat');
+Route::get('/page/faq', function() { return 'This is the Faq page. Route name: application.faq'; })->name('application.faq');
+Route::get('/page/resister', function() { return 'This is the Resister page. Route name: register'; })->name('register');
+Route::get('/page/error-400', function() { return 'This is the Error 400 page. Route name: error.400'; })->name('error.400');
+Route::get('/page/error-500', function() { return 'This is the Error 500 page. Route name: error.500'; })->name('error.500');
+Route::get('/page/forgot-pass', function() { return 'This is the Forgot Pass page. Route name: password.request'; })->name('password.request');
+Route::get('/page/gallery', function() { return view('gallery'); })->name('pages.gallery');
+Route::get('/page/admin-list', function() { return 'This is the Admin List page. Route name: admins.list'; })->name('admins.list');
+Route::get('/page/add-new-admin', function() { return 'This is the Add New Admin page. Route name: admins.create'; })->name('admins.create');
+Route::get('/page/module-setting', function() { return 'This is the Module Setting page. Route name: settings.module'; })->name('settings.module');
+Route::get('/page/role-permissions', function() { return 'This is the Role Permissions page. Route name: permissions.role'; })->name('permissions.role');
+Route::get('/page/navs', function() { return 'This is the Navs page. Route name: ui.navs'; })->name('ui.navs');
+Route::get('/page/user-list', function() { return 'This is the User List page. Route name: users.list'; })->name('users.list');
+Route::get('/page/add-new-user', function() { return 'This is the Add New User page. Route name: users.create'; })->name('users.create');
+Route::get('/page/Builder', function() { return 'This is the Builder page. Route name: pages.builder'; })->name('pages.builder');
+Route::get('/page/invoice', function() { return 'This is the Invoice page. Route name: pages.invoice'; })->name('pages.invoice');
+Route::get('/page/Basic-Elements', function() { return 'This is the Basic Elements page. Route name: forms.basic-elements'; })->name('forms.basic-elements');
+Route::get('/page/Groups', function() { return 'This is the Groups page. Route name: forms.groups'; })->name('forms.groups');
+Route::get('/page/Max-Length', function() { return 'This is the Max Length page. Route name: forms.max-length'; })->name('forms.max-length');
+Route::get('/page/Layouts', function() { return 'This is the Layouts page. Route name: forms.layouts'; })->name('forms.layouts');
+Route::get('/page/Board', function() { return 'This is the Board page. Route name: pages.board'; })->name('pages.board');
+Route::get('/page/calender', function() { return 'This is the Calender page. Route name: pages.calendar'; })->name('pages.calendar');
+Route::get('/page/dark-sidebar', function() { return 'This is the Dark Sidebar page. Route name: themes.dark-sidebar'; })->name('themes.dark-sidebar');
+Route::get('/page/light-sidebar', function() { return 'This is the Light Sidebar page. Route name: themes.light-sidebar'; })->name('themes.light-sidebar');
+Route::get('/page/Minimized-Aside', function() { return 'This is the Minimized Aside page. Route name: general.minimized-aside'; })->name('general.minimized-aside');
+Route::get('/page/empty-page', function() { return 'This is the Empty Page page. Route name: general.empty-page'; })->name('general.empty-page');
+Route::get('/page/fixed-footer', function() { return 'This is the Fixed Footer page. Route name: general.fixed-footer'; })->name('general.fixed-footer');
+Route::get('/page/Products', function() { return 'This is the Products page. Route name: products.list'; })->name('products.list');
+Route::get('/page/Product-Details', function() { return 'This is the Product Details page. Route name: products.show'; })->name('products.show');
+Route::get('/page/Cart', function() { return 'This is the Cart page. Route name: products.cart'; })->name('products.cart');
+Route::get('/page/Checkout', function() { return 'This is the Checkout page. Route name: products.checkout'; })->name('products.checkout');
+Route::get('/page/Fontawesome-Icon', function() { return 'This is the Fontawesome Icon page. Route name: icons.fontawesome'; })->name('icons.fontawesome');
+Route::get('/page/themefy-icon', function() { return 'This is the Themefy Icon page. Route name: icons.themefy'; })->name('icons.themefy');
+Route::get('/page/wow-animation', function() { return 'This is the Wow Animation page. Route name: animations.wow'; })->name('animations.wow');
+Route::get('/page/Scroll-Reveal', function() { return 'This is the Scroll Reveal page. Route name: animations.scroll-reveal'; })->name('animations.scroll-reveal');
+Route::get('/page/tilt', function() { return 'This is the Tilt page. Route name: animations.tilt'; })->name('animations.tilt');
+Route::get('/page/accordion', function() { return 'This is the Accordion page. Route name: components.accordion'; })->name('components.accordion');
+Route::get('/page/Scrollable', function() { return 'This is the Scrollable page. Route name: components.scrollable'; })->name('components.scrollable');
+Route::get('/page/notification', function() { return 'This is the Notification page. Route name: components.notification'; })->name('components.notification');
+Route::get('/page/carousel', function() { return 'This is the Carousel page. Route name: components.carousel'; })->name('components.carousel');
+Route::get('/page/Pagination', function() { return 'This is the Pagination page. Route name: components.pagination'; })->name('components.pagination');
+Route::get('/page/data-table', function() { return 'This is the Data Table page. Route name: tables.data'; })->name('tables.data');
+Route::get('/page/bootstrap-table', function() { return 'This is the Bootstrap Table page. Route name: tables.bootstrap'; })->name('tables.bootstrap');
+Route::get('/page/basic-card', function() { return 'This is the Basic Card page. Route name: cards.basic'; })->name('cards.basic');
+Route::get('/page/theme-card', function() { return 'This is the Theme Card page. Route name: cards.theme'; })->name('cards.theme');
+Route::get('/page/dargable-card', function() { return 'This is the Dargable Card page. Route name: cards.draggable'; })->name('cards.draggable');
+Route::get('/page/chartjs', function() { return 'This is the Chartjs page. Route name: charts.chartjs'; })->name('charts.chartjs');
+Route::get('/page/apex-chart', function() { return 'This is the Apex Chart page. Route name: charts.apex'; })->name('charts.apex');
+Route::get('/page/chart-sparkline', function() { return 'This is the Chart Sparkline page. Route name: charts.sparkline'; })->name('charts.sparkline');
+Route::get('/page/am-chart', function() { return 'This is the Am Chart page. Route name: charts.am'; })->name('charts.am');
+Route::get('/page/nvd3-charts', function() { return 'This is the Nvd3 Charts page. Route name: charts.nvd3'; })->name('charts.nvd3');
+Route::get('/page/colors', function() { return 'This is the Colors page. Route name: uikits.colors'; })->name('uikits.colors');
+Route::get('/page/Alerts', function() { return 'This is the Alerts page. Route name: uikits.alerts'; })->name('uikits.alerts');
+Route::get('/page/buttons', function() { return 'This is the Buttons page. Route name: uikits.buttons'; })->name('uikits.buttons');
+Route::get('/page/modal', function() { return 'This is the Modal page. Route name: uikits.modal'; })->name('uikits.modal');
+Route::get('/page/dropdown', function() { return 'This is the Dropdown page. Route name: uikits.dropdowns'; })->name('uikits.dropdowns');
+Route::get('/page/Badges', function() { return 'This is the Badges page. Route name: uikits.badges'; })->name('uikits.badges');
+Route::get('/page/Loading-Indicators', function() { return 'This is the Loading Indicators page. Route name: uikits.loading-indicators'; })->name('uikits.loading-indicators');
+Route::get('/page/color-plate', function() { return 'This is the Color Plate page. Route name: uikits.color-plate'; })->name('uikits.color-plate');
+Route::get('/page/typography', function() { return 'This is the Typography page. Route name: uikits.typography'; })->name('uikits.typography');
+Route::get('/page/datepicker', function() { return 'This is the Datepicker page. Route name: uikits.datepicker'; })->name('uikits.datepicker');
+Route::get('/page/chart-box-1', function() { return 'This is the Chart Box 1 page. Route name: widgets.chart-box-1'; })->name('widgets.chart-box-1');
+Route::get('/page/profilebox', function() { return 'This is the Profilebox page. Route name: widgets.profilebox'; })->name('widgets.profilebox');
+Route::get('/page/mapjs', function() { return 'This is the Mapjs page. Route name: maps.js'; })->name('maps.js');
+Route::get('/page/vector-map', function() { return 'This is the Vector Map page. Route name: maps.vector'; })->name('maps.vector');
+// --- End of automatically generated routes ---
