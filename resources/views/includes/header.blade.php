@@ -30,6 +30,9 @@
     <link rel="stylesheet" href="{{ asset('assets/css/metisMenu.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style1.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/colors/default.css') }}" id="colorSkinCSS">
+    <script src="{{ asset('assets/js/jquery1-3.4.1.min.js') }}"></script> 
+
+    
 </head>
 <body class="crm_body_bg">
     
