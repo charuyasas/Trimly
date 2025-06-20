@@ -12,78 +12,82 @@
       </div>
     </div>
 
-    {{-- Customer Registration Form --}}
-    <div class="row justify-content-center mt-4">
-      <div class="col-md-8">
+{{-- Customer Registration Form --}}
+<div class="row justify-content-center mt-4">
+  <div class="col-md-8">
 
-        {{-- Flash Messages --}}
-        @if(session('message'))
-          <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('message') }}
-            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+    {{-- Flash Messages --}}
+    <div id="flash-message"></div>
+
+    {{-- Styled Form Card --}}
+    <div class="white_card card_height_100 mb_30">
+      <div class="white_card_header">
+        <div class="box_header m-0">
+          <div class="main-title">
+            <h3 class="m-0" style="color: #415094; font-weight: 700;">Add New Customer</h3>
           </div>
-        @endif
+        </div>
+      </div>
 
-        @if(session('error'))
-          <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-          </div>
-        @endif
+      <div class="white_card_body">
+        <form id="addCustomerForm" autocomplete="off">
+          @csrf
 
-        {{-- Form Card --}}
-        <div class="card-modern border-0 shadow-sm p-4" style="border-radius: 20px; background-color: #fff;">
-          <h3 class="mb-4 text-center text-dark" style="font-weight: 700;">Add New Customer</h3>
-
-          <form action="{{ route('add.customer') }}" method="POST" autocomplete="off">
-            @csrf
+          <div class="row">
 
             {{-- Name --}}
-            <div class="form-group mb-3">
-              <label for="name" class="form-label">👤 Full Name</label>
-              <input type="text" name="name" id="name" class="form-control styled-input @error('name') is-invalid @enderror" value="{{ old('name') }}" required>
-              @error('name')
-                <small class="text-danger">{{ $message }}</small>
-              @enderror
+            <div class="col-lg-12">
+              <div class="common_input mb_15">
+                <label for="name" style="font-weight: 600; color: #415094;">Full Name</label>
+                <input type="text" name="name" id="name" placeholder="Enter full name" required>
+                <small class="text-danger error-name"></small>
+              </div>
             </div>
 
             {{-- Email --}}
-            <div class="form-group mb-3">
-              <label for="email" class="form-label">📧 Email Address</label>
-              <input type="email" name="email" id="email" class="form-control styled-input @error('email') is-invalid @enderror" value="{{ old('email') }}" required>
-              @error('email')
-                <small class="text-danger">{{ $message }}</small>
-              @enderror
+            <div class="col-lg-12">
+              <div class="common_input mb_15">
+                <label for="email" style="font-weight: 600; color: #415094;">Email Address</label>
+                <input type="email" name="email" id="email" placeholder="Enter email" required>
+                <small class="text-danger error-email"></small>
+              </div>
             </div>
 
             {{-- Phone --}}
-            <div class="form-group mb-3">
-              <label for="phone" class="form-label">📱 Phone Number</label>
-              <input type="text" name="phone" id="phone" class="form-control styled-input @error('phone') is-invalid @enderror" value="{{ old('phone') }}" required>
-              @error('phone')
-                <small class="text-danger">{{ $message }}</small>
-              @enderror
+            <div class="col-lg-12">
+              <div class="common_input mb_15">
+                <label for="phone" style="font-weight: 600; color: #415094;">Phone Number</label>
+                <input type="text" name="phone" id="phone" placeholder="Enter phone number" required>
+                <small class="text-danger error-phone"></small>
+              </div>
             </div>
 
             {{-- Address --}}
-            <div class="form-group mb-4">
-              <label for="address" class="form-label">🏠 Address</label>
-              <textarea name="address" id="address" rows="3" class="form-control styled-input @error('address') is-invalid @enderror">{{ old('address') }}</textarea>
-              @error('address')
-                <small class="text-danger">{{ $message }}</small>
-              @enderror
+            <div class="col-lg-12">
+              <div class="common_input mb_15">
+                <label for="address" style="font-weight: 600; color: #415094;">Address</label>
+                <input type="text" name="address" id="address" rows="3" placeholder="Enter address" required>
+                <small class="text-danger error-address"></small>
+              </div>
             </div>
 
             {{-- Buttons --}}
-            <div class="d-flex justify-content-between">
-              <button type="submit" class="btn btn-gradient-primary px-4 py-2 rounded-pill">Save</button>
-              <a href="{{ route('view.customers') }}" class="btn btn-outline-secondary px-4 py-2 rounded-pill">Cancel</a>
+            <div class="col-12">
+              <div class="create_report_btn mt_30 d-flex justify-content-between">
+                <button type="submit" class="btn_1 radius_btn">Save</button>
+                <a href="{{ route('view.customers') }}" class="btn_1 radius_btn" style="background: #fff; color: #415094; border: 1px solid #e4e8f0;">Cancel</a>
+              </div>
             </div>
-          </form>
-        </div>
+
+          </div>
+        </form>
       </div>
     </div>
+
   </div>
+</div>
+
+
 
   {{-- Chat Popup --}}
   <div class="CHAT_MESSAGE_POPUPBOX">
@@ -150,12 +154,53 @@
   }
 </style>
 
-{{-- Scripts --}}
+{{-- jQuery + AJAX Script --}}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  setTimeout(() => {
-    document.querySelectorAll('.alert').forEach(alert => {
-      alert.classList.remove('show');
-      alert.classList.add('fade');
+  $(document).ready(function () {
+    $('#addCustomerForm').on('submit', function (e) {
+      e.preventDefault();
+
+      // Clear previous messages
+      $('.text-danger').html('');
+      $('#flash-message').html('');
+
+      $.ajax({
+        url: "{{ route('add.customer') }}",
+        method: "POST",
+        data: $(this).serialize(),
+        success: function (res) {
+          $('#flash-message').html(`
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              ${res.message}
+              <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+            </div>
+          `);
+
+          // Reset form
+          $('#addCustomerForm')[0].reset();
+
+          // ✅ Delay then redirect
+          setTimeout(() => {
+            window.location.href = res.redirect;
+          }, 2000); // 2 seconds delay
+        },
+        error: function (xhr) {
+          const errors = xhr.responseJSON.errors;
+          if (errors) {
+            $.each(errors, function (key, val) {
+              $('.error-' + key).html(val[0]);
+            });
+          }
+        }
+      });
     });
-  }, 5000);
+
+    // Auto dismiss flash alerts if needed
+    setTimeout(() => {
+      $('.alert').alert('close');
+    }, 5000);
+  });
 </script>
+
+

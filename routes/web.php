@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\View\CustomerViewController;
 
 Route::get('/login', function () {
     return view('auth.login');
@@ -13,15 +13,15 @@ Route::get('/', function () {
 });
 
 // Customer Routes
-Route::get('/customers', [CustomerController::class, 'index'])->name('view.customers');
 
-Route::get('/add-customer', [CustomerController::class, 'create'])->name('add.customer.form');
+Route::get('/customers', [CustomerViewController::class, 'index'])->name('view.customers');
 
-Route::post('/add-customer', [CustomerController::class, 'store'])->name('add.customer');
+Route::get('/add-customer', [CustomerViewController::class, 'create'])->name('add.customer.form');
 
-Route::get('/edit-customer/{id}', [CustomerController::class, 'edit'])->name('edit.customer.form');
+Route::post('/add-customer', [CustomerViewController::class, 'store'])->name('add.customer');
 
-Route::put('/update-customer/{id}', [CustomerController::class, 'update'])->name('update.customer');
+Route::get('/edit-customer/{id}', [CustomerViewController::class, 'edit'])->name('edit.customer.form');
 
-Route::delete('/delete-customer/{id}', [CustomerController::class, 'destroy'])->name('delete.customer');
+Route::put('/update-customer/{id}', [CustomerViewController::class, 'update'])->name('update.customer');
 
+Route::delete('/delete-customer/{id}', [CustomerViewController::class, 'destroy'])->name('delete.customer');

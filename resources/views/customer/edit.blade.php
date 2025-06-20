@@ -4,90 +4,88 @@
 <section class="main_content dashboard_part large_header_bg">
   <div class="container-fluid g-0">
 
-    {{-- ✅ Flash Messages --}}
+    {{-- Header --}}
     <div class="row">
       <div class="col-lg-12 p-0">
         <div class="header_iner d-flex justify-content-between align-items-center">
-          {{-- Header content --}}
+          {{-- Header content (left/right panels) --}}
         </div>
       </div>
     </div>
 
+    {{-- Customer Edit Form --}}
     <div class="row justify-content-center mt-4">
       <div class="col-md-8">
+        <div class="white_card card_height_100 mb_30">
 
-        {{-- ✅ Flash Messages --}}
-        @if(session('message'))
-          <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('message') }}
-            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+          {{-- Title --}}
+          <div class="white_card_header">
+            <div class="box_header m-0">
+              <div class="main-title">
+                <h3 class="m-0">Edit Customer</h3>
+              </div>
+            </div>
           </div>
-        @endif
 
-        @if(session('error'))
-          <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+          <div class="white_card_body">
+            <form id="editCustomerForm" autocomplete="off">
+              @csrf
+              @method('PUT')
+
+              <div class="row">
+
+                {{-- Full Name --}}
+                <div class="col-lg-12">
+                  <div class="common_input mb_15">
+                    <label class="form-label" style="font-weight: 600; color: #415094;">Full Name</label>
+                    <input type="text" name="name" value="{{ $customer->name }}" placeholder="Enter full name" required>
+                    <small class="text-danger error-name"></small>
+                  </div>
+                </div>
+
+                {{-- Email --}}
+                <div class="col-lg-12">
+                  <div class="common_input mb_15">
+                    <label class="form-label" style="font-weight: 600; color: #415094;">Email Address</label>
+                    <input type="email" name="email" value="{{ $customer->email }}" placeholder="Enter email" required>
+                    <small class="text-danger error-email"></small>
+                  </div>
+                </div>
+
+                {{-- Phone --}}
+                <div class="col-lg-12">
+                  <div class="common_input mb_15">
+                    <label class="form-label" style="font-weight: 600; color: #415094;">Phone Number</label>
+                    <input type="text" name="phone" value="{{ $customer->phone }}" placeholder="Enter phone number" required>
+                    <small class="text-danger error-phone"></small>
+                  </div>
+                </div>
+
+                {{-- Address --}}
+                <div class="col-lg-12">
+                  <div class="common_input mb_15">
+                    <label class="form-label" style="font-weight: 600; color: #415094;">Address</label>
+                    <input type="text" name="address" id="address" rows="3" placeholder="Enter address" required>
+                    <small class="text-danger error-address"></small>
+                  </div>
+                </div>
+
+                {{-- Buttons --}}
+                <div class="col-12">
+                  <div class="create_report_btn mt_30 d-flex justify-content-between">
+                    <button type="submit" class="btn_1 radius_btn">Update</button>
+                    <a href="{{ route('view.customers') }}" class="btn_1 radius_btn" style="background: #fff; color: #415094; border: 1px solid #e4e8f0;">Cancel</a>
+                  </div>
+                </div>
+
+              </div>
+            </form>
+
+            {{-- Flash Message --}}
+            <div id="flash-message" class="mt-3"></div>
+
           </div>
-        @endif
-
-        {{-- ✅ Form Card --}}
-        <div class="card-modern border-0 shadow-sm p-4" style="border-radius: 20px; background-color: #fff;">
-          <h3 class="mb-4 text-center text-dark" style="font-weight: 700;">Edit Customer</h3>
-
-          <form action="{{ route('update.customer', $customer->id) }}" method="POST" autocomplete="off">
-            @csrf
-            @method('PUT')
-
-            {{-- Name --}}
-            <div class="form-group mb-3">
-              <label for="name" class="form-label">👤 Full Name</label>
-              <input type="text" name="name" id="name" value="{{ old('name', $customer->name) }}"
-                     class="form-control styled-input @error('name') is-invalid @enderror" required>
-              @error('name')
-                <small class="text-danger">{{ $message }}</small>
-              @enderror
-            </div>
-
-            {{-- Email --}}
-            <div class="form-group mb-3">
-              <label for="email" class="form-label">📧 Email Address</label>
-              <input type="email" name="email" id="email" value="{{ old('email', $customer->email) }}"
-                     class="form-control styled-input @error('email') is-invalid @enderror" required>
-              @error('email')
-                <small class="text-danger">{{ $message }}</small>
-              @enderror
-            </div>
-
-            {{-- Phone --}}
-            <div class="form-group mb-3">
-              <label for="phone" class="form-label">📱 Phone Number</label>
-              <input type="text" name="phone" id="phone" value="{{ old('phone', $customer->phone) }}"
-                     class="form-control styled-input @error('phone') is-invalid @enderror" required>
-              @error('phone')
-                <small class="text-danger">{{ $message }}</small>
-              @enderror
-            </div>
-
-            {{-- Address --}}
-            <div class="form-group mb-4">
-              <label for="address" class="form-label">🏠 Address</label>
-              <textarea name="address" id="address" rows="3"
-                        class="form-control styled-input @error('address') is-invalid @enderror">{{ old('address', $customer->address) }}</textarea>
-              @error('address')
-                <small class="text-danger">{{ $message }}</small>
-              @enderror
-            </div>
-
-            {{-- Buttons --}}
-            <div class="d-flex justify-content-between">
-              <button type="submit" class="btn btn-gradient-primary px-4 py-2 rounded-pill">Update</button>
-              <a href="{{ route('view.customers') }}" class="btn btn-outline-secondary px-4 py-2 rounded-pill">Cancel</a>
-            </div>
-
-          </form>
         </div>
-
       </div>
     </div>
 
@@ -96,69 +94,41 @@
 
 @include('includes.footer')
 
-{{-- ✅ Styles --}}
-<style>
-  .card-modern {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  }
-
-  .form-label {
-    font-weight: 600;
-    margin-bottom: 5px;
-    color: #343a40;
-  }
-
-  .styled-input {
-    border-radius: 12px;
-    padding: 12px;
-    font-size: 15px;
-    border: 1px solid #ced4da;
-    transition: all 0.3s ease-in-out;
-  }
-
-  .styled-input:focus {
-    border-color: #4a90e2;
-    box-shadow: 0 0 10px rgba(74, 144, 226, 0.2);
-  }
-
-  .btn-gradient-primary {
-    background: linear-gradient(to right, #6a11cb, #2575fc);
-    border: none;
-    color: #fff;
-    font-weight: 600;
-    transition: all 0.3s ease;
-  }
-
-  .btn-gradient-primary:hover {
-    background: linear-gradient(to right, #5a00e0, #1c5ed9);
-  }
-
-  .btn-outline-secondary {
-    font-weight: 500;
-    color: #6c757d;
-    border: 1px solid #ced4da;
-  }
-
-  .text-danger {
-    font-size: 0.85rem;
-    margin-top: 4px;
-    display: block;
-  }
-
-  .alert {
-    border-radius: 10px;
-  }
-</style>
-
-{{-- ✅ Auto-dismiss Alerts --}}
 <script>
-  setTimeout(() => {
-    document.querySelectorAll('.alert').forEach(alert => {
-      alert.classList.remove('show');
-      alert.classList.add('fade');
+  $(document).ready(function () {
+    $('#editCustomerForm').on('submit', function (e) {
+      e.preventDefault();
+      $('.text-danger').html('');
+      $('#flash-message').html('');
+
+      $.ajax({
+        url: "{{ route('update.customer', $customer->id) }}",
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function (res) {
+          $('#flash-message').html(`
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              ${res.message}
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+          `);
+
+          setTimeout(() => {
+            window.location.href = res.redirect;
+          }, 2000);
+        },
+        error: function (xhr) {
+          if (xhr.responseJSON && xhr.responseJSON.errors) {
+            $.each(xhr.responseJSON.errors, function (key, val) {
+              $('.error-' + key).html(val[0]);
+            });
+          }
+        }
+      });
     });
-  }, 5000);
+
+    setTimeout(() => {
+      $('.alert').alert('close');
+    }, 5000);
+  });
 </script>

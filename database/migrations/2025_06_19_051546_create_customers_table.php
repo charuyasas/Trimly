@@ -18,6 +18,7 @@ public function up()
         $table->string('phone')->nullable();
         $table->string('address')->nullable();
         $table->timestamps();
+        $table->softDeletes();
     });
 }
 
