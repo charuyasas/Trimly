@@ -5,14 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>LOGIN</title>
 
-    <!-- CSS Files -->
-    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap1.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendors/themefy_icon/themify-icons.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendors/font_awesome/css/all.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendors/scroll/scrollable.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/css/metisMenu.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/css/style1.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/css/colors/default.css') }}" id="colorSkinCSS">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="crm_body_bg">
 
@@ -25,15 +18,35 @@
                         <h5 class="modal-title text_white">Log in</h5>
                     </div>
                     <div class="modal-body px-4 py-4">
-                        <form>
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        <form method="POST" action="{{ route('login.submit') }}">
+                            @csrf
                             <div class="mb-3">
-                                <input type="email" class="form-control" placeholder="Enter your email">
+                                <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Enter your email" value="{{ old('email') }}">
+                                @error('email')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
                             <div class="mb-3">
-                                <input type="password" class="form-control" placeholder="Password">
+                                <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Password">
+                                @error('password')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
                             <div class="d-grid mb-3">
-                                <a href="#" class="btn_1 text-center">Log In</a>
+                                <button type="submit" class="btn_1 text-center">Log In</button>
                             </div>
                             <p class="text-center">Need an account?
                                 <a href="#" data-toggle="modal" data-target="#sing_up" data-dismiss="modal">Sign Up</a>
@@ -45,7 +58,7 @@
                     </div>
                 </div>
                 <div class="text-center mt-4">
-                    <p class="small text-muted">2020 © Developed by
+                    <p class="small text-muted">{{ date('Y') }} © Developed by
                         <a href="#">ECHO DATA</a>
                     </p>
                 </div>
@@ -55,13 +68,5 @@
 </section>
 
 <!-- Scripts -->
-<script src="{{ asset('assets/js/jquery1-3.4.1.min.js') }}"></script>
-<script src="{{ asset('assets/js/popper1.min.js') }}"></script>
-<script src="{{ asset('assets/js/bootstrap1.min.js') }}"></script>
-<script src="{{ asset('assets/js/metisMenu.js') }}"></script>
-<script src="{{ asset('assets/vendors/scroll/perfect-scrollbar.min.js') }}"></script>
-<script src="{{ asset('assets/vendors/scroll/scrollable-custom.js') }}"></script>
-<script src="{{ asset('assets/js/custom.js') }}"></script>
-
 </body>
 </html>

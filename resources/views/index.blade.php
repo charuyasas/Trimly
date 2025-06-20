@@ -185,7 +185,7 @@
                                         <i class="fas fa-ellipsis-h f_s_11 white_text"></i>
                                     </div>
                                     <div class="crm_body">
-                                        <h4>2455</h4>
+                                        <h4>{{ $totalUsers ?? 0 }}</h4>
                                         <p>User Registrations</p>
                                     </div>
                                 </div>
@@ -282,72 +282,31 @@
                             </div>
                         </div>
                         <div class="white_card_body ">
-                            <div class="single_user_pil d-flex align-items-center justify-content-between">
-                                <div class="user_pils_thumb d-flex align-items-center">
-                                    <div class="thumb_34 mr_15 mt-0"><img class="img-fluid radius_50" src="{{ asset('assets/img/customers/1.png') }}" alt=""></div>
-                                    <span class="f_s_14 f_w_400 text_color_11">Jhon Smith</span>
-                                </div>
-                                <div class="user_info">
-                                    Customer
-                                </div>
-                                <div class="action_btns d-flex">
-                                    <a href="#" class="action_btn mr_10"> <i class="far fa-edit"></i> </a>
-                                    <a href="#" class="action_btn"> <i class="fas fa-trash"></i> </a>
-                                </div>
+                @if(isset($recentUsers) && $recentUsers->count() > 0)
+                    @foreach($recentUsers as $user)
+                    <div class="single_user_pil d-flex align-items-center justify-content-between">
+                        <div class="user_pils_thumb d-flex align-items-center">
+                            <div class="thumb_34 mr_15 mt-0">
+                                <!-- Placeholder for user avatar, can be improved later -->
+                                <img class="img-fluid radius_50" src="{{ asset('assets/img/customers/1.png') }}" alt="User Avatar">
                             </div>
-                            <div class="single_user_pil admin_bg d-flex align-items-center justify-content-between">
-                                <div class="user_pils_thumb d-flex align-items-center">
-                                    <div class="thumb_34 mr_15 mt-0"><img class="img-fluid radius_50" src="{{ asset('assets/img/customers/1.png') }}" alt=""></div>
-                                    <span class="f_s_14 f_w_400 text_color_11">Jhon Smith</span>
-                                </div>
-                                <div class="user_info">
-                                    Admin
-                                </div>
-                                <div class="action_btns d-flex">
-                                    <a href="#" class="action_btn mr_10"> <i class="far fa-edit"></i> </a>
-                                    <a href="#" class="action_btn"> <i class="fas fa-trash"></i> </a>
-                                </div>
-                            </div>
-                            <div class="single_user_pil d-flex align-items-center justify-content-between">
-                                <div class="user_pils_thumb d-flex align-items-center">
-                                    <div class="thumb_34 mr_15 mt-0"><img class="img-fluid radius_50" src="{{ asset('assets/img/customers/1.png') }}" alt=""></div>
-                                    <span class="f_s_14 f_w_400 text_color_11">Jhon Smith</span>
-                                </div>
-                                <div class="user_info">
-                                    Customer
-                                </div>
-                                <div class="action_btns d-flex">
-                                    <a href="#" class="action_btn mr_10"> <i class="far fa-edit"></i> </a>
-                                    <a href="#" class="action_btn"> <i class="fas fa-trash"></i> </a>
-                                </div>
-                            </div>
-                            <div class="single_user_pil d-flex align-items-center justify-content-between">
-                                <div class="user_pils_thumb d-flex align-items-center">
-                                    <div class="thumb_34 mr_15 mt-0"><img class="img-fluid radius_50" src="{{ asset('assets/img/customers/1.png') }}" alt=""></div>
-                                    <span class="f_s_14 f_w_400 text_color_11">Jhon Smith</span>
-                                </div>
-                                <div class="user_info">
-                                    Customer
-                                </div>
-                                <div class="action_btns d-flex">
-                                    <a href="#" class="action_btn mr_10"> <i class="far fa-edit"></i> </a>
-                                    <a href="#" class="action_btn"> <i class="fas fa-trash"></i> </a>
-                                </div>
-                            </div>
-                            <div class="single_user_pil d-flex align-items-center justify-content-between mb-0">
-                                <div class="user_pils_thumb d-flex align-items-center">
-                                    <div class="thumb_34 mr_15 mt-0"><img class="img-fluid radius_50" src="{{ asset('assets/img/customers/1.png') }}" alt=""></div>
-                                    <span class="f_s_14 f_w_400 text_color_11">Jhon Smith</span>
-                                </div>
-                                <div class="user_info">
-                                    Customer
-                                </div>
-                                <div class="action_btns d-flex">
-                                    <a href="#" class="action_btn mr_10"> <i class="far fa-edit"></i> </a>
-                                    <a href="#" class="action_btn"> <i class="fas fa-trash"></i> </a>
-                                </div>
-                            </div>
+                            <span class="f_s_14 f_w_400 text_color_11">{{ $user->name }}</span>
                         </div>
+                        <div class="user_info">
+                            <!-- Placeholder for user role or registration date -->
+                            {{ $user->email }} <br>
+                            <small>Joined: {{ $user->created_at->format('M d, Y') }}</small>
+                        </div>
+                        <div class="action_btns d-flex">
+                            <a href="#" class="action_btn mr_10"> <i class="far fa-edit"></i> </a>
+                            <a href="#" class="action_btn"> <i class="fas fa-trash"></i> </a>
+                        </div>
+                    </div>
+                    @endforeach
+                @else
+                    <p>No recent users found.</p>
+                @endif
+            </div>
                     </div>
                 </div>
                 <div class="col-xl-4">
@@ -1225,7 +1184,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="footer_iner text-center">
-                    <p>2020 © Influence - Designed by <a href="#"> <i class="ti-heart"></i> </a><a href="#"> Dashboard</a></p>
+                    <p>{{ date('Y') }} © Influence - Designed by <a href="#"> <i class="ti-heart"></i> </a><a href="#"> Dashboard</a></p>
                 </div>
             </div>
         </div>

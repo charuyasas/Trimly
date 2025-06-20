@@ -1,7 +1,7 @@
 <nav class="sidebar">
     <div class="logo d-flex justify-content-between">
-        <a class="large_logo" href="index-2.html"><img src="{{ asset('assets/img/logo.png') }}" alt=""></a>
-        <a class="small_logo" href="index-2.html"><img src="{{ asset('assets/img/mini_logo.png') }}" alt=""></a>
+        <a class="large_logo" href="{{ route('dashboard.alternative') }}"><img src="{{ asset('assets/img/logo.png') }}" alt=""></a>
+        <a class="small_logo" href="{{ route('dashboard.alternative') }}"><img src="{{ asset('assets/img/mini_logo.png') }}" alt=""></a>
         <div class="sidebar_close_icon d-lg-none">
             <i class="ti-close"></i>
         </div>
@@ -17,9 +17,9 @@
                 </div>
             </a>
             <ul>
-                <li><a href="index_2.html">Default</a></li>
-              <li><a href="index_3.html">Dark Sidebar</a></li>
-              <li><a href="index-2.html">Light Sidebar</a></li>
+                <li><a href="{{ route('dashboard.default') }}">Default</a></li>
+              <li><a href="{{ route('dashboard.dark') }}">Dark Sidebar</a></li>
+              <li><a href="{{ route('dashboard.alternative') }}">Light Sidebar</a></li>
             </ul>
         </li>
         <li class="">
@@ -32,10 +32,10 @@
                 </div>
             </a>
             <ul>
-              <li><a href="editor.html">editor</a></li>
-              <li><a href="mail_box.html">Mail Box</a></li>
-              <li><a href="chat.html">Chat</a></li>
-              <li><a href="faq.html">FAQ</a></li>
+              <li><a href="{{ route('application.editor') }}">editor</a></li>
+              <li><a href="{{ route('application.mailbox') }}">Mail Box</a></li>
+              <li><a href="{{ route('application.chat') }}">Chat</a></li>
+              <li><a href="{{ route('application.faq') }}">FAQ</a></li>
             </ul>
         </li>
         <li class="">
@@ -49,11 +49,11 @@
             </a>
             <ul>
               <li><a href="/login">Login</a></li>
-              <li><a href="resister.html">Register</a></li>
-              <li><a href="error_400.html">Error 404</a></li>
-              <li><a href="error_500.html">Error 500</a></li>
-              <li><a href="forgot_pass.html">Forgot Password</a></li>
-              <li><a href="gallery.html">Gallery</a></li>
+              <li><a href="{{ route('register') }}">Register</a></li>
+              <li><a href="{{ route('error.400') }}">Error 404</a></li>
+              <li><a href="{{ route('error.500') }}">Error 500</a></li>
+              <li><a href="{{ route('password.request') }}">Forgot Password</a></li>
+              <li><a href="{{ route('pages.gallery') }}">Gallery</a></li>
             </ul>
         </li>
         <li class="">
@@ -66,8 +66,8 @@
             </div>
             </a>
             <ul>
-              <li><a href="admin_list.html">Admin List</a></li>
-              <li><a href="add_new_admin.html">Add New Admin</a></li>
+              <li><a href="{{ route('admins.list') }}">Admin List</a></li>
+              <li><a href="{{ route('admins.create') }}">Add New Admin</a></li>
             </ul>
         </li>
         <li class="">
@@ -80,12 +80,12 @@
             </div>
             </a>
             <ul>
-              <li><a href="module_setting.html">Module Setting</a></li>
-              <li><a href="role_permissions.html">Role & Permissions</a></li>
+              <li><a href="{{ route('settings.module') }}">Module Setting</a></li>
+              <li><a href="{{ route('permissions.role') }}">Role & Permissions</a></li>
             </ul>
         </li>
         <li class="">
-            <a  href="navs.html" aria-expanded="false">
+            <a  href="{{ route('ui.navs') }}" aria-expanded="false">
               <div class="nav_icon_small">
                 <img src="{{ asset('assets/img/menu-icon/12.svg') }}" alt="">
             </div>
@@ -104,12 +104,12 @@
             </div>
             </a>
             <ul>
-              <li><a href="user_list.html">Users List</a></li>
-              <li><a href="add_new_user.html">Add New User</a></li>
+              <li><a href="{{ route('users.list') }}">Users List</a></li>
+              <li><a href="{{ route('users.create') }}">Add New User</a></li>
             </ul>
         </li>
         <li>
-            <a href="Builder.html" aria-expanded="false">
+            <a href="{{ route('pages.builder') }}" aria-expanded="false">
                 <div class="nav_icon_small">
                     <img src="{{ asset('assets/img/menu-icon/6.svg') }}" alt="">
                 </div>
@@ -119,7 +119,7 @@
             </a>
         </li>
         <li class="">
-            <a  href="invoice.html" aria-expanded="false">
+            <a  href="{{ route('pages.invoice') }}" aria-expanded="false">
               <div class="nav_icon_small">
                 <img src="{{ asset('assets/img/menu-icon/7.svg') }}" alt="">
             </div>
@@ -138,14 +138,14 @@
               </div>
             </a>
             <ul>
-              <li><a href="Basic_Elements.html">Basic Elements</a></li>
-              <li><a href="Groups.html">Groups</a></li>
-              <li><a href="Max_Length.html">Max Length</a></li>
-              <li><a href="Layouts.html">Layouts</a></li>
+              <li><a href="{{ route('forms.basic-elements') }}">Basic Elements</a></li>
+              <li><a href="{{ route('forms.groups') }}">Groups</a></li>
+              <li><a href="{{ route('forms.max-length') }}">Max Length</a></li>
+              <li><a href="{{ route('forms.layouts') }}">Layouts</a></li>
             </ul>
           </li>
           <li class="">
-              <a href="Board.html" aria-expanded="false">
+              <a href="{{ route('pages.board') }}" aria-expanded="false">
                   <div class="nav_icon_small">
                       <img src="{{ asset('assets/img/menu-icon/9.svg') }}" alt="">
                   </div>
@@ -155,7 +155,7 @@
               </a>
           </li>
         <li class="">
-            <a  href="calender.html" aria-expanded="false">
+            <a  href="{{ route('pages.calendar') }}" aria-expanded="false">
               <div class="nav_icon_small">
                 <img src="{{ asset('assets/img/menu-icon/10.svg') }}" alt="">
             </div>
@@ -174,8 +174,8 @@
               </div>
             </a>
             <ul>
-              <li><a href="dark_sidebar.html">Dark Sidebar</a></li>
-              <li><a href="light_sidebar.html">light Sidebar</a></li>
+              <li><a href="{{ route('themes.dark-sidebar') }}">Dark Sidebar</a></li>
+              <li><a href="{{ route('themes.light-sidebar') }}">light Sidebar</a></li>
             </ul>
         </li>
         <li class="">
@@ -188,9 +188,9 @@
               </div>
             </a>
             <ul>
-              <li><a href="Minimized_Aside.html">Minimized Aside</a></li>
-              <li><a href="empty_page.html">Empty page</a></li>
-              <li><a href="fixed_footer.html">Fixed Footer</a></li>
+              <li><a href="{{ route('general.minimized-aside') }}">Minimized Aside</a></li>
+              <li><a href="{{ route('general.empty-page') }}">Empty page</a></li>
+              <li><a href="{{ route('general.fixed-footer') }}">Fixed Footer</a></li>
             </ul>
         </li>
         <li class="">
@@ -203,10 +203,10 @@
             </div>
             </a>
             <ul>
-              <li><a href="Products.html">Products</a></li>
-              <li><a href="Product_Details.html">Product Details</a></li>
-              <li><a href="Cart.html">Cart</a></li>
-              <li><a href="Checkout.html">Checkout</a></li>
+              <li><a href="{{ route('products.list') }}">Products</a></li>
+              <li><a href="{{ route('products.show') }}">Product Details</a></li>
+              <li><a href="{{ route('products.cart') }}">Cart</a></li>
+              <li><a href="{{ route('products.checkout') }}">Checkout</a></li>
             </ul>
           </li>
         <li class="">
@@ -219,8 +219,8 @@
             </div>
           </a>
           <ul>
-            <li><a href="Fontawesome_Icon.html">Fontawesome Icon</a></li>
-            <li><a href="themefy_icon.html">themefy icon</a></li>
+            <li><a href="{{ route('icons.fontawesome') }}">Fontawesome Icon</a></li>
+            <li><a href="{{ route('icons.themefy') }}">themefy icon</a></li>
           </ul>
         </li>
         <li class="">
@@ -233,9 +233,9 @@
                 </div>
             </a>
             <ul>
-                <li><a href="wow_animation.html">Animate</a></li>
-                <li><a href="Scroll_Reveal.html">Scroll Reveal</a></li>
-                <li><a href="tilt.html">Tilt Animation</a></li>
+                <li><a href="{{ route('animations.wow') }}">Animate</a></li>
+                <li><a href="{{ route('animations.scroll-reveal') }}">Scroll Reveal</a></li>
+                <li><a href="{{ route('animations.tilt') }}">Tilt Animation</a></li>
                 
             </ul>
           </li>
@@ -249,11 +249,11 @@
                 </div>
             </a>
             <ul>
-              <li><a href="accordion.html">Accordions</a></li>
-              <li><a href="Scrollable.html">Scrollable</a></li>
-              <li><a href="notification.html">Notifications</a></li>
-              <li><a href="carousel.html">Carousel</a></li>
-              <li><a href="Pagination.html">Pagination</a></li>
+              <li><a href="{{ route('components.accordion') }}">Accordions</a></li>
+              <li><a href="{{ route('components.scrollable') }}">Scrollable</a></li>
+              <li><a href="{{ route('components.notification') }}">Notifications</a></li>
+              <li><a href="{{ route('components.carousel') }}">Carousel</a></li>
+              <li><a href="{{ route('components.pagination') }}">Pagination</a></li>
             </ul>
           </li>
 
@@ -267,8 +267,8 @@
                 </div>
             </a>
             <ul>
-                <li><a href="data_table.html">Data Tables</a></li>
-                <li><a href="bootstrap_table.html">Bootstrap</a></li>
+                <li><a href="{{ route('tables.data') }}">Data Tables</a></li>
+                <li><a href="{{ route('tables.bootstrap') }}">Bootstrap</a></li>
             </ul>
           </li>
           <li class="">
@@ -281,9 +281,9 @@
                 </div>
             </a>
             <ul>
-                <li><a href="basic_card.html">Basic Card</a></li>
-                <li><a href="theme_card.html">Theme Card</a></li>
-                <li><a href="dargable_card.html">Draggable Card</a></li>
+                <li><a href="{{ route('cards.basic') }}">Basic Card</a></li>
+                <li><a href="{{ route('cards.theme') }}">Theme Card</a></li>
+                <li><a href="{{ route('cards.draggable') }}">Draggable Card</a></li>
             </ul>
           </li>
 
@@ -298,11 +298,11 @@
             </div>
           </a>
           <ul>
-            <li><a href="chartjs.html">ChartJS</a></li>
-            <li><a href="apex_chart.html">Apex Charts</a></li>
-            <li><a href="chart_sparkline.html">Chart sparkline</a></li>
-            <li><a href="am_chart.html">am-charts</a></li>
-            <li><a href="nvd3_charts.html">nvd3 charts.</a></li>
+            <li><a href="{{ route('charts.chartjs') }}">ChartJS</a></li>
+            <li><a href="{{ route('charts.apex') }}">Apex Charts</a></li>
+            <li><a href="{{ route('charts.sparkline') }}">Chart sparkline</a></li>
+            <li><a href="{{ route('charts.am') }}">am-charts</a></li>
+            <li><a href="{{ route('charts.nvd3') }}">nvd3 charts.</a></li>
           </ul>
         </li>
         <li class="">
@@ -315,16 +315,16 @@
               </div>
             </a>
             <ul>
-              <li><a href="colors.html">colors</a></li>
-              <li><a href="Alerts.html">Alerts</a></li>
-              <li><a href="buttons.html">Buttons</a></li>
-              <li><a href="modal.html">modal</a></li>
-              <li><a href="dropdown.html">Droopdowns</a></li>
-              <li><a href="Badges.html">Badges</a></li>
-              <li><a href="Loading_Indicators.html">Loading Indicators</a></li>
-              <li><a href="color_plate.html">Color Plate</a></li>
-              <li><a href="typography.html">Typography</a></li>
-              <li><a href="datepicker.html">Date Picker</a></li>
+              <li><a href="{{ route('uikits.colors') }}">colors</a></li>
+              <li><a href="{{ route('uikits.alerts') }}">Alerts</a></li>
+              <li><a href="{{ route('uikits.buttons') }}">Buttons</a></li>
+              <li><a href="{{ route('uikits.modal') }}">modal</a></li>
+              <li><a href="{{ route('uikits.dropdowns') }}">Droopdowns</a></li>
+              <li><a href="{{ route('uikits.badges') }}">Badges</a></li>
+              <li><a href="{{ route('uikits.loading-indicators') }}">Loading Indicators</a></li>
+              <li><a href="{{ route('uikits.color-plate') }}">Color Plate</a></li>
+              <li><a href="{{ route('uikits.typography') }}">Typography</a></li>
+              <li><a href="{{ route('uikits.datepicker') }}">Date Picker</a></li>
             </ul>
           </li>
 
@@ -338,8 +338,8 @@
             </div>
           </a>
           <ul>
-            <li><a href="chart_box_1.html">Chart Boxes 1</a></li>
-            <li><a href="profilebox.html">Profile Box</a></li>
+            <li><a href="{{ route('widgets.chart-box-1') }}">Chart Boxes 1</a></li>
+            <li><a href="{{ route('widgets.profilebox') }}">Profile Box</a></li>
           </ul>
         </li>
         
@@ -354,8 +354,8 @@
             </div>
           </a>
           <ul>
-            <li><a href="mapjs.html">Maps JS</a></li>
-            <li><a href="vector_map.html">Vector Maps</a></li>
+            <li><a href="{{ route('maps.js') }}">Maps JS</a></li>
+            <li><a href="{{ route('maps.vector') }}">Vector Maps</a></li>
           </ul>
         </li>
 
