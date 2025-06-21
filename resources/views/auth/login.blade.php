@@ -1,67 +1,65 @@
-<!DOCTYPE html>
-<html lang="zxx">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>LOGIN</title>
+@extends('layouts.app')
 
-    <!-- CSS Files -->
-    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap1.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendors/themefy_icon/themify-icons.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendors/font_awesome/css/all.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendors/scroll/scrollable.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/css/metisMenu.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/css/style1.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/css/colors/default.css') }}" id="colorSkinCSS">
-</head>
-<body class="crm_body_bg">
-
-<section class="main_content dashboard_part large_header_bg" style="min-height: 100vh; display: flex; align-items: center; justify-content: center;padding-left: 0;">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-5">
-                <div class="modal-content cs_modal shadow rounded">
-                    <div class="modal-header justify-content-center theme_bg_1 rounded-top">
-                        <h5 class="modal-title text_white">Log in</h5>
-                    </div>
-                    <div class="modal-body px-4 py-4">
-                        <form>
-                            <div class="mb-3">
-                                <input type="email" class="form-control" placeholder="Enter your email">
-                            </div>
-                            <div class="mb-3">
-                                <input type="password" class="form-control" placeholder="Password">
-                            </div>
-                            <div class="d-grid mb-3">
-                                <a href="#" class="btn_1 text-center">Log In</a>
-                            </div>
-                            <p class="text-center">Need an account?
-                                <a href="#" data-toggle="modal" data-target="#sing_up" data-dismiss="modal">Sign Up</a>
-                            </p>
-                            <div class="text-center">
-                                <a href="#" class="pass_forget_btn" data-toggle="modal" data-target="#forgot_password" data-dismiss="modal">Forget Password?</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="text-center mt-4">
-                    <p class="small text-muted">2020 © Developed by
-                        <a href="#">ECHO DATA</a>
-                    </p>
-                </div>
-            </div>
+@section('content')
+<div class="auth-container"> {{-- auth-container class from layouts.app for consistent styling --}}
+    <h2 class="text-center">Login</h2>
+    <form id="loginForm">
+        <div class="form-group mb-3">
+            <label for="email">Email address</label>
+            <input type="email" class="form-control" id="email" placeholder="Enter email" required>
         </div>
+        <div class="form-group mb-3">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+    <div id="message" class="mt-3 text-center"></div>
+    <div class="mt-3 text-center">
+        <p>Don't have an account? <a href="/register">Register here</a></p> {{-- Updated href --}}
     </div>
-</section>
+</div>
+@endsection
 
-<!-- Scripts -->
-<script src="{{ asset('assets/js/jquery1-3.4.1.min.js') }}"></script>
-<script src="{{ asset('assets/js/popper1.min.js') }}"></script>
-<script src="{{ asset('assets/js/bootstrap1.min.js') }}"></script>
-<script src="{{ asset('assets/js/metisMenu.js') }}"></script>
-<script src="{{ asset('assets/vendors/scroll/perfect-scrollbar.min.js') }}"></script>
-<script src="{{ asset('assets/vendors/scroll/scrollable-custom.js') }}"></script>
-<script src="{{ asset('assets/js/custom.js') }}"></script>
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // Redirect if already logged in
+    if (localStorage.getItem('authToken')) {
+        window.location.href = '/dashboard'; // Updated href
+    }
 
-</body>
-</html>
+    $("#loginForm").submit(function(event) {
+        event.preventDefault();
+        $("#message").text('').css('color', 'black'); // Clear previous messages
+
+        $.ajax({
+            url: '/api/login', // This remains the same as it's an API call
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                email: $("#email").val(),
+                password: $("#password").val()
+            }),
+            success: function(response) {
+                if (response.access_token) {
+                    localStorage.setItem('authToken', response.access_token);
+                    window.location.href = '/dashboard'; // Updated href
+                } else {
+                     $("#message").text('Login successful, but no token received.').css('color', 'orange');
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = 'An error occurred during login.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.statusText) {
+                    errorMessage = xhr.statusText;
+                }
+                $("#message").text(errorMessage).css('color', 'red');
+            }
+        });
+    });
+});
+</script>
+@endpush
