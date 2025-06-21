@@ -7,9 +7,22 @@ use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+// User model is already imported in UserRoleController.php via assignRole/revokeRole type hints
 
 class UserRoleController extends Controller
 {
+    /**
+     * Display a listing of the users.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index()
+    {
+        // Eager load roles to prevent N+1 query problems when accessing user roles.
+        $users = User::with('roles')->get();
+        return response()->json($users);
+    }
+
     /**
      * Assign a role to a user.
      *
@@ -34,22 +47,22 @@ class UserRoleController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Role  $role
+     * @param  int  $role_id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function revokeRole(Request $request, User $user, Role $role)
+    public function revokeRole(Request $request, User $user, int $role_id)
     {
-        // Validate if the role_id from URL exists, though route model binding already does this.
-        // This is more of a double check or if not using route model binding for the role.
-        $request->validate(['role_id' => Rule::exists('roles', 'id')->where(function ($query) use ($role) {
-            $query->where('id', $role->id);
-        })]);
+        $role = Role::find($role_id);
 
-        if (!$user->roles()->find($role->id)) {
+        if (!$role) {
+            return response()->json(['message' => "Role with ID {$role_id} not found."], 404);
+        }
+
+        if (!$user->roles()->find($role_id)) {
             return response()->json(['message' => "User '{$user->name}' does not have the role '{$role->name}'."], 400);
         }
 
-        $user->roles()->detach($role->id);
+        $user->roles()->detach($role_id);
 
         return response()->json(['message' => "Role '{$role->name}' revoked from user '{$user->name}' successfully."]);
     }

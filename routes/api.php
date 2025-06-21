@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserRoleController;
+use App\Http\Controllers\API\LogController; // Added LogController
 
 /*
 |--------------------------------------------------------------------------
@@ -32,9 +33,14 @@ Route::middleware('auth:sanctum')->group(function () {
 // Admin protected routes for Role and UserRole management
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::apiResource('roles', RoleController::class);
+
+    // User listing
+    Route::get('/users', [UserRoleController::class, 'index'])->name('users.index');
+
+    // User role assignment
     Route::post('users/{user}/roles', [UserRoleController::class, 'assignRole']);
-    // Using {role} for route model binding for the role to be revoked.
-    Route::delete('users/{user}/roles/{role}', [UserRoleController::class, 'revokeRole']);
+    // Role ID is passed directly for revocation
+    Route::delete('users/{user}/roles/{role_id}', [UserRoleController::class, 'revokeRole'])->name('users.roles.revoke');
 
     // User activation/deactivation routes
     Route::patch('users/{user}/activate', [UserRoleController::class, 'activateUser'])->name('users.activate');
@@ -43,4 +49,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     // User block/unblock routes
     Route::patch('users/{user}/block', [UserRoleController::class, 'blockUser'])->name('users.block');
     Route::patch('users/{user}/unblock', [UserRoleController::class, 'unblockUser'])->name('users.unblock');
+
+    // Log listing route
+    Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
 });
