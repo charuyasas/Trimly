@@ -7,7 +7,11 @@ Route::get('/', function () {
 });
 
 Route::get('/services', function () {
-    return view('services.index');
+    return view('services');
+});
+
+Route::get('/employee', function () {
+    return view('employee');
 });
 
 Route::middleware([

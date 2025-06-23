@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Models\Service;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ServiceController extends Controller
 {
@@ -21,7 +22,6 @@ class ServiceController extends Controller
             'price' => 'nullable|numeric',
         ]);
 
-        // $service = Service::create($request->only(['code', 'description', 'price']));
         $service = Service::create($validated);
         return response()->json($service, 201);
     }
@@ -29,7 +29,11 @@ class ServiceController extends Controller
     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
-            'code' => 'required|string|unique:services,code',
+            'code' => [
+            'required',
+            'string',
+            Rule::unique('services', 'code')->ignore($id),
+        ],
             'description' => 'required|string|max:255',
             'price' => 'nullable|numeric',
         ]);

@@ -11,22 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('services', function (Blueprint $table) {
+        Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
-            $table->text('description')->nullable();
-            $table->decimal('price', 10, 2);
+             $table->string('employee_id')->unique();
+            $table->string('name'); 
+            $table->text('address')->nullable(); 
+            $table->string('contact_no', 15)->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
     }
-    
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('services');
+        Schema::dropIfExists('employees');
     }
 };
