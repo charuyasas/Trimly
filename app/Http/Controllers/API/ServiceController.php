@@ -15,14 +15,27 @@ class ServiceController extends Controller
     
     public function store(Request $request)
     {
-        $service = Service::create($request->only(['code', 'description', 'price']));
+         $validated = $request->validate([
+            'code' => 'required|string|unique:services,code',
+            'description' => 'required|string|max:255',
+            'price' => 'nullable|numeric',
+        ]);
+
+        // $service = Service::create($request->only(['code', 'description', 'price']));
+        $service = Service::create($validated);
         return response()->json($service, 201);
     }
     
     public function update(Request $request, string $id)
     {
+        $validated = $request->validate([
+            'code' => 'required|string|unique:services,code',
+            'description' => 'required|string|max:255',
+            'price' => 'nullable|numeric',
+        ]);
+
         $service = Service::findOrFail($id);
-        $service->update($request->only(['code', 'description', 'price']));
+        $service->update($validated);
         return response()->json($service);
     }
     
