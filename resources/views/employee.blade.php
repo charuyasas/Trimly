@@ -7,10 +7,10 @@
             <div class="col-12">
                 <div class="page_title_box d-flex flex-wrap align-items-center justify-content-between">
                     <div class="page_title_left d-flex align-items-center">
-                        <h3 class="f_s_25 f_w_700 dark_text mr_30" >Services</h3>
+                        <h3 class="f_s_25 f_w_700 dark_text mr_30" >Employees</h3>
                         <ol class="breadcrumb page_bradcam mb-0">
                             <li class="breadcrumb-item"><a href="javascript:void(0);">Home</a></li>
-                            <li class="breadcrumb-item active">Services</li>
+                            <li class="breadcrumb-item active">Employees</li>
                         </ol>
                     </div>
                 </div>
@@ -22,7 +22,7 @@
                     <div class="white_card_header">
                         <div class="box_header m-0">
                             <div class="main-title">
-                                <h3 class="m-0">Service List </h3>
+                                <h3 class="m-0">Employee List </h3>
                             </div>
                         </div>
                     </div>
@@ -38,7 +38,7 @@
                                                 <div class="search_inner">
                                                     <form Active="#">
                                                         <div class="search_field">
-                                                            <input type="text" placeholder="Search content here..." class="searchBox" data-target="serviceTable">
+                                                            <input type="text" placeholder="Search content here..." class="searchBox" data-target="employeeTable">
                                                         </div>
                                                         <button type="submit"> <i class="ti-search"></i> </button>
                                                     </form>
@@ -57,21 +57,20 @@
                                             <thead>
                                                 <tr>
                                                     <th scope="col">ID</th>
-                                                    <th scope="col">Code</th>
-                                                    <th scope="col">Description</th>
-                                                    <th scope="col">Price</th>
+                                                    <th scope="col">Employee ID</th>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">Address</th>
+                                                    <th scope="col">Phone No.</th>
                                                     <th scope="col">Action</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="serviceTable">
+                                            <tbody id="employeeTable">
                                                 
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            
+                            </div>                            
                         </div>
                     </div>
                 </div>
@@ -83,87 +82,93 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                            <h5 class="modal-title" id="exampleModalLongTitle">Add Employee</h5>
                             <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form id="serviceForm">
-                                <input type="hidden" id="service_id">
+                            <form id="employeeForm">
+                                <input type="hidden" id="employee_id">
                                 <div class="white_card_body">
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="common_input mb_15">
-                                                <input type="text" id="code" placeholder="Service Code">
+                                                <input type="text" id="employeeID" placeholder="Employee ID">
                                             </div>
                                         </div>
                                         <div class="col-lg-12">
                                             <div class="common_input mb_15">
-                                                <input type="text" id="description" placeholder="Description">
+                                                <input type="text" id="employee_name" placeholder="Name">
                                             </div>
                                         </div>
                                         <div class="col-lg-12">
                                             <div class="common_input mb_15">
-                                                <input type="number" class="decimal-input" step="0.01" id="price" placeholder="Price">
+                                                <input type="text" id="employee_address" placeholder="Address">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <div class="common_input mb_15">
+                                                <input type="text" id="employee_contactno" class="contactNo" placeholder="Contact Number">
                                             </div>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                             <div class="modal-footer">
-                                {{-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> --}}
                                 <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
-                                <button type="button" class="btn btn-primary" onclick="saveService()">Save</button>
+                                <button type="button" class="btn btn-primary" onclick="saveEmployee()">Save</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 <script>
-                    const apiUrl = '/api/services';
-                    loadServices();
+                    const apiUrl = '/api/employees';
+                    loadEmployees();
                     
-                    function loadServices() {
+                    function loadEmployees() {
                         $.get(apiUrl, function(data) {
                             let rows = '';
                             let rowID = 1;
-                            data.forEach(service => {
+                            data.forEach(employee => {
                                 rows += `
                                 <tr>
                                     <td>${rowID}</td>
-                                    <td>${service.code}</td>
-                                    <td>${service.description}</td>
-                                    <td>${service.price}</td>
+                                    <td>${employee.employee_id}</td>
+                                    <td>${employee.name}</td>
+                                    <td>${employee.address}</td>
+                                    <td>${employee.contact_no}</td>
                                     <td>
-                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" onclick="editService(${service.id})">Edit</button>
-                                        <button class="btn btn-sm btn-danger" onclick="deleteService(${service.id})">Delete</button>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" onclick="editEmployee(${employee.id})">Edit</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${employee.id})">Delete</button>
                                     </td>
                                 </tr>
                             `;
                                 rowID++;
                             });
-                            $('#serviceTable').html(rows);
+                            $('#employeeTable').html(rows);
                         });
                     }
                     
-                    function saveService() {
-                        const service_id = $('#service_id').val();
+                    function saveEmployee() {
+                        const employee_id = $('#employee_id').val();
                         const data = {
-                            code: $('#code').val(),
-                            description: $('#description').val(),
-                            price: $('#price').val()
+                            employee_id: $('#employeeID').val(),
+                            name: $('#employee_name').val(),
+                            address: $('#employee_address').val(),
+                            contact_no: $('#employee_contactno').val()
                         };
                         
-                        if (service_id) {
+                        if (employee_id) {
                             $.ajax({
-                                url: `${apiUrl}/${service_id}`,
+                                url: `${apiUrl}/${employee_id}`,
                                 method: 'PUT',
                                 data: data,
                                 success: function() {
-                                    loadServices();
+                                    loadEmployees();
                                     closeModal();
-                                    $('#service_id').val('');
+                                    $('#employee_id').val('');
                                 },
                                 error: function (xhr) {
                                     if (xhr.status === 422) {
@@ -180,7 +185,7 @@
                                 method: 'POST',
                                 data: data,
                                 success: function() {
-                                    loadServices();
+                                    loadEmployees();
                                     closeModal();
                                 },
                                 error: function (xhr) {
@@ -201,29 +206,30 @@
                         
                         if (modal) {
                             modal.hide(); 
-                            $('#serviceForm')[0].reset();
+                            $('#employeeForm')[0].reset();
                         }
                     }
                     
-                    function editService(service_id) {
-                        $.get(`${apiUrl}/${service_id}`, function(service) {
-                            $('#service_id').val(service.id);
-                            $('#code').val(service.code);
-                            $('#description').val(service.description);
-                            $('#price').val(service.price);
+                    function editEmployee(employee_id) {
+                        $.get(`${apiUrl}/${employee_id}`, function(employee) {
+                            $('#employee_id').val(employee.id);
+                            $('#employeeID').val(employee.employee_id);
+                            $('#employee_name').val(employee.name);
+                            $('#employee_address').val(employee.address);
+                            $('#employee_contactno').val(employee.contact_no);
                         });
                     }
                     
-                    function deleteService(service_id) {
-                        if (confirm('Delete this service?')) {
+                    function deleteEmployee(employee_id) {
+                        if (confirm('Delete this employee?')) {
                             $.ajax({
-                                url: `${apiUrl}/${service_id}`,
+                                url: `${apiUrl}/${employee_id}`,
                                 method: 'DELETE',
-                                success: loadServices
+                                success: loadEmployees
                             });
                         }
                     }
-
+                    
                     
                     
                 </script>

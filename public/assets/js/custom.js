@@ -25,6 +25,14 @@ $(document).ready(function () {
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
         });
     });
+
+    $('.contactNo').on('input', function () {
+    this.value = this.value.replace(/\D/g, '');
+
+    if (this.value.length > 10) {
+        this.value = this.value.slice(0, 10);
+    }
+});
 });
 	
 $(".open_miniSide").click(function () {
