@@ -16,9 +16,11 @@ return new class extends Migration
             $table->string('code');
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
+    
 
     /**
      * Reverse the migrations.

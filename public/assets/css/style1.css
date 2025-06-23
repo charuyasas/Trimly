@@ -2041,6 +2041,12 @@ p a:hover {
   border-color: #884FFBe6;
 }
 
+.btn-primary:focus{
+  color:#fff;
+  background-color:#884FFBe6;
+  border-color:#884FFBe6;
+}
+
 @media (max-width: 991px) {
   /* line 1506, G:/admin_project/8 admin/management_html/scss/_reset.scss */
   .sm_padding_15px {

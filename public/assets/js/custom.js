@@ -5,6 +5,27 @@
 $("#sidebar_menu").metisMenu();
 // metisMenu 
 $("#admin_profile_active").metisMenu();
+
+$(document).ready(function () {
+    $('.decimal-input').on('input', function () {
+        let value = $(this).val();
+        let isValid = /^\d*\.?\d{0,2}$/.test(value);
+
+        if (!isValid) {
+            // Remove last entered character if not valid
+            $(this).val(value.slice(0, -1));
+        }
+    });
+
+    $('.searchBox').on('keyup', function () {
+        let value = $(this).val().toLowerCase();
+        let targetTableId = $(this).data('target');
+
+        $('#' + targetTableId + ' tr').filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+    });
+});
 	
 $(".open_miniSide").click(function () {
     $(".sidebar").toggleClass("mini_sidebar");
@@ -81,6 +102,8 @@ $("#sidebar_menu >li a").filter(function() {
                 $("body").find(".serach_field-area").removeClass("active");
             }
         });
+
+        
     //progressbar js
     $(document).ready(function(){
         var proBar = $('#bar1');
