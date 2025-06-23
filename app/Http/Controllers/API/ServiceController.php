@@ -13,7 +13,7 @@ class ServiceController extends Controller
     {
         return Service::all();
     }
-    
+
     public function store(Request $request)
     {
          $validated = $request->validate([
@@ -25,8 +25,8 @@ class ServiceController extends Controller
         $service = Service::create($validated);
         return response()->json($service, 201);
     }
-    
-    public function update(Request $request, string $id)
+
+     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
             'code' => [
@@ -42,13 +42,13 @@ class ServiceController extends Controller
         $service->update($validated);
         return response()->json($service);
     }
-    
+
     public function show(string $id)
     {
         return Service::findOrFail($id);
     }
-    
-    
+
+
     public function destroy(string $id)
     {
         Service::destroy($id);
