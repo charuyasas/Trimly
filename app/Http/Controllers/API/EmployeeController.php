@@ -45,7 +45,7 @@ class EmployeeController extends Controller
 
     public function loadEmployeeDropdown(LoadEmployeemDropdownInteractor $loadEmployeemDropdownInteractor)
     {
-        return response()->json($loadEmployeemDropdownInteractor->execute(request('q')));
+        return response()->json($loadEmployeemDropdownInteractor->execute(request('search_key')));
     }
 
 

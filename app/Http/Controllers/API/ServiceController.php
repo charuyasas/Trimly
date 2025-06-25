@@ -10,6 +10,7 @@ use App\UseCases\Service\Requests\ServiceRequest;
 use App\UseCases\Service\ShowServiceInteractor;
 use App\UseCases\Service\StoreServiceInteractor;
 use App\UseCases\Service\UpdateServiceInteractor;
+use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
@@ -41,5 +42,26 @@ class ServiceController extends Controller
         $deleteServiceInteractor->execute($service);
         return response()->json(null, 204);
     }
+
+    public function loadServiceDropdown(Request $request)
+    {
+       $search = $request->get('search_key');
+
+       $services = \App\Models\Service::where('description', 'like', "%$search%")
+                    ->limit(10)
+                    ->get();
+
+       $results = [];
+
+        foreach ($services as $srv) {
+         $results[] = [
+            'label' => $srv->description . ' - Rs.' . number_format($srv->price, 2),
+            'value' => $srv->id
+         ];
+        }
+
+        return response()->json($results);
+    }
+
 
 }
