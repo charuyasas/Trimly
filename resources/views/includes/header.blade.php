@@ -30,10 +30,13 @@
     <link rel="stylesheet" href="{{ asset('assets/css/metisMenu.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style1.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/colors/default.css') }}" id="colorSkinCSS">
-    <script src="{{ asset('assets/js/jquery1-3.4.1.min.js') }}"></script> 
-
+    <script src="{{ asset('assets/js/jquery1-3.4.1.min.js') }}"></script>
+    <!-- FullCalendar CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.17/index.global.min.js"></script>
     
+
 </head>
+
 <body class="crm_body_bg">
     @if (Route::has('login'))
         <nav class="flex items-center justify-end gap-4">
@@ -54,4 +57,3 @@
             @endauth
         </nav>
     @endif
-    
