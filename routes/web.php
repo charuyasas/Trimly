@@ -6,6 +6,10 @@ Route::get('/', function () {
     return view('index');
 });
 
+Route::get('/bookings', function () {
+    return view('bookings');
+});
+
 Route::get('/customers', function () {
     return view('customer');
 });
@@ -14,7 +18,7 @@ Route::get('/services', function () {
     return view('services');
 });
 
-Route::get('/employees', function () {
+Route::get('/employee', function () {
     return view('employee');
 });
 

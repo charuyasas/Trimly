@@ -44,7 +44,7 @@ class CustomerController extends Controller
 
     public function loadCustomerDropdown(Request $request)
     {
-        $search = $request->get('q');
+        $search = $request->get('search_key');
 
         $customer = Customer::where('phone', 'like', "%$search%")
             ->orWhere('name', 'like', "%$search%")
