@@ -5,12 +5,28 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\EmployeeController;
 use App\Http\Controllers\API\CustomerController;
+use App\Http\Controllers\API\InvoiceController;
 
 Route::apiResource('customers', CustomerController::class);
 
 Route::apiResource('services', ServiceController::class);
 
 Route::apiResource('employees', EmployeeController::class);
+
+Route::apiResource('invoices', InvoiceController::class);
+
+Route::get('/employees-list', [EmployeeController::class, 'loadEmployeeDropdown']);
+
+Route::get('/customer-list', [CustomerController::class, 'loadCustomerDropdown']);
+
+Route::get('/item-list', [InvoiceController::class, 'loadItemDropdown']);
+
+Route::get('/invoice-list', [InvoiceController::class, 'loadInvoiceDropdown']);
+
+Route::post('/new-invoice',[InvoiceController::class, 'store']);
+
+Route::get('/invoice-items/{id}', [InvoiceController::class, 'getInvoiceItems']);
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
