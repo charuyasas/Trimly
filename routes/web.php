@@ -18,6 +18,14 @@ Route::get('/employees', function () {
     return view('employee');
 });
 
+Route::get('/invoice', function () {
+    return view('invoice/invoice');
+});
+
+Route::get('/invoiceList', function () {
+    return view('invoice/invoice-list');
+});
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

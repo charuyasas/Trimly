@@ -1,4 +1,4 @@
-<nav class="sidebar">
+<nav class="sidebar dark_sidebar">
     <div class="logo d-flex justify-content-between">
         <a class="large_logo" href="index-2.html"><img src="{{ asset('assets/img/logo.png') }}" alt=""></a>
         <a class="small_logo" href="index-2.html"><img src="{{ asset('assets/img/mini_logo.png') }}" alt=""></a>
@@ -38,7 +38,7 @@
             </a>
         </li>
         <li class="">
-            <a  href="/invoice" aria-expanded="false">
+            <a   class="has-arrow" href="#" aria-expanded="false">
               <div class="nav_icon_small">
                 <img src="{{ asset('assets/img/menu-icon/20.svg') }}" alt="">
             </div>
@@ -46,6 +46,10 @@
                 <span>Sales Invoice</span>
             </div>
             </a>
+            <ul>
+              <li><a href="/invoice">Add New</a></li>
+              <li><a href="/invoiceList">List</a></li>
+            </ul>
         </li>
       </ul>
 </nav>
@@ -71,6 +75,7 @@
                     </div>
 
                     <div class="header_right d-flex justify-content-between align-items-center">
+                        <div id="datetime" style="font-size: 20px; font-weight: bold;"></div>
                         <div class="serach_field-area d-flex align-items-center">
                         <div class="search_inner">
                             <form action="#">

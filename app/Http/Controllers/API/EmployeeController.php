@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\UseCases\Employee\DeleteEmployeeInteractor;
 use App\UseCases\Employee\ListEmployeeInteractor;
+use App\UseCases\Employee\LoadEmployeemDropdownInteractor;
 use App\UseCases\Employee\Requests\EmployeeRequest;
 use App\UseCases\Employee\ShowEmployeeInteractor;
 use App\UseCases\Employee\StoreEmployeeInteractor;
 use App\UseCases\Employee\updateEmployeeInteractor;
+use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
@@ -40,4 +42,11 @@ class EmployeeController extends Controller
         $deleteEmployeeInteractor->execute($employee);
         return response()->json(null, 204);
     }
+
+    public function loadEmployeeDropdown(LoadEmployeemDropdownInteractor $loadEmployeemDropdownInteractor)
+    {
+        return response()->json($loadEmployeemDropdownInteractor->execute(request('q')));
+    }
+
+
 }

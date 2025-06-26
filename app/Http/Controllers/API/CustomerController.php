@@ -41,4 +41,25 @@ class CustomerController extends Controller
         $delete->execute($customer);
         return response()->json(null, 204);
     }
+
+    public function loadCustomerDropdown(Request $request)
+    {
+        $search = $request->get('q');
+
+        $customer = Customer::where('phone', 'like', "%$search%")
+            ->orWhere('name', 'like', "%$search%")
+            ->limit(10)
+            ->get();
+
+        $results = [];
+
+        foreach ($customer as $cus) {
+            $results[] = [
+                'label' => $cus->name . ' - ' . $cus->phone,
+                'value' => $cus->id
+            ];
+        }
+
+        return response()->json($results);
+    }
 }
