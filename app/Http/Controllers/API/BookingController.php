@@ -32,6 +32,7 @@ class BookingController extends Controller
         // Check for overlapping bookings
         $overlap = Booking::where('employee_id', $validated['employee_id'])
             ->where('booking_date', $validated['booking_date'])
+            ->where('status', '!=', 'cancelled') // ignore cancelled bookings
             ->where(function ($q) use ($validated) {
                 $q->whereBetween('start_time', [$validated['start_time'], $validated['end_time']])
                   ->orWhereBetween('end_time', [$validated['start_time'], $validated['end_time']])
@@ -61,65 +62,68 @@ class BookingController extends Controller
     }
 
     public function update(Request $request, $id)
-   {
-    $booking = Booking::findOrFail($id);
+    {
+        $booking = Booking::findOrFail($id);
 
-    $validated = $request->validate([
-        'customer_id' => 'required|exists:customers,id',
-        'employee_id' => 'required|exists:employees,id',
-        'service_id' => 'required|exists:services,id',
-        'booking_date' => 'required|date',
-        'start_time' => 'required',
-        'end_time' => 'required|after:start_time',
-        'status' => 'required|in:pending,confirmed,completed,cancelled',
+        // Validate only present fields (partial update allowed)
+        $validated = $request->validate([
+        'customer_id' => 'sometimes|required|exists:customers,id',
+        'employee_id' => 'sometimes|required|exists:employees,id',
+        'service_id' => 'sometimes|required|exists:services,id',
+        'booking_date' => 'sometimes|required|date',
+        'start_time' => 'sometimes|required',
+        'end_time' => 'sometimes|required|after:start_time',
+        'status' => 'sometimes|required|in:pending,confirmed,completed,cancelled',
         'notes' => 'nullable|string'
-    ]);
+        ]);
 
-    // Convert time to 24-hour format
-    $startTime = Carbon::parse($validated['start_time'])->format('H:i');
-    $endTime = Carbon::parse($validated['end_time'])->format('H:i');
+        // Optional: if updating time, check for overlaps
+        if (
+         isset($validated['employee_id']) &&
+         isset($validated['booking_date']) &&
+         isset($validated['start_time']) &&
+         isset($validated['end_time'])
+        )
+        {
+         $startTime = Carbon::parse($validated['start_time'])->format('H:i');
+         $endTime = Carbon::parse($validated['end_time'])->format('H:i');
 
-    // Check for overlap with other bookings of the same employee (exclude current booking)
-    $conflict = Booking::where('employee_id', $validated['employee_id'])
-        ->where('booking_date', $validated['booking_date'])
-        ->where('id', '!=', $booking->id)
-        ->where(function ($query) use ($startTime, $endTime) {
-            $query->whereBetween('start_time', [$startTime, $endTime])
-                ->orWhereBetween('end_time', [$startTime, $endTime])
-                ->orWhere(function ($q) use ($startTime, $endTime) {
-                    $q->where('start_time', '<=', $startTime)
-                      ->where('end_time', '>=', $endTime);
-                });
-        })
-        ->first();
+         $conflict = Booking::where('employee_id', $validated['employee_id'])
+            ->where('booking_date', $validated['booking_date'])
+            ->where('id', '!=', $booking->id)
+            ->where('status', '!=', 'cancelled') // ignore cancelled
+            ->where(function ($query) use ($startTime, $endTime) {
+                $query->whereBetween('start_time', [$startTime, $endTime])
+                    ->orWhereBetween('end_time', [$startTime, $endTime])
+                    ->orWhere(function ($q) use ($startTime, $endTime) {
+                        $q->where('start_time', '<=', $startTime)
+                            ->where('end_time', '>=', $endTime);
+                    });
+            })
+            ->first();
 
-    if ($conflict) {
-        // Suggest next available 30-min slot
-        $nextStart = Carbon::parse($conflict->end_time);
-        $nextEnd = $nextStart->copy()->addMinutes(
-            Carbon::parse($endTime)->diffInMinutes(Carbon::parse($startTime))
-        );
+         if ($conflict) {
+            $nextStart = Carbon::parse($conflict->end_time);
+            $nextEnd = $nextStart->copy()->addMinutes(
+                Carbon::parse($endTime)->diffInMinutes(Carbon::parse($startTime))
+            );
 
-        return response()->json([
-            'message' => 'Time slot overlaps with another booking.',
-            'suggested_start_time' => $nextStart->format('H:i'),
-            'suggested_end_time' => $nextEnd->format('H:i'),
-        ], 409);
+            return response()->json([
+                'message' => 'Time slot overlaps with another booking.',
+                'suggested_start_time' => $nextStart->format('H:i'),
+                'suggested_end_time' => $nextEnd->format('H:i'),
+            ], 409);
+          }
+
+         // override validated times
+         $validated['start_time'] = $startTime;
+         $validated['end_time'] = $endTime;
+       }
+
+       // Update the booking
+       $booking->update($validated);
+
+       return response()->json(['message' => 'Booking updated successfully']);
     }
-
-    // Proceed to update
-    $booking->update([
-        'customer_id' => $validated['customer_id'],
-        'employee_id' => $validated['employee_id'],
-        'service_id' => $validated['service_id'],
-        'booking_date' => $validated['booking_date'],
-        'start_time' => $startTime,
-        'end_time' => $endTime,
-        'status' => $validated['status'],
-        'notes' => $validated['notes']
-    ]);
-
-    return response()->json(['message' => 'Booking updated successfully']);
-   }
 
 }
