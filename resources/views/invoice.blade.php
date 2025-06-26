@@ -69,7 +69,7 @@
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="txt_price">Price <code>*</code></label>
-                                        <input type="text" class="form-control" id="txt_price" disabled>
+                                        <input type="text" class="form-control text-end" id="txt_price" disabled>
                                     </div>
                                     <div class="col-md-1">
                                         <label class="form-label" for="txt_discount">Discount</label>
@@ -77,11 +77,11 @@
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="txt_discount_amount">Dis. Amount</label>
-                                        <input type="text" class="form-control" id="txt_discount_amount" onkeyup="calculateSubTotal()">
+                                        <input type="text" class="form-control text-end" id="txt_discount_amount" onkeyup="calculateSubTotal()">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="txt_sub_total">Sub Total <code>*</code></label>
-                                        <input type="text" class="form-control" id="txt_sub_total" disabled>
+                                        <input type="text" class="form-control text-end" id="txt_sub_total" disabled>
                                     </div>
                                     <div class="col-md-1">
                                         <button type="button" class="btn btn-secondary mb-3" id="btn_add">ADD</button>
@@ -153,32 +153,32 @@
                                         <td class="left">
                                             <strong>Return Amount</strong>
                                         </td>
-                                        <td class="right" id="txt_return"></td>
+                                        <td class="right"><input type="text" class="form-control text-end" id="txt_return"></td>
                                     </tr>
                                     <tr>
                                         <td class="left">
                                             <strong>Total Amount</strong>
                                         </td>
-                                        <td class="right" id="txt_total"></td>
+                                        <td class="right"><input type="text" class="form-control text-end" id="txt_total" disabled></td>
                                     </tr>
                                     <tr>
                                         <td class="left">
                                             <strong>Bill Discount %</strong>
                                         </td>
-                                        <td class="right" id="txt_totdiscount"></td>
+                                        <td class="right"><input type="text" class="form-control" id="txt_totdiscount" onkeyup="calculateGrandTotal();"></td>
                                     </tr>
                                     <tr>
                                         <td class="left">
                                             <strong>Bill Dis. Amount</strong>
                                         </td>
-                                        <td class="right" id="txt_totdiscount_amount"></td>
+                                        <td class="right" ><input type="text" class="form-control text-end" id="txt_totdiscount_amount" onkeyup="calculateGrandTotal();"></td>
                                     </tr>
                                     <tr>
                                         <td class="left">
                                             <strong>Grand Total</strong>
                                         </td>
-                                        <td class="right" id="txt_grandtotal">
-                                            <strong></strong>
+                                        <td class="right">
+                                                <strong><input type="text" class="form-control text-end" id="txt_grandtotal" disabled></strong>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -187,7 +187,7 @@
 
                             <div class="row">
                                 <div class="col-lg-12">
-                                    <button type="button" class="btn btn-primary">Finish Sale</button>
+                                    <button type="button" class="btn btn-primary" onclick="finishInvoice()">Finish Sale</button>
                                 </div>
                             </div>
                         </div>
@@ -369,6 +369,8 @@
     }
 
     let itemsList = [];
+    let invoice = [];
+
     $("#btn_add").click(function () {
         var employee = $("#employee_id").val();
         var customer = $("#customer_id").val();
@@ -395,31 +397,25 @@
         let description = ($("#cbo_item").val()).split(" - ");
         let itemDescription = description[1];
 
-        if (itemsList.length > 0) {
-            itemsList.push({
-                invoice_id: invoiceID,
-                item_id: itemID,
-                item_description: itemDescription,
-                quantity: qty,
-                amount: unitPrice,
-                discount_percentage: discount,
-                discount_amount: discount_amount,
-                sub_total: sub_total
-            });
-        }else{
-            itemsList = [{
-                invoice_id: invoiceID,
-                item_id: itemID,
-                item_description: itemDescription,
-                quantity: qty,
-                amount: unitPrice,
-                discount_percentage: discount,
-                discount_amount: discount_amount,
-                sub_total: sub_total
-            }];
-        }
+        const isDuplicate = itemsList.some(item => item.item_id === itemID);
+    if (isDuplicate) {
+        alert("Item already exists.");
+        return false;
+    }
 
-        let invoice = {
+            itemsList .push({
+        invoice_id: invoiceID,
+        item_id: itemID,
+        item_description: itemDescription,
+        quantity: qty,
+        amount: unitPrice,
+        discount_percentage: discount,
+        discount_amount: discount_amount,
+        sub_total: sub_total
+    });
+
+
+         invoice = {
             id: invoiceID,
             invoice_no: tokenNo,
             employee_no: employee,
@@ -487,7 +483,7 @@
 
     function renderItemsTable(items) {
         let tbody = $("#itemTbl tbody");
-        tbody.empty(); // Clear existing rows
+        tbody.empty(); let subTotal = 0;
 
         items.forEach((item, index) => {
             let row = `
@@ -495,18 +491,67 @@
                 <td>${index + 1}</td>
                 <td>${item.item_description}</td>
                 <td>${item.quantity}</td>
-                <td>${item.amount}</td>
+                <td class="text-end">${item.amount}</td>
                 <td>${item.discount_percentage || ''}</td>
-                <td>${item.discount_amount || ''}</td>
-                <td>${item.sub_total}</td>
+                <td class="text-end">${item.discount_amount || ''}</td>
+                <td class="text-end">${item.sub_total}</td>
             </tr>
         `;
-            tbody.append(row);
+            subTotal += parseFloat(item.sub_total);tbody.append(row);
         });
+    $("#txt_total").val(subTotal.toFixed(2));
+        calculateGrandTotal();
     }
 
+    function calculateGrandTotal(){
+        let grandTotal = $("#txt_total").val();
 
+        let discount = $("#txt_totdiscount").val();
+        let discount_amount = $("#txt_totdiscount_amount").val();
 
+        if(discount != ""){
+            $("#txt_totdiscount_amount").prop("disabled", true);
+            grandTotal = grandTotal-((grandTotal*discount)/100);
+
+        }else if(discount_amount != ""){
+            $("#txt_totdiscount").prop("disabled", true);
+            grandTotal = grandTotal-discount_amount;
+
+        }else{
+            $("#txt_totdiscount").prop("disabled", false);
+            $("#txt_totdiscount_amount").prop("disabled", false);
+        }
+
+        $("#txt_grandtotal").val(parseFloat(grandTotal).toFixed(2));
+    }
+
+function finishInvoice() {
+        const discount = $("#txt_totdiscount").val();
+        const discountAmount = $("#txt_totdiscount_amount").val();
+        var invoiceId = $("#invoice_id").val();
+
+        invoice.discount_percentage = discount;
+        invoice.discount_amount = discountAmount;
+
+        $.ajax({
+            url: `/api/finish-invoice/${invoiceId}`,
+            method: 'POST',
+            data: invoice,
+            success: function(response) {
+                alert('Successfully finalized invoice.');
+                location.reload();
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    const response = xhr.responseJSON;
+                    alert(response.message);
+                } else {
+                    alert('Something went wrong.');
+                }
+            }
+        });
+
+    }
 </script>
 
 
