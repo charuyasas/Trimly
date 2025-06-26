@@ -25,6 +25,8 @@ Route::get('/invoice-list', [InvoiceController::class, 'loadInvoiceDropdown']);
 
 Route::post('/new-invoice',[InvoiceController::class, 'store']);
 
+Route::post('/finish-invoice/{id}',[InvoiceController::class, 'finishInvoice']);
+
 Route::get('/invoice-items/{id}', [InvoiceController::class, 'getInvoiceItems']);
 
 
