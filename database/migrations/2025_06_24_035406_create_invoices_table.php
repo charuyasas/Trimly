@@ -16,7 +16,7 @@ return new class extends Migration
             $table->decimal('grand_total', 10, 2);
             $table->integer('discount_percentage')->default(0);
             $table->integer('discount_amount')->default(0); 
-            $table->boolean('status')->default(1);
+            $table->tinyInteger('status');
             $table->softDeletes();
             $table->timestamps();
         });
