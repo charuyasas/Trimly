@@ -12,8 +12,13 @@ class Invoice extends Model
     protected $guarded = [];
     protected $dates = ['deleted_at'];
 
-    public function items()
-    {
+    const STATUS = [
+        0 => 'pending',
+        1 => 'complete',
+        2 => 'finish',
+    ];
+
+    public function items(){
         return $this->hasMany(\App\Models\InvoiceItem::class, 'invoice_id');
     }
 
