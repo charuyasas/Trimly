@@ -28,17 +28,21 @@ Route::get('/calendar/employees', function () {
 });
 
 Route::get('/calendar/bookings', function () {
-    return Booking::with(['customer', 'employee'])->get()->map(function ($b) {
-        return [
-            'id' => $b->id,
-            'resourceId' => $b->employee_id, // ← employee is the resource column
-            'title' => $b->customer->name ?? 'Customer',
-            'start' => $b->booking_date . 'T' . $b->start_time,
-            'end' => $b->booking_date . 'T' . $b->end_time,
-            'status' => $b->status
-        ];
-    });
+    return Booking::with(['customer', 'employee'])
+        ->where('status', '!=', 'cancelled') // Exclude cancelled
+        ->get()
+        ->map(function ($b) {
+            return [
+                'id' => $b->id,
+                'resourceId' => $b->employee_id,
+                'title' => $b->customer->name ?? 'Customer',
+                'start' => $b->booking_date . 'T' . $b->start_time,
+                'end' => $b->booking_date . 'T' . $b->end_time,
+                'status' => $b->status
+            ];
+        });
 });
+
 
 Route::get('/bookings/{id}', [BookingController::class, 'show']);
 

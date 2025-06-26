@@ -44,7 +44,7 @@
             </div>
             <div class="common_input mb_15">
                 <label>Date</label>
-                <input type="date" id="booking_date" class="form-control">
+                <input type="date" id="booking_date" class="form-control" min="{{ \Carbon\Carbon::today()->format('Y-m-d') }}">
             </div>
             <div class="common_input mb_15">
                 <label>Start Time</label>
@@ -57,15 +57,6 @@
             <div class="common_input mb_15">
                 <label>Service</label>
                 <select class="form-select" id="service_id"></select>
-            </div>
-            <div class="common_input mb_15">
-                <label>Status</label>
-                <select class="form-select" id="status">
-                    <option value="pending">Pending</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
-                </select>
             </div>
             <div class="common_input mb_15">
                 <label>Notes</label>
@@ -83,7 +74,11 @@
 
 <script>
 
-document.addEventListener('DOMContentLoaded', function () {
+$(function () {
+    loadCalendar();
+});
+
+function loadCalendar() {
   var calendarEl = document.getElementById('calendar');
 
   var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -114,21 +109,91 @@ document.addEventListener('DOMContentLoaded', function () {
     ],
     resources: '/api/calendar/employees',
     events: '/api/calendar/bookings',
-    eventDidMount: function (info) {
-      const statusColors = {
-        confirmed: '#198754',
-        pending: '#ffc107',
-        completed: '#0d6efd',
-        cancelled: '#dc3545'
-      };
-      info.el.style.backgroundColor = statusColors[info.event.extendedProps.status] || '#6c757d';
-      info.el.style.color = 'white';
-      info.el.style.borderRadius = '4px';
-    },
 
+    eventDidMount: function (info) {
+    const statusColors = {
+    confirmed: '#198754',
+    pending: '#ffc107',
+    completed: '#0d6efd',
+    cancelled: '#dc3545'
+  };
+
+  const status = info.event.extendedProps.status;
+  info.el.style.backgroundColor = statusColors[status] || '#6c757d';
+  info.el.style.color = 'white';
+  info.el.style.borderRadius = '4px';
+  info.el.style.position = 'relative';
+  info.el.style.overflow = 'visible';
+
+  if (status === 'completed') return;
+
+  // Tooltip container
+  const tooltip = document.createElement('div');
+  tooltip.classList.add('status-tooltip');
+  tooltip.style.position = 'absolute';
+  tooltip.style.top = '100%';
+  tooltip.style.left = '50%';
+  tooltip.style.transform = 'translate(-50%, -5%)';
+  tooltip.style.background = '#fff';
+  tooltip.style.padding = '6px 10px';
+  tooltip.style.borderRadius = '6px';
+  tooltip.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.12)';
+  tooltip.style.display = 'none';
+  tooltip.style.zIndex = '9999';
+  tooltip.style.whiteSpace = 'nowrap';
+  tooltip.style.gap = '6px';
+  tooltip.style.border = '1px solid #e2e2e2';
+  tooltip.style.alignItems = 'center';
+  tooltip.style.fontSize = '12px';
+
+  const bookingId = info.event.id;
+
+  const createButton = (text, value, color) => {
+    const btn = document.createElement('button');
+    btn.innerText = text;
+    btn.style.marginRight = '5px';
+    btn.style.padding = '4px 10px';
+    btn.style.fontSize = '11px';
+    btn.style.border = 'none';
+    btn.style.borderRadius = '4px';
+    btn.style.backgroundColor = color;
+    btn.style.color = '#fff';
+    btn.style.cursor = 'pointer';
+    btn.style.transition = 'background 0.2s ease';
+
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      updateBookingStatus(bookingId, value);
+    };
+
+    return btn;
+  };
+
+  if (status === 'pending') {
+    tooltip.appendChild(createButton('Confirm', 'confirmed', '#198754'));
+    tooltip.appendChild(createButton('Cancel', 'cancelled', '#dc3545'));
+    tooltip.appendChild(createButton('Complete', 'completed', '#0d6efd'));
+  } else if (status === 'confirmed') {
+    tooltip.appendChild(createButton('Cancel', 'cancelled', '#dc3545'));
+    tooltip.appendChild(createButton('Complete', 'completed', '#0d6efd'));
+  }
+
+  //Attach tooltip below label
+  info.el.appendChild(tooltip);
+
+  // Show/hide on hover
+  info.el.addEventListener('mouseenter', () => {
+    tooltip.style.display = 'inline-flex';
+  });
+
+  info.el.addEventListener('mouseleave', () => {
+    tooltip.style.display = 'none';
+  });
+},
     // Add event click handler to load modal
     eventClick: function (info) {
       const bookingId = info.event.id;
+      const status = info.event.extendedProps.status;
 
       // Load data from API
       $.get(`/api/bookings/${bookingId}`, function (b) {
@@ -142,6 +207,15 @@ document.addEventListener('DOMContentLoaded', function () {
         $('#status').val(b.status);
         $('#notes').val(b.notes);
 
+        // Enable/disable form fields based on status
+      if (status !== 'pending') {
+        $('#bookingForm select, #bookingForm input, #bookingForm textarea').attr('disabled', true);
+        $('#bookingForm button[type="submit"]').hide();
+      } else {
+        $('#bookingForm select, #bookingForm input, #bookingForm textarea').removeAttr('disabled');
+        $('#bookingForm button[type="submit"]').show();
+      }
+
         $('#bookingModal').modal('show');
       });
     }
@@ -149,8 +223,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
   calendar.render();
 
+}
+//not disable form fields with add button
+$('#bookingModal').on('hidden.bs.modal', function () {
+  $('#bookingForm select, #bookingForm input, #bookingForm textarea').removeAttr('disabled');
+  $('#bookingForm button[type="submit"]').show();
 });
 
+
+function updateBookingStatus(id, newStatus) {
+  $.ajax({
+    url: `/api/bookings/${id}`,
+    type: 'PUT',
+    data: {
+      status: newStatus
+    },
+    success: function () {
+    //   calendar.refetchEvents();
+       loadCalendar(); // Reload calendar to reflect changes
+    },
+    error: function (xhr) {
+      alert(xhr.responseJSON?.message || 'Status update failed.');
+    }
+  });
+}
 
 $('#bookingForm').on('submit', function(e) {
     e.preventDefault();
@@ -175,7 +271,7 @@ $('#bookingForm').on('submit', function(e) {
         data: data,
         success: function() {
          $('#bookingModal').modal('hide');
-         location.reload(); // Force full page reload
+         loadCalendar(); // reload calendar only
          // Reset form fields
          $('#bookingForm')[0].reset();
          $('#booking_id').val();
@@ -217,5 +313,46 @@ $.get('/api/services', res => {
       $('#notes').val('');
       $('#status').val('pending'); // Reset status
   });
+
+// Update time-picker based on selected date
+  document.addEventListener('DOMContentLoaded', function () {
+    const dateInput = document.getElementById('booking_date');
+    const startTimeInput = document.getElementById('start_time');
+    const endTimeInput = document.getElementById('end_time');
+
+    function updateTimeLimits() {
+        const selectedDate = new Date(dateInput.value);
+        const today = new Date();
+        const isToday = selectedDate.toDateString() === today.toDateString();
+
+        const officeStart = "07:00";
+        const officeEnd = "21:00";
+
+        let minTime;
+
+        if (isToday) {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() + (30 - now.getMinutes() % 30)); // round to next 30 mins
+            const h = now.getHours().toString().padStart(2, '0');
+            const m = now.getMinutes().toString().padStart(2, '0');
+            minTime = `${h}:${m}`;
+        } else {
+            minTime = officeStart;
+        }
+
+        startTimeInput.min = minTime;
+        endTimeInput.min = minTime;
+
+        startTimeInput.max = officeEnd;
+        endTimeInput.max = officeEnd;
+    }
+
+    dateInput.addEventListener('change', updateTimeLimits);
+});
+dateInput.addEventListener('change', function () {
+    startTimeInput.value = '';
+    endTimeInput.value = '';
+    updateTimeLimits();
+});
 
 </script>
