@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('discount_percentage')->default(0);
             $table->integer('discount_amount')->default(0);
             $table->decimal('sub_total', 10, 2);
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');

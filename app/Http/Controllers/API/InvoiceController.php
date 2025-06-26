@@ -12,9 +12,9 @@ class InvoiceController extends Controller
 {
     public function index()
     {
-        
+
     }
-    
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -27,9 +27,9 @@ class InvoiceController extends Controller
             'items.*.amount' => 'required|numeric|min:0',
             'items.*.sub_total' => 'required|numeric|min:0',
         ]);
-        
+
         DB::beginTransaction();
-        
+
         try {
             $itemIds = collect($request->items)->pluck('item_id');
             if ($itemIds->duplicates()->isNotEmpty()) {
@@ -38,13 +38,13 @@ class InvoiceController extends Controller
                     'duplicates' => $itemIds->duplicates()->values()
                 ], 422);
             }
-            
+
             $grandTotal = collect($request->items)->sum(function ($item) {
                 return floatval($item['sub_total']);
             });
-            
+
             $invoice = null;
-            
+
             if (!empty($request->invoice_no)) {
                 $invoice = \App\Models\Invoice::where('invoice_no', $request->invoice_no)->first();
                 if ($invoice) {
@@ -52,24 +52,24 @@ class InvoiceController extends Controller
                     $invoice->employee_no = $request->employee_no;
                     $invoice->customer_no = $request->customer_no;
                     $invoice->save();
-                    
+
                     $invoice->items()->delete();
                 }
             }
-            
+
             if (!$invoice) {
                 $last = \App\Models\Invoice::orderBy('invoice_no', 'desc')
                 ->where('invoice_no', 'like', 'INV%')
                 ->first();
-                
+
                 if ($last && preg_match('/INV(\d+)/', $last->invoice_no, $matches)) {
                     $nextNumber = intval($matches[1]) + 1;
                 } else {
                     $nextNumber = 1;
                 }
-                
+
                 $invoiceNo = 'INV' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
-                
+
                 $invoice = \App\Models\Invoice::create([
                     'invoice_no' => $invoiceNo,
                     'employee_no' => $request->employee_no,
@@ -77,26 +77,31 @@ class InvoiceController extends Controller
                     'grand_total' => $grandTotal,
                     'discount_percentage' => $request->discount_percentage ?? 0,
                     'discount_amount' => $request->discount_amount ?? 0,
-                    'status' => 0,
+                    'status' => 1,
                 ]);
             }
-            
-            foreach ($request->items as $item) {
-                $invoice->items()->create([
-                    'item_id' => $item['item_id'],
-                    'item_description' => $item['item_description'],
-                    'quantity' => $item['quantity'],
-                    'amount' => $item['amount'],
-                    'discount_percentage' => $item['discount_percentage'] ?? 0,
-                    'discount_amount' => $item['discount_amount'] ?? 0,
-                    'sub_total' => $item['sub_total'],
-                ]);
-            }
-            
+
+            $lastItem = collect($request->items)->last();
+            $invoice->items()->create([
+                'item_id' => $lastItem['item_id'],
+                'item_description' => $lastItem['item_description'],
+                'quantity' => $lastItem['quantity'],
+                'amount' => $lastItem['amount'],
+                'discount_percentage' => $lastItem['discount_percentage'] ?? 0,
+                'discount_amount' => $lastItem['discount_amount'] ?? 0,
+                'sub_total' => $lastItem['sub_total'],
+            ]);
+
             DB::commit();
-            
+
+            // return response()->json([
+            //     'message' => $invoice->wasRecentlyCreated ? 'Invoice created successfully' : 'Invoice grand total updated and item added.',
+            //     'invoice_no' => $invoice->invoice_no,
+            //     'invoice_id' => $invoice->id,
+            // ], $invoice->wasRecentlyCreated ? 201 : 200);
+
             $allItems = $invoice->items()->get()->makeHidden(['created_at', 'updated_at', 'deleted_at']);
-            
+
             return response()->json([
                 'message' => $invoice->wasRecentlyCreated ? 'Invoice created successfully' : 'Invoice updated.',
                 'invoice' => [
@@ -108,7 +113,7 @@ class InvoiceController extends Controller
                     'items' => $allItems
                     ]
                 ], $invoice->wasRecentlyCreated ? 201 : 200);
-                
+
             } catch (\Exception $e) {
                 DB::rollBack();
                 return response()->json([
@@ -117,34 +122,37 @@ class InvoiceController extends Controller
                 ], 500);
             }
         }
-        
+
+
+
+
         public function show(string $id)
         {
-            
+
         }
-        
+
         public function update(Request $request, string $id)
         {
-            
+
         }
-        
+
         public function destroy(string $id)
         {
-            
+
         }
-        
+
         public function loadItemDropdown(Request $request)
         {
             $search = $request->get('q');
-            
+
             $employees = \App\Models\Service::where('code', 'like', "%$search%")
             ->orWhere('description', 'like', "%$search%")
             ->limit(10)
             ->orderBy('code', 'asc')
             ->get();
-            
+
             $results = [];
-            
+
             foreach ($employees as $emp) {
                 $results[] = [
                     'label' => $emp->code . ' - ' . $emp->description,
@@ -152,38 +160,37 @@ class InvoiceController extends Controller
                     'price' => $emp->price
                 ];
             }
-            
+
             return response()->json($results);
         }
-        
+
         public function loadInvoiceDropdown(Request $request)
         {
             $search = $request->get('q');
-            
-            $invoices = \App\Models\Invoice::where('status', 0)
-            ->where('id', 'like', "%$search%")
+
+            $invoices = \App\Models\Invoice::where('id', 'like', "%$search%")
             ->limit(10)
             ->orderBy('id', 'asc')
             ->get();
-            
+
             $results = [];
-            
+
             foreach ($invoices as $inv) {
                 $results[] = [
                     'label' => $inv->invoice_no,
                     'value' => $inv->id
                 ];
             }
-            
+
             return response()->json($results);
         }
-        
-        public function getInvoiceItems($id)
+
+       public function getInvoiceItems($id)
         {
             $invoice = \App\Models\Invoice::with(['items', 'employee', 'customer'])->findOrFail($id);
-            
-            $items = $invoice->items->makeHidden(['created_at', 'updated_at']);
-            
+
+            $items = $invoice->items->makeHidden(['created_at', 'updated_at', 'deleted_at']);
+
             return response()->json([
                 'invoice_id' => $invoice->id,
                 'invoice_no' => $invoice->invoice_no,
@@ -196,25 +203,25 @@ class InvoiceController extends Controller
                 'discount_amount' => $invoice->discount_amount,
                 'items' => $items,
             ]);
-        } 
-        
+        }
+
         public function finishInvoice(Request $request, $id)
         {
             $validated = $request->validate([
                 'discount_percentage' => 'nullable|numeric|min:0|max:100',
                 'discount_amount' => 'nullable|numeric|min:0',
             ]);
-            
+
             DB::beginTransaction();
-            
+
             try {
                 $invoice = Invoice::with('items')->findOrFail($id);
-                
+
                 $baseTotal = $invoice->items->sum('sub_total');
-                
+
                 $discountPercentage = $request->discount_percentage;
-                $discountAmount = $request->discount_amount;          
-                
+                $discountAmount = $request->discount_amount;
+
                 if ($discountPercentage > 0) {
                     $discountAmount = ($baseTotal * $discountPercentage) / 100;
                     $invoice->discount_percentage = $request->discount_percentage;
@@ -223,20 +230,20 @@ class InvoiceController extends Controller
                     $invoice->discount_percentage = 0;
                     $invoice->discount_amount = $request->discount_amount;
                 }
-                
+
                 $finalTotal = max(0, $baseTotal - $discountAmount);
                 $invoice->grand_total = round($finalTotal, 2);
                 $invoice->status = 1;
-                
+
                 $invoice->save();
-                
+
                 DB::commit();
-                
+
                 return response()->json([
                     'message' => 'Invoice finalized successfully.',
                     'invoice' => $invoice->makeHidden(['created_at', 'updated_at', 'deleted_at']),
                 ]);
-                
+
             } catch (\Exception $e) {
                 DB::rollBack();
                 return response()->json([
@@ -245,8 +252,7 @@ class InvoiceController extends Controller
                 ], 500);
             }
         }
-        
-        
-        
+
+
+
     }
-    
