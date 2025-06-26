@@ -23,6 +23,21 @@ Route::post('/finish-invoice/{id}',[InvoiceController::class, 'finishInvoice']);
 Route::get('/invoice-items/{id}', [InvoiceController::class, 'getInvoiceItems']);
 
 
+Route::apiResource('invoices', InvoiceController::class);
+
+Route::get('/employees-list', [EmployeeController::class, 'loadEmployeeDropdown']);
+
+Route::get('/customer-list', [CustomerController::class, 'loadCustomerDropdown']);
+
+Route::get('/item-list', [InvoiceController::class, 'loadItemDropdown']);
+
+Route::get('/invoice-list', [InvoiceController::class, 'loadInvoiceDropdown']);
+
+Route::post('/new-invoice',[InvoiceController::class, 'store']);
+
+Route::get('/invoice-items/{id}', [InvoiceController::class, 'getInvoiceItems']);
+
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');

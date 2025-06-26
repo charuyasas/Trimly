@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InvoiceItem extends Model
 {
+   use SoftDeletes;
 
     protected $guarded = [];
+    protected $dates = ['deleted_at'];
 
      public function invoice()
     {
