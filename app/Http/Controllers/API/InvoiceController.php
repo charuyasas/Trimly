@@ -192,61 +192,60 @@ class InvoiceController extends Controller
                 'customer_no' => $invoice->customer_no,
                 'customer_name' => $invoice->customer->name ?? '',
                 'token_no' => $invoice->invoice_no,
+                'discount_percentage' => $invoice->discount_percentage,
+                'discount_amount' => $invoice->discount_amount,
                 'items' => $items,
             ]);
         } 
         
-       public function finishInvoice(Request $request, $id)
-{
-    $validated = $request->validate([
-        'discount_percentage' => 'nullable|numeric|min:0|max:100',
-        'discount_amount' => 'nullable|numeric|min:0',
-    ]);
-
-    DB::beginTransaction();
-
-    try {
-        $invoice = Invoice::with('items')->findOrFail($id);
-
-        $baseTotal = $invoice->items->sum('sub_total');
-
-        $discountAmount = 0;
-
-        if (isset($validated['discount_percentage'])) {
-            $discountAmount = ($baseTotal * $validated['discount_percentage']) / 100;
-            $invoice->discount_percentage = $validated['discount_percentage'];
-            $invoice->discount_amount = 0;
-        } elseif (isset($validated['discount_amount'])) {
-            $discountAmount = min($validated['discount_amount'], $baseTotal);
-            $invoice->discount_percentage = 0;
-            $invoice->discount_amount = $discountAmount;
-        } else {
-            $invoice->discount_percentage = 0;
-            $invoice->discount_amount = 0;
+        public function finishInvoice(Request $request, $id)
+        {
+            $validated = $request->validate([
+                'discount_percentage' => 'nullable|numeric|min:0|max:100',
+                'discount_amount' => 'nullable|numeric|min:0',
+            ]);
+            
+            DB::beginTransaction();
+            
+            try {
+                $invoice = Invoice::with('items')->findOrFail($id);
+                
+                $baseTotal = $invoice->items->sum('sub_total');
+                
+                $discountPercentage = $request->discount_percentage;
+                $discountAmount = $request->discount_amount;          
+                
+                if ($discountPercentage > 0) {
+                    $discountAmount = ($baseTotal * $discountPercentage) / 100;
+                    $invoice->discount_percentage = $request->discount_percentage;
+                    $invoice->discount_amount = 0;
+                } elseif ($discountAmount > 0) {
+                    $invoice->discount_percentage = 0;
+                    $invoice->discount_amount = $request->discount_amount;
+                }
+                
+                $finalTotal = max(0, $baseTotal - $discountAmount);
+                $invoice->grand_total = round($finalTotal, 2);
+                $invoice->status = 1;
+                
+                $invoice->save();
+                
+                DB::commit();
+                
+                return response()->json([
+                    'message' => 'Invoice finalized successfully.',
+                    'invoice' => $invoice->makeHidden(['created_at', 'updated_at', 'deleted_at']),
+                ]);
+                
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json([
+                    'message' => 'Failed to finish invoice.',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
         }
-
-        $finalTotal = max(0, $baseTotal - $discountAmount);
-        $invoice->grand_total = round($finalTotal, 2);
-        $invoice->status = 1;
-
-        $invoice->save();
-
-        DB::commit();
-
-        return response()->json([
-            'message' => 'Invoice finalized successfully.',
-            'invoice' => $invoice->makeHidden(['created_at', 'updated_at', 'deleted_at']),
-        ]);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return response()->json([
-            'message' => 'Failed to finish invoice.',
-            'error' => $e->getMessage()
-        ], 500);
-    }
-}
-
+        
         
         
     }

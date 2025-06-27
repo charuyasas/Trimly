@@ -24,12 +24,14 @@
     </svg>
 
     </div>
+
     </div>
     <div class="CHAT_POPUP_BODY">
         <p class="mesaged_send_date">
         Sunday, 12 January
         </p>
 
+    
 
     </div>
     <div class="CHAT_POPUP_BOTTOM">

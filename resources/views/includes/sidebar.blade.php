@@ -1,4 +1,4 @@
-<nav class="sidebar">
+<nav class="sidebar dark_sidebar">
     <div class="logo d-flex justify-content-between">
         <a class="large_logo" href="index-2.html"><img src="{{ asset('assets/img/logo.png') }}" alt=""></a>
         <a class="small_logo" href="index-2.html"><img src="{{ asset('assets/img/mini_logo.png') }}" alt=""></a>
@@ -61,7 +61,6 @@
                     <div class="line_icon open_miniSide d-none d-lg-block">
                         <img src="{{ asset('assets/img/line_img.png') }}" alt="">
                     </div>
-
                     <div class="page_title_left d-flex align-items-center me-auto" style="padding-left: 50px;">
                         <h3 class="f_s_25 f_w_700 dark_text mr_30">{{ $pageTitle ?? 'Default Title' }}</h3>
                         <ol class="breadcrumb page_bradcam mb-0">
