@@ -1,5 +1,5 @@
 @include('includes.header')
-@include('includes.sidebar', ['pageTitle' => 'Service'])
+@include('includes.sidebar', ['pageTitle' => 'Services'])
 
 <div class="main_content_iner overly_inner ">
     <div class="container-fluid p-0 ">
