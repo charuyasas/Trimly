@@ -46,4 +46,9 @@ Route::get('/calendar/bookings', function () {
 
 Route::get('/bookings/{id}', [BookingController::class, 'show']);
 
+Route::get('/employees-list', [EmployeeController::class, 'loadEmployeeDropdown']);
+
+Route::get('/customer-list', [CustomerController::class, 'loadCustomerDropdown']);
+
+Route::get('/service-list', [ServiceController::class, 'loadServiceDropdown']);
 

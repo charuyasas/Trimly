@@ -1,23 +1,27 @@
 @include('includes.header')
-@include('includes.sidebar')
+@include('includes.sidebar', ['pageTitle' => 'Bookings'])
+
+<style>
+  .fc .fc-timeline-slot-cushion {      /*Timeline text color*/
+   color: rgb(57, 58, 59) !important;
+  }
+   .fc-addBooking-button {
+    background-color: #6f42c1 !important; /*add button color*/
+    border-color: #6f42c1 !important;
+    color: white !important;
+  }
+  .fc-toolbar-title {
+    font-size: 18%;
+    font-weight: bold;
+    color: #6f42c1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+</style>
 
 <div class="main_content_iner overly_inner">
     <div class="container-fluid p-0">
-        <div class="row">
-            <div class="col-12">
-                <div class="page_title_box d-flex justify-content-between">
-                    <div class="page_title_left d-flex align-items-center">
-                        <h3 class="f_s_25 f_w_700 dark_text mr_30">Bookings</h3>
-                        <ol class="breadcrumb page_bradcam mb-0">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item active">Bookings</li>
-                        </ol>
-                    </div>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bookingModal">Add Booking</button>
-                </div>
-            </div>
-        </div>
-           <div id="calendar"> </div>
+        <div id="calendar"> </div>
     </div>
 </div>
 
@@ -36,11 +40,18 @@
             <input type="hidden" id="booking_id">
             <div class="common_input mb_15">
                 <label>Customer</label>
-                <select class="form-select" id="customer_id"></select>
+                <div class="button-group position-relative">
+                   <input type="text" class="form-control" id="cbo_customer" placeholder="Search customer..." autocomplete="off" style="max-width: 100%;">
+                   <button type="button" id="addCustomerBtn" class="btn position-absolute top-50 end-0 translate-middle-y me-1 btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" style="z-index: 10;" title="Add Customer">
+                     <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <input type="hidden" id="customer_id">
             </div>
             <div class="common_input mb_15">
                 <label>Haircutter</label>
-                <select class="form-select" id="employee_id"></select>
+                <input type="text" class="form-control" id="cbo_employee" placeholder="Search employee..." autocomplete="off">
+                <input type="hidden" id="employee_id">
             </div>
             <div class="common_input mb_15">
                 <label>Date</label>
@@ -56,7 +67,8 @@
             </div>
             <div class="common_input mb_15">
                 <label>Service</label>
-                <select class="form-select" id="service_id"></select>
+                <input type="text" class="form-control" id="cbo_service" placeholder="Search service..." autocomplete="off">
+                <input type="hidden" id="service_id">
             </div>
             <div class="common_input mb_15">
                 <label>Notes</label>
@@ -72,6 +84,53 @@
   </div>
 </div>
 
+<!--Add Customer Modal-->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Customer</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="customerForm">
+                    <input type="hidden" id="customer_id">
+                    <div class="white_card_body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="common_input mb_15">
+                                    <input type="text" id="name" placeholder="Customer Name">
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="common_input mb_15">
+                                    <input type="email" id="email" placeholder="Email">
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="common_input mb_15">
+                                    <input type="text" id="phone" class="contactNo" placeholder="Phone">
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="common_input mb_15">
+                                    <input type="text" id="address" placeholder="Address">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCustomer()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 
 $(function () {
@@ -81,14 +140,35 @@ $(function () {
 function loadCalendar() {
   var calendarEl = document.getElementById('calendar');
 
-  var calendar = new FullCalendar.Calendar(calendarEl, {
-    schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
-    initialView: 'resourceTimelineDay',
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+     schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+     initialView: 'resourceTimelineDay',
+     customButtons: {
+     addBooking: {
+      text: 'Add Booking',
+      click: function () {
+        $('#bookingForm')[0].reset();
+        $('#booking_id').val('');
+        $('#customer_id, #employee_id, #service_id').val('');
+        $('#status').val('pending');
+        $('#notes').val('');
+        $('#bookingModal').modal('show');
+      }
+     }
+    },
+    resourceAreaWidth: '160px',
     headerToolbar: {
       left: 'today prev,next',
       center: 'title',
-      right: 'resourceTimelineDay,resourceTimelineWeek'
+      right: 'addBooking resourceTimelineDay,resourceTimelineWeek'
     },
+    // Custom button text
+    buttonText: {
+    today: 'TODAY',
+    day: 'DAY',
+    week: 'WEEK'
+    },
+
     aspectRatio: 1.5,
 
     slotDuration: '01:00:00',
@@ -198,9 +278,15 @@ function loadCalendar() {
       // Load data from API
       $.get(`/api/bookings/${bookingId}`, function (b) {
         $('#booking_id').val(b.id);
+        // Customer
         $('#customer_id').val(b.customer_id);
+        $('#cbo_customer').val(`${b.customer?.name} - ${b.customer?.phone}`);
+        // Employee
         $('#employee_id').val(b.employee_id);
+        $('#cbo_employee').val(`${b.employee?.employee_id} - ${b.employee?.name}`);
+        // Service
         $('#service_id').val(b.service_id);
+        $('#cbo_service').val(`${b.service?.description} - Rs.${parseFloat(b.service?.price).toFixed(2)}`);
         $('#booking_date').val(b.booking_date);
         $('#start_time').val(b.start_time);
         $('#end_time').val(b.end_time);
@@ -211,9 +297,11 @@ function loadCalendar() {
       if (status !== 'pending') {
         $('#bookingForm select, #bookingForm input, #bookingForm textarea').attr('disabled', true);
         $('#bookingForm button[type="submit"]').hide();
+        $('#addCustomerBtn').hide();
       } else {
         $('#bookingForm select, #bookingForm input, #bookingForm textarea').removeAttr('disabled');
         $('#bookingForm button[type="submit"]').show();
+        $('#addCustomerBtn').show();
       }
 
         $('#bookingModal').modal('show');
@@ -290,16 +378,76 @@ $('#bookingForm').on('submit', function(e) {
     });
 });
 
+$("#cbo_employee").autocomplete({
+    source: function (request, response) {
+        if (request.term.length < 1) return;
+        $.ajax({
+            url: '/api/employees-list',
+            dataType: 'json',
+            data: { q: request.term },
+            success: function (data) {
+                response(data);
+                if (data.length === 1) {
+                    $("#cbo_employee").val(data[0].label);
+                    $("#employee_id").val(data[0].value);
+                }
+            }
+        });
+    },
+    minLength: 1,
+    select: function (event, ui) {
+        $("#cbo_employee").val(ui.item.label);
+        $("#employee_id").val(ui.item.value);
+        return false;
+    }
+});
 
-// Load dropdowns
-$.get('/api/customers', res => {
-    res.forEach(c => $('#customer_id').append(`<option value="${c.id}">${c.name}</option>`));
+$("#cbo_customer").autocomplete({
+    source: function (request, response) {
+        if (request.term.length < 1) return;
+        $.ajax({
+            url: '/api/customer-list',
+            dataType: 'json',
+            data: { q: request.term },
+            success: function (data) {
+                response(data);
+                if (data.length === 1) {
+                    $("#cbo_customer").val(data[0].label);
+                    $("#customer_id").val(data[0].value);
+                }
+            }
+        });
+    },
+    minLength: 1,
+    select: function (event, ui) {
+        $("#cbo_customer").val(ui.item.label);
+        $("#customer_id").val(ui.item.value);
+        return false;
+    }
 });
-$.get('/api/employees', res => {
-    res.forEach(e => $('#employee_id').append(`<option value="${e.id}">${e.name}</option>`));
-});
-$.get('/api/services', res => {
-    res.forEach(s => $('#service_id').append(`<option value="${s.id}">${s.description} - Rs.${parseFloat(s.price).toFixed(2)}</option>`));
+
+$("#cbo_service").autocomplete({
+    source: function (request, response) {
+        if (request.term.length < 1) return;
+        $.ajax({
+            url: '/api/service-list',
+            dataType: 'json',
+            data: { q: request.term },
+            success: function (data) {
+                response(data);
+                if (data.length === 1) {
+                    $("#cbo_service").val(data[0].label);
+                    $("#service_id").val(data[0].value);
+                }
+            }
+        });
+    },
+    minLength: 1,
+    select: function (event, ui) {
+        $("#cbo_service").val(ui.item.label);
+        $("#service_id").val(ui.item.value);
+        return false;
+    }
 });
 
 
@@ -313,6 +461,7 @@ $.get('/api/services', res => {
       $('#notes').val('');
       $('#status').val('pending'); // Reset status
   });
+
 
 // Update time-picker based on selected date
   document.addEventListener('DOMContentLoaded', function () {
@@ -354,5 +503,42 @@ dateInput.addEventListener('change', function () {
     endTimeInput.value = '';
     updateTimeLimits();
 });
+
+//save customer function
+function saveCustomer() {
+    const apiUrlCust = '/api/customers';
+        const data = {
+            name: $('#name').val(),
+            email: $('#email').val(),
+            phone: $('#phone').val(),
+            address: $('#address').val()
+        };
+        $.ajax({
+            url: `${apiUrlCust}`,
+            method: 'POST',
+            data: data,
+            success: function() {
+                closeModal();
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    const response = xhr.responseJSON;
+                    alert(response.message);
+                } else {
+                    alert('Something went wrong.');
+                }
+            }
+        });
+    }
+
+    function closeModal() {
+        const modalElement = document.getElementById('exampleModalCenter');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) {
+            modal.hide();
+            $('#customerForm')[0].reset();
+            $('#customer_id').val('');
+        }
+    }
 
 </script>

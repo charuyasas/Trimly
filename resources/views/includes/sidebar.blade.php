@@ -37,7 +37,7 @@
             </div>
             </a>
         </li>
-        <li class="">
+         <li class="">
             <a  href="/bookings" aria-expanded="false">
               <div class="nav_icon_small">
                 <img src="{{ asset('assets/img/menu-icon/15.svg') }}" alt="">
@@ -71,7 +71,17 @@
                     <div class="line_icon open_miniSide d-none d-lg-block">
                         <img src="{{ asset('assets/img/line_img.png') }}" alt="">
                     </div>
-                    <div class="serach_field-area d-flex align-items-center">
+
+                    <div class="page_title_left d-flex align-items-center me-auto" style="padding-left: 50px;">
+                        <h3 class="f_s_25 f_w_700 dark_text mr_30">{{ $pageTitle ?? 'Default Title' }}</h3>
+                        <ol class="breadcrumb page_bradcam mb-0">
+                            <li class="breadcrumb-item"><a href="javascript:void(0);">Home</a></li>
+                            <li class="breadcrumb-item active">{{ $pageTitle ?? 'Page' }}</li>
+                        </ol>
+                    </div>
+
+                    <div class="header_right d-flex justify-content-between align-items-center">
+                        <div class="serach_field-area d-flex align-items-center">
                         <div class="search_inner">
                             <form action="#">
                                 <div class="search_field">
@@ -81,7 +91,6 @@
                             </form>
                         </div>
                     </div>
-                    <div class="header_right d-flex justify-content-between align-items-center">
                         <div class="header_notification_warp d-flex align-items-center">
                             <li>
                                 <a class="bell_notification_clicker" href="#"> <img src="{{ asset('assets/img/icon/bell.svg') }}" alt="">
