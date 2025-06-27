@@ -61,7 +61,6 @@
                     <div class="line_icon open_miniSide d-none d-lg-block">
                         <img src="{{ asset('assets/img/line_img.png') }}" alt="">
                     </div>
-
                     <div class="page_title_left d-flex align-items-center me-auto" style="padding-left: 50px;">
                         <h3 class="f_s_25 f_w_700 dark_text mr_30">{{ $pageTitle ?? 'Default Title' }}</h3>
                         <ol class="breadcrumb page_bradcam mb-0">
