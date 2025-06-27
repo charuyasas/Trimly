@@ -1,22 +1,8 @@
 @include('includes.header')
-@include('includes.sidebar')
+@include('includes.sidebar', ['pageTitle' => 'Invoice'])
 
 <div class="main_content_iner overly_inner ">
     <div class="container-fluid p-0 ">
-        <div class="row">
-            <div class="col-12">
-                <div class="page_title_box d-flex flex-wrap align-items-center justify-content-between">
-                    <div class="page_title_left d-flex align-items-center">
-                        <h3 class="f_s_25 f_w_700 dark_text mr_30" >Invoice</h3>
-                        <ol class="breadcrumb page_bradcam mb-0">
-                            <li class="breadcrumb-item"><a href="javascript:void(0);">Home</a></li>
-                            <li class="breadcrumb-item active">Invoice</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
         <div class="row">
             <div class="col-lg-12">
                 <div class="white_card card_height_100 mb_30">
@@ -83,8 +69,8 @@
                                         <label class="form-label" for="txt_sub_total">Sub Total <code>*</code></label>
                                         <input type="text" class="form-control text-end" id="txt_sub_total" disabled>
                                     </div>
-                                    <div class="col-md-1">
-                                        <button type="button" class="btn btn-secondary mb-3" id="btn_add">ADD</button>
+                                    <div class="col-md-1 d-flex align-items-end">
+                                        <button type="button" class="btn btn-secondary" id="btn_add"> <i class="fas fa-plus"></i></button>
                                     </div>
                                 </div>
                             </form>
@@ -147,38 +133,38 @@
                             </div>
                             <hr>
                             <div class="QA_table mb_30">
-                                <table class="table table-clear QA_table">
+                                <table class="table table-clear QA_table" id="invoice_details" >
                                     <tbody>
                                         <tr>
-                                            <td class="left">
+                                            <td class="left" width="45%">
                                                 <strong>Return Amount</strong>
                                             </td>
-                                            <td class="right"><input type="text" class="form-control text-end" id="txt_return"></td>
+                                            <td class="right"><input type="text" class="form-control text-end" id="txt_return" value="0.00"></td>
                                         </tr>
                                         <tr>
                                             <td class="left">
                                                 <strong>Total Amount</strong>
                                             </td>
-                                            <td class="right"><input type="text" class="form-control text-end" id="txt_total" disabled></td>
+                                            <td class="right"><input type="text" class="form-control text-end" id="txt_total" disabled  value="0.00"></td>
                                         </tr>
                                         <tr>
                                             <td class="left">
                                                 <strong>Bill Discount %</strong>
                                             </td>
-                                            <td class="right"><input type="text" class="form-control" id="txt_totdiscount" onkeyup="calculateGrandTotal();"></td>
+                                            <td class="right"><input type="text" class="form-control text-end" id="txt_totdiscount" onkeyup="calculateGrandTotal();"  value="0"></td>
                                         </tr>
                                         <tr>
                                             <td class="left">
                                                 <strong>Bill Dis. Amount</strong>
                                             </td>
-                                            <td class="right" ><input type="text" class="form-control text-end" id="txt_totdiscount_amount" onkeyup="calculateGrandTotal();"></td>
+                                            <td class="right" ><input type="text" class="form-control text-end" id="txt_totdiscount_amount" onkeyup="calculateGrandTotal();" value="0.00"></td>
                                         </tr>
                                         <tr>
                                             <td class="left">
                                                 <strong>Grand Total</strong>
                                             </td>
                                             <td class="right">
-                                                <strong><input type="text" class="form-control text-end" id="txt_grandtotal" disabled></strong>
+                                                <strong><input type="text" class="form-control text-end" id="txt_grandtotal" disabled  value="0.00"></strong>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -288,6 +274,28 @@
                 fetchInvoiceDetails(ui.item.value);
                 
                 return false;
+            },
+            change: function (event, ui) {
+                if (!ui.item) {
+                    $("#cbo_tokenNo").val('');
+                    $("#invoice_id").val('');
+                    $("#employee_id").val('');
+                    $("#cbo_employee").val();
+                    
+                    $("#customer_id").val('');
+                    $("#cbo_customer").val('');
+                    
+                    $("#cbo_tokenNo").val('');
+                    $("#invoice_id").val('');
+                    
+                    $("#txt_totdiscount").val('');
+                    $("#txt_totdiscount_amount").val('');
+                    
+                    invoice = res;
+                    itemsList = res.items;
+                    renderItemsTable(itemsList);
+                    
+                }
             }
         });
         
@@ -370,12 +378,13 @@
     
     let itemsList = [];
     let invoice = [];
-
+    
     $("#btn_add").click(function () {
         var employee = $("#employee_id").val();
         var customer = $("#customer_id").val();
         var tokenNo = $("#cbo_tokenNo").val();
         var invoiceID = $("#invoice_id").val();
+        let itemID = $("#item_id").val();
         
         if(employee == ''){
             alert("Please enter 'Employee'!");
@@ -386,8 +395,12 @@
             alert("Please enter 'Customer'!");
             return false;
         }
+
+        if(itemID == ''){
+            alert("Please enter 'Item'!");
+            return false;
+        }
         
-        let itemID = $("#item_id").val();
         let unitPrice = $("#txt_price").val();
         let qty = $("#txt_qty").val();
         let discount = $("#txt_discount").val();
@@ -396,23 +409,23 @@
         
         let description = ($("#cbo_item").val()).split(" - ");
         let itemDescription = description[1];
-     
-    const isDuplicate = itemsList.some(item => item.item_id === itemID);
-    if (isDuplicate) {
-        alert("Item already exists.");
-        return false; 
-    }
-
-    itemsList.push({
-        invoice_id: invoiceID,
-        item_id: itemID,
-        item_description: itemDescription,
-        quantity: qty,
-        amount: unitPrice,
-        discount_percentage: discount,
-        discount_amount: discount_amount,
-        sub_total: sub_total
-    });
+        
+        const isDuplicate = itemsList.some(item => item.item_id === itemID);
+        if (isDuplicate) {
+            alert("Item already exists.");
+            return false; 
+        }
+        
+        itemsList.push({
+            invoice_id: invoiceID,
+            item_id: itemID,
+            item_description: itemDescription,
+            quantity: qty,
+            amount: unitPrice,
+            discount_percentage: discount,
+            discount_amount: discount_amount,
+            sub_total: sub_total
+        });
         
         invoice = {
             id: invoiceID,
@@ -440,6 +453,9 @@
                 $("#txt_discount_amount").val('');
                 $("#txt_sub_total").val('');
                 $("#cbo_item").val('');
+                
+                $("#txt_discount").prop("disabled", false);
+                $("#txt_discount_amount").prop("disabled", false);
                 
                 $("#cbo_tokenNo").val(invoiceData.invoice_no);
                 $("#invoice_id").val(invoiceData.id);
@@ -470,6 +486,10 @@
                 $("#cbo_tokenNo").val(res.token_no);
                 $("#invoice_id").val(res.invoice_id);
                 
+                $("#txt_totdiscount").val(res.discount_percentage);
+                $("#txt_totdiscount_amount").val(res.discount_amount);
+                
+                invoice = res;
                 itemsList = res.items;
                 renderItemsTable(itemsList);
                 
@@ -505,18 +525,18 @@
         $("#txt_total").val(subTotal.toFixed(2));
         calculateGrandTotal();
     }
-
+    
     function calculateGrandTotal(){
         let grandTotal = $("#txt_total").val();
         
         let discount = $("#txt_totdiscount").val();
-        let discount_amount = $("#txt_totdiscount_amount").val();
-
-        if(discount != ""){
+        let discount_amount = $('#txt_totdiscount_amount').val();
+        
+        if(discount > 0){
             $("#txt_totdiscount_amount").prop("disabled", true);
             grandTotal = grandTotal-((grandTotal*discount)/100);
             
-        }else if(discount_amount != ""){
+        }else if(discount_amount > 0){
             $("#txt_totdiscount").prop("disabled", true);
             grandTotal = grandTotal-discount_amount;
             
@@ -527,15 +547,14 @@
         
         $("#txt_grandtotal").val(parseFloat(grandTotal).toFixed(2)); 
     }
-
+    
     function finishInvoice() {
-        const discount = $("#txt_totdiscount").val();
-        const discountAmount = $("#txt_totdiscount_amount").val();
         var invoiceId = $("#invoice_id").val();
-
-        invoice.discount_percentage = discount;
-        invoice.discount_amount = discountAmount;
-
+        
+        invoice.discount_percentage = $("#txt_totdiscount").val();
+        invoice.discount_amount = $("#txt_totdiscount_amount").val();
+        invoice.grand_total = $("#txt_grandtotal").val();
+        
         $.ajax({
             url: `/api/finish-invoice/${invoiceId}`,
             method: 'POST',
@@ -555,6 +574,27 @@
         });
         
     }
+    
+    $(document).on('keydown', 'input, select, textarea, button', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            
+            const focusables = $('input, select, textarea, button')
+            .filter(':visible:not([readonly]):not([disabled])');
+            
+            const index = focusables.index(this);
+            
+            if ($(this).is('button')) {
+                $(this).click(); // Optional: trigger button click
+            }
+            
+            if (index > -1 && index + 1 < focusables.length) {
+                focusables.eq(index + 1).focus();
+            }
+        }
+    });
+    
+    
     
 </script>
 

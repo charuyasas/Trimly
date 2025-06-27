@@ -17,8 +17,6 @@
 
      <link rel="stylesheet" href="{{ asset('assets/vendors/datepicker/date-picker.css') }}" />
 
-     <link rel="stylesheet" href="{{ asset('assets/vendors/vectormap-home/vectormap-2.0.2.css') }}" />
-
      <link rel="stylesheet" href="{{ asset('assets/vendors/scroll/scrollable.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendors/datatable/css/jquery.dataTables.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendors/datatable/css/responsive.dataTables.min.css') }}" />
@@ -42,23 +40,5 @@
     
 </head>
 <body class="crm_body_bg">
-    @if (Route::has('login'))
-        <nav class="flex items-center justify-end gap-4">
-            @auth
-                <a
-                    href="{{ url('/index') }}"
-                    class="inline-block px-5 py-1.5 border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] rounded-sm text-sm leading-normal"
-                >
-                    Dashboard
-                </a>
-            @else
-                <a
-                    href="{{ route('login') }}"
-                    class="inline-block px-5 py-1.5 text-[#1b1b18] border border-transparent hover:border-[#19140035] rounded-sm text-sm leading-normal"
-                >
-                    Log in
-                </a>
-            @endauth
-        </nav>
-    @endif
+    
     

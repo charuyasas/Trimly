@@ -1,4 +1,4 @@
-<nav class="sidebar">
+<nav class="sidebar dark_sidebar">
     <div class="logo d-flex justify-content-between">
         <a class="large_logo" href="index-2.html"><img src="{{ asset('assets/img/logo.png') }}" alt=""></a>
         <a class="small_logo" href="index-2.html"><img src="{{ asset('assets/img/mini_logo.png') }}" alt=""></a>
@@ -61,7 +61,17 @@
                     <div class="line_icon open_miniSide d-none d-lg-block">
                         <img src="{{ asset('assets/img/line_img.png') }}" alt="">
                     </div>
-                    <div class="serach_field-area d-flex align-items-center">
+
+                    <div class="page_title_left d-flex align-items-center me-auto" style="padding-left: 50px;">
+                        <h3 class="f_s_25 f_w_700 dark_text mr_30">{{ $pageTitle ?? 'Default Title' }}</h3>
+                        <ol class="breadcrumb page_bradcam mb-0">
+                            <li class="breadcrumb-item"><a href="javascript:void(0);">Home</a></li>
+                            <li class="breadcrumb-item active">{{ $pageTitle ?? 'Page' }}</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="header_right d-flex justify-content-between align-items-center">
+                        <div class="serach_field-area d-flex align-items-center">
                         <div class="search_inner">
                             <form action="#">
                                 <div class="search_field">
@@ -71,7 +81,6 @@
                             </form>
                         </div>
                     </div>
-                    <div class="header_right d-flex justify-content-between align-items-center">
                         <div class="header_notification_warp d-flex align-items-center">
                             <li>
                                 <a class="bell_notification_clicker" href="#"> <img src="{{ asset('assets/img/icon/bell.svg') }}" alt="">
