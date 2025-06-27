@@ -37,16 +37,6 @@
             </div>
             </a>
         </li>
-         <li class="">
-            <a  href="/bookings" aria-expanded="false">
-              <div class="nav_icon_small">
-                <img src="{{ asset('assets/img/menu-icon/15.svg') }}" alt="">
-            </div>
-            <div class="nav_title">
-                <span>Bookings</span>
-            </div>
-            </a>
-        </li>
         <li class="">
             <a  href="/bookings" aria-expanded="false">
               <div class="nav_icon_small">
