@@ -1,4 +1,4 @@
-<nav class="sidebar">
+<nav class="sidebar dark_sidebar">
     <div class="logo d-flex justify-content-between">
         <a class="large_logo" href="index-2.html"><img src="{{ asset('assets/img/logo.png') }}" alt=""></a>
         <a class="small_logo" href="index-2.html"><img src="{{ asset('assets/img/mini_logo.png') }}" alt=""></a>

@@ -992,7 +992,7 @@ table.dataTable tbody th, table.dataTable tbody td {
 .list_header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 25px;
+  margin-bottom: 10px;
   align-items: center;
 }
 
@@ -1294,7 +1294,7 @@ table.dataTable tbody th, table.dataTable tbody td {
 
 /* line 922, G:/admin_project/8 admin/management_html/scss/_reset.scss */
 .mb_30 {
-  margin-bottom: 30px !important;
+  margin-bottom: 15px !important;
 }
 
 @media (max-width: 575.98px) {
@@ -1989,7 +1989,7 @@ p a:hover {
 
 /* line 1468, G:/admin_project/8 admin/management_html/scss/_reset.scss */
 .card_height_100 {
-  height: calc(100% - 30px);
+  height: calc(100% - 15px);
 }
 
 /* line 1471, G:/admin_project/8 admin/management_html/scss/_reset.scss */
@@ -3516,7 +3516,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child::befor
   position: fixed;
   top: 0;
   z-index: 99;
-  padding: 20px 30px;
+  padding: 15px 30px;
   position: relative;
   border-radius: 0px;
   margin: 0;
@@ -5195,7 +5195,7 @@ body::-webkit-scrollbar {
 
 /* line 13, G:/admin_project/8 admin/management_html/scss/_main_content.scss */
 .main_content.full_main_content {
-  padding-left: 136px;
+  padding-left: 65px;
 }
 
 /* line 17, G:/admin_project/8 admin/management_html/scss/_main_content.scss */
@@ -5254,7 +5254,7 @@ body::-webkit-scrollbar {
   margin: 0;
   z-index: 22;
   border-radius: 0px;
-  padding: 30px 30px;
+  padding: 20px 30px;
 }
 
 /* line 54, G:/admin_project/8 admin/management_html/scss/_main_content.scss */
@@ -5660,7 +5660,7 @@ body::-webkit-scrollbar {
 
 /* line 45, G:/admin_project/8 admin/management_html/scss/_dashboard_part.scss */
 .white_card .white_card_header {
-  padding: 22px 30px;
+  padding: 10px 30px;
 }
 
 /* line 53, G:/admin_project/8 admin/management_html/scss/_dashboard_part.scss */
@@ -13404,10 +13404,10 @@ table.lms_table_active3.dataTable thead .sorting_desc::after {
 
 /* line 2, G:/admin_project/8 admin/management_html/scss/_mini_menu.scss */
 .sidebar.mini_sidebar {
-  width: 136px;
+  width: 65px;
   z-index: 1;
   overflow: visible !important;
-  min-width: 136px;
+  min-width: 65px;
   max-width: 136px;
   position: absolute;
   z-index: 9999999;
@@ -13442,13 +13442,13 @@ table.lms_table_active3.dataTable thead .sorting_desc::after {
 /* line 30, G:/admin_project/8 admin/management_html/scss/_mini_menu.scss */
 .sidebar.mini_sidebar .mini_logo {
   display: block;
-  width: 136px;
+  width: 65px;
 }
 
 /* line 35, G:/admin_project/8 admin/management_html/scss/_mini_menu.scss */
 .sidebar.mini_sidebar .logo {
-  width: 136px;
-  padding: 10px 0;
+  width: 65px;
+  padding: 20px 0;
   margin: 0;
   justify-content: center !important;
 }
@@ -13490,7 +13490,7 @@ table.lms_table_active3.dataTable thead .sorting_desc::after {
 /* line 66, G:/admin_project/8 admin/management_html/scss/_mini_menu.scss */
 .sidebar.mini_sidebar #sidebar_menu > li {
   position: relative;
-  width: 136px;
+  width: 65px;
   text-align: center;
 }
 
@@ -13523,7 +13523,7 @@ table.lms_table_active3.dataTable thead .sorting_desc::after {
 
 /* line 91, G:/admin_project/8 admin/management_html/scss/_mini_menu.scss */
 .sidebar.mini_sidebar #sidebar_menu > li > a .nav_icon_small {
-  width: 136px;
+  width: 65px;
 }
 
 /* line 95, G:/admin_project/8 admin/management_html/scss/_mini_menu.scss */
@@ -13973,6 +13973,10 @@ table.lms_table_active3.dataTable thead .sorting_desc::after {
 /* line 76, G:/admin_project/8 admin/management_html/scss/_crm.scss */
 .max-width-220 {
   max-width: 220px;
+}
+
+#invoice_details td{
+      padding: 5px 5px;
 }
 
 /*# sourceMappingURL=style.css.map */
