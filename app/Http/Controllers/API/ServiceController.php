@@ -54,4 +54,26 @@ class ServiceController extends Controller
         Service::destroy($id);
         return response()->json(null, 204);
     }
+
+    public function loadServiceDropdown(Request $request)
+    {
+       $search = $request->get('q');
+
+       $services = \App\Models\Service::where('description', 'like', "%$search%")
+                    ->limit(10)
+                    ->get();
+
+       $results = [];
+
+        foreach ($services as $srv) {
+         $results[] = [
+            'label' => $srv->description . ' - Rs.' . number_format($srv->price, 2),
+            'value' => $srv->id
+         ];
+        }
+
+        return response()->json($results);
+    }
+
+
 }

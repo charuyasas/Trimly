@@ -1,22 +1,8 @@
 @include('includes.header')
-@include('includes.sidebar')
+@include('includes.sidebar', ['pageTitle' => 'Customers'])
 
 <div class="main_content_iner overly_inner ">
     <div class="container-fluid p-0 ">
-        <div class="row">
-            <div class="col-12">
-                <div class="page_title_box d-flex flex-wrap align-items-center justify-content-between">
-                    <div class="page_title_left d-flex align-items-center">
-                        <h3 class="f_s_25 f_w_700 dark_text mr_30">Customers</h3>
-                        <ol class="breadcrumb page_bradcam mb-0">
-                            <li class="breadcrumb-item"><a href="javascript:void(0);">Home</a></li>
-                            <li class="breadcrumb-item active">Customers</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="row">
             <div class="col-12">
                 <div class="white_card card_height_100 mb_30">
@@ -80,6 +66,7 @@
 
 @include('includes.footer')
 
+<!--Add Customer Modal-->
 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
