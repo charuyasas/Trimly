@@ -4,26 +4,24 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Service;
 use App\Http\Controllers\Controller;
+use App\UseCases\Service\ListServiceIntractor;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\UseCases\Service\Requests\ServiceRequest;
+use App\UseCases\Service\StoreServiceInteractor;
 
 class ServiceController extends Controller
 {
-    public function index()
+    public function index(ListServiceIntractor $listEmployeeIntractor)
     {
-        return Service::all();
+        return $listEmployeeIntractor->execute();
     }
 
-    public function store(Request $request)
+    public function store(StoreServiceInteractor $storeServiceInteractor)
     {
-         $validated = $request->validate([
-            'code' => 'required|string|unique:services,code',
-            'description' => 'required|string|max:255',
-            'price' => 'nullable|numeric',
-        ]);
 
-        $service = Service::create($validated);
-        return response()->json($service, 201);
+        $newService = $storeServiceInteractor->execute(ServiceRequest::validateAndCreate(request()));
+        return response()->json($newService , 201);
     }
 
      public function update(Request $request, string $id)

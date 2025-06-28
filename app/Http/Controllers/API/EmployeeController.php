@@ -6,25 +6,22 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 use Illuminate\Validation\Rule;
+use App\UseCases\Employee\ListEmployeeIntractor;
+use App\UseCases\Employee\Requests\EmployeeRequest;
+use App\UseCases\Employee\StoreEmployeeInteractor;
+use App\UseCases\Employee\updateEmployeeInteractor;
 
 class EmployeeController extends Controller
 {
-    public function index()
+    public function index(ListEmployeeIntractor $listEmployeeIntractor)
     {
-        return Employee::all();
+        return $listEmployeeIntractor->execute();
     }
 
-    public function store(Request $request)
+    public function store(StoreEmployeeInteractor $storeEmployeeInteractor)
     {
-        $validated = $request->validate([
-            'employee_id' => 'required|string|unique:employees,employee_id',
-            'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'contact_no' => 'nullable|numeric',
-        ]);
-
-        $employee = Employee::create($validated);
-        return response()->json($employee, 201);
+        $newEmployee = $storeEmployeeInteractor->execute(EmployeeRequest::validateAndCreate(request()));
+        return response()->json($newEmployee , 201);
     }
 
     public function show(string $id)
@@ -32,22 +29,10 @@ class EmployeeController extends Controller
         return Employee::findOrFail($id);
     }
 
-    public function update(Request $request, string $id)
+    public function update(Employee $employee, UpdateEmployeeInteractor $updateEmployeeInteractor)
     {
-       $validated = $request->validate([
-            'employee_id' => [
-                'required',
-                'string',
-                Rule::unique('employees', 'employee_id')->ignore($id),
-            ],
-            'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'contact_no' => 'nullable|numeric',
-        ]);
-
-        $employee = Employee::findOrFail($id);
-        $employee->update($validated);
-        return response()->json($employee);
+        $updateEmployee = $updateEmployeeInteractor->execute($employee, EmployeeRequest::validateAndCreate(request()));
+        return response()->json($updateEmployee);
     }
 
     public function destroy(string $id)
