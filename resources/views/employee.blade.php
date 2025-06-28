@@ -140,8 +140,8 @@
                                     <td>${employee.address}</td>
                                     <td>${employee.contact_no}</td>
                                     <td>
-                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" onclick="editEmployee(${employee.id})">Edit</button>
-                                        <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${employee.id})">Delete</button>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" onclick="editEmployee('${employee.id}')">Edit</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteEmployee('${employee.id}')">Delete</button>
                                     </td>
                                 </tr>
                             `;
@@ -154,6 +154,7 @@
                     function saveEmployee() {
                         const employee_id = $('#employee_id').val();
                         const data = {
+                            id: $('#employee_id').val(),
                             employee_id: $('#employeeID').val(),
                             name: $('#employee_name').val(),
                             address: $('#employee_address').val(),

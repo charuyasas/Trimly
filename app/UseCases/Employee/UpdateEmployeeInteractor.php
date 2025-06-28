@@ -8,7 +8,7 @@ use App\UseCases\Employee\Requests\EmployeeRequest;
  class UpdateEmployeeInteractor {
 
     public function execute(Employee $employee, EmployeeRequest $employeeRequest){
-        $employee->update($employeeRequest->except('employee_id')->toArray());
+        $employee->update($employeeRequest->except('id')->toArray());
 
         return $employee;
     }
