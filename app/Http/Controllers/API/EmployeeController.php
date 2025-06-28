@@ -5,9 +5,10 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Employee;
-use Illuminate\Validation\Rule;
+use App\UseCases\Employee\DeleteEmployeeInteractor;
 use App\UseCases\Employee\ListEmployeeIntractor;
 use App\UseCases\Employee\Requests\EmployeeRequest;
+use App\UseCases\Employee\ShowEmployeeInteractor;
 use App\UseCases\Employee\StoreEmployeeInteractor;
 use App\UseCases\Employee\updateEmployeeInteractor;
 
@@ -24,9 +25,9 @@ class EmployeeController extends Controller
         return response()->json($newEmployee , 201);
     }
 
-    public function show(string $id)
+    public function show(Employee $employee, ShowEmployeeInteractor $showEmployeeInteractor)
     {
-        return Employee::findOrFail($id);
+        return $showEmployeeInteractor->execute($employee);
     }
 
     public function update(Employee $employee, UpdateEmployeeInteractor $updateEmployeeInteractor)
@@ -35,9 +36,9 @@ class EmployeeController extends Controller
         return response()->json($updateEmployee);
     }
 
-    public function destroy(string $id)
+    public function destroy(Employee $employee, DeleteEmployeeInteractor $deleteEmployeeInteractor)
     {
-        Employee::destroy($id);
+        $deleteEmployeeInteractor->execute($employee);
         return response()->json(null, 204);
     }
 }
