@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Employee;
 use App\UseCases\Employee\DeleteEmployeeInteractor;
-use App\UseCases\Employee\ListEmployeeIntractor;
+use App\UseCases\Employee\ListEmployeeInteractor;
 use App\UseCases\Employee\Requests\EmployeeRequest;
 use App\UseCases\Employee\ShowEmployeeInteractor;
 use App\UseCases\Employee\StoreEmployeeInteractor;
@@ -14,9 +13,9 @@ use App\UseCases\Employee\updateEmployeeInteractor;
 
 class EmployeeController extends Controller
 {
-    public function index(ListEmployeeIntractor $listEmployeeIntractor)
+    public function index(ListEmployeeInteractor $listEmployeeInteractor)
     {
-        return $listEmployeeIntractor->execute();
+        return $listEmployeeInteractor->execute();
     }
 
     public function store(StoreEmployeeInteractor $storeEmployeeInteractor)
