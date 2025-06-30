@@ -2,54 +2,43 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Validation\Rule;
+use App\UseCases\Customer\Requests\CustomerRequest;
+use App\UseCases\Customer\ListCustomerInteractor;
+use App\UseCases\Customer\StoreCustomerInteractor;
+use App\UseCases\Customer\ShowCustomerInteractor;
+use App\UseCases\Customer\UpdateCustomerInteractor;
+use App\UseCases\Customer\DeleteCustomerInteractor;
 
 class CustomerController extends Controller
 {
-    public function index()
+    public function index(ListCustomerInteractor $list)
     {
-        return Customer::all();
+        return $list->execute();
     }
 
-    public function store(Request $request)
+    public function store(StoreCustomerInteractor $store)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:customers,email',
-            'phone' => 'nullable|string|max:10|unique:customers,phone',
-            'address' => 'nullable|string|max:255',
-        ]);
-
-        return Customer::create($validated);
+        $data = CustomerRequest::validateAndCreate(request());
+        return response()->json($store->execute($data), 201);
     }
 
-    public function show(string $id)
+    public function show(Customer $customer, ShowCustomerInteractor $show)
     {
-        return Customer::findOrFail($id);
+        return $show->execute($customer);
     }
 
-    public function update(Request $request, string $id)
+    public function update(Customer $customer, UpdateCustomerInteractor $update)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('customers', 'email')->ignore($id)],
-            'phone' => ['nullable', 'string', 'max:10', Rule::unique('customers', 'phone')->ignore($id)],
-            'address' => 'nullable|string|max:255',
-        ]);
-
-        $customer = Customer::findOrFail($id);
-        $customer->update($validated);
-
-        return $customer;
+        $data = CustomerRequest::validateAndCreate(request());
+        return response()->json($update->execute($customer, $data));
     }
 
-    public function destroy(string $id)
+    public function destroy(Customer $customer, DeleteCustomerInteractor $delete)
     {
-        Customer::destroy($id);
+        $delete->execute($customer);
         return response()->json(null, 204);
     }
 }
-
