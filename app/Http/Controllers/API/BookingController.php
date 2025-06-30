@@ -57,9 +57,10 @@ class BookingController extends Controller
     }
 
     public function show($id)
-    {
-        return Booking::findOrFail($id);
-    }
+   {
+       $booking = \App\Models\Booking::with(['customer', 'employee', 'service'])->findOrFail($id);
+       return response()->json($booking);
+   }
 
     public function update(Request $request, $id)
     {

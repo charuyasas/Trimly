@@ -40,4 +40,28 @@ class EmployeeController extends Controller
         $deleteEmployeeInteractor->execute($employee);
         return response()->json(null, 204);
     }
+
+    public function loadEmployeeDropdown(Request $request)
+    {
+        $search = $request->get('q');
+
+        $employees = \App\Models\Employee::where('employee_id', 'like', "%$search%")
+                        ->orWhere('name', 'like', "%$search%")
+                        ->limit(10)
+                        ->orderBy('employee_id', 'asc')
+                        ->get();
+
+        $results = [];
+
+        foreach ($employees as $emp) {
+            $results[] = [
+                'label' => $emp->employee_id . ' - ' . $emp->name,
+                'value' => $emp->id
+            ];
+        }
+
+        return response()->json($results);
+    }
+
+
 }

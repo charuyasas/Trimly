@@ -37,7 +37,7 @@
             </div>
             </a>
         </li>
-        <li class="">
+         <li class="">
             <a  href="/bookings" aria-expanded="false">
               <div class="nav_icon_small">
                 <img src="{{ asset('assets/img/menu-icon/15.svg') }}" alt="">
