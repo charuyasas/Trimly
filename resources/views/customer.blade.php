@@ -46,7 +46,7 @@
                                                 </div>
                                             </div>
                                             <div class="add_button ms-2">
-                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" onclick="openAddCustomerModal()">
                                                     Add New
                                                 </button>
                                             </div>
@@ -54,7 +54,7 @@
                                     </div>
 
                                     <div class="QA_table mb_30">
-                                        <table class="table lms_table_active3">
+                                        <table class="table lms_table_active">
                                             <thead>
                                                 <tr>
                                                     <th scope="col">ID</th>
@@ -119,7 +119,7 @@
                 </form>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="saveCustomer()">Save</button>
+                    <button type="button" class="btn btn-primary" id="saveBtn" onclick="saveCustomer()">Save</button>
                 </div>
             </div>
         </div>
@@ -130,33 +130,35 @@
     const apiUrl = '/api/customers';
     loadCustomers();
 
-    function loadCustomers() {
-        $.get(apiUrl, function(data) {
-            let rows = '';
-            let rowID = 1;
-            data.forEach(customer => {
-                rows += `
-                    <tr>
-                        <td>${rowID}</td>
-                        <td>${customer.name}</td>
-                        <td>${customer.email}</td>
-                        <td>${customer.phone ?? ''}</td>
-                        <td>${customer.address ?? ''}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" onclick="editCustomer(${customer.id})">Edit</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteCustomer(${customer.id})">Delete</button>
-                        </td>
-                    </tr>
-                `;
-                rowID++;
-            });
-            $('#customerTable').html(rows);
+   function loadCustomers() {
+      $.get(apiUrl, function(data) {
+        let table = $('.lms_table_active').DataTable();
+        table.clear();
+
+        let rowID = 1;
+        data.forEach(customer => {
+            table.row.add([
+                rowID,
+                customer.name,
+                customer.email,
+                customer.phone ?? '',
+                customer.address ?? '',
+                `
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" onclick="editCustomer('${customer.id}')">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteCustomer('${customer.id}')">Delete</button>
+                `
+            ]);
+            rowID++;
         });
+
+        table.draw();
+      });
     }
 
     function saveCustomer() {
         const customer_id = $('#customer_id').val();
         const data = {
+            id: customer_id,
             name: $('#name').val(),
             email: $('#email').val(),
             phone: $('#phone').val(),
@@ -169,6 +171,12 @@
                 method: 'PUT',
                 data: data,
                 success: function() {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Updated Successfully",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                     loadCustomers();
                     closeModal();
                     $('#customer_id').val('');
@@ -176,9 +184,19 @@
                 error: function(xhr) {
                     if (xhr.status === 422) {
                         const response = xhr.responseJSON;
-                        alert(response.message);
+                        Swal.fire({
+                            icon: "error",
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     } else {
-                        alert('Something went wrong.');
+                        Swal.fire({
+                            icon: "error",
+                            title: "Something went wrong",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 }
             });
@@ -188,15 +206,31 @@
                 method: 'POST',
                 data: data,
                 success: function() {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Saved Successfully",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                     loadCustomers();
                     closeModal();
                 },
                 error: function(xhr) {
                     if (xhr.status === 422) {
                         const response = xhr.responseJSON;
-                        alert(response.message);
+                        Swal.fire({
+                            icon: "error",
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                       });
                     } else {
-                        alert('Something went wrong.');
+                        Swal.fire({
+                            icon: "success",
+                            title: "Something went wrong",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 }
             });
@@ -210,18 +244,38 @@
             $('#email').val(customer.email);
             $('#phone').val(customer.phone);
             $('#address').val(customer.address);
+            $('.modal-title').text('Edit Customer');
+            $('#saveBtn').text('Update');
         });
     }
 
     function deleteCustomer(customer_id) {
-        if (confirm('Delete this customer?')) {
-            $.ajax({
-                url: `${apiUrl}/${customer_id}`,
-                method: 'DELETE',
-                success: loadCustomers
-            });
-        }
+      if (confirm('Delete this customer?')) {
+        $.ajax({
+            url: `${apiUrl}/${customer_id}`,
+            method: 'DELETE',
+            success: function () {
+                loadCustomers();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Customer deleted successfully!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Something went wrong!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        });
+      }
     }
+
 
     function closeModal() {
         const modalElement = document.getElementById('exampleModalCenter');
@@ -232,4 +286,38 @@
             $('#customer_id').val('');
         }
     }
+
+    // open modal
+    function openAddCustomerModal() {
+    $('#customerForm')[0].reset();
+    $('#customer_id').val('');
+    $('.modal-title').text('Add Customer');
+    $('#saveBtn').text('Save');
+    modal.show();
+    }
+
+    //tab navigation for Enter key
+     $(document).on('keydown', 'input, select, textarea', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); 
+
+            const form = $(this).closest('form');
+            const focusables = form.find('input, select, textarea, button')
+                .filter(':visible:not([readonly]):not([disabled])');
+
+            const index = focusables.index(this);
+
+            if (index > -1 && index + 1 < focusables.length) {
+                focusables.eq(index + 1).focus();
+            } else {
+                $('#saveBtn').click();
+            }
+        }
+    });
+
+    // Prevent full form submission if user presses Enter accidentally
+    $('#customerForm').on('submit', function (e) {
+        e.preventDefault();
+    });
+
 </script>
