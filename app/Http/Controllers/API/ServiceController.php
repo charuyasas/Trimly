@@ -4,17 +4,18 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Service;
 use App\Http\Controllers\Controller;
-use App\UseCases\Service\ListServiceIntractor;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use App\UseCases\Service\DeleteServiceInteractor;
+use App\UseCases\Service\ListServiceInteractor;
 use App\UseCases\Service\Requests\ServiceRequest;
+use App\UseCases\Service\ShowServiceInteractor;
 use App\UseCases\Service\StoreServiceInteractor;
+use App\UseCases\Service\UpdateServiceInteractor;
 
 class ServiceController extends Controller
 {
-    public function index(ListServiceIntractor $listEmployeeIntractor)
+    public function index(ListServiceInteractor $listServiceInteractor)
     {
-        return $listEmployeeIntractor->execute();
+        return $listServiceInteractor->execute();
     }
 
     public function store(StoreServiceInteractor $storeServiceInteractor)
@@ -24,32 +25,20 @@ class ServiceController extends Controller
         return response()->json($newService , 201);
     }
 
-     public function update(Request $request, string $id)
+    public function show(Service $service, ShowServiceInteractor $showServiceInteractor)
     {
-        $validated = $request->validate([
-            'code' => [
-            'required',
-            'string',
-            Rule::unique('services', 'code')->ignore($id),
-        ],
-            'description' => 'required|string|max:255',
-            'price' => 'nullable|numeric',
-        ]);
-
-        $service = Service::findOrFail($id);
-        $service->update($validated);
-        return response()->json($service);
+        return $showServiceInteractor->execute($service);
     }
 
-    public function show(string $id)
+    public function update(Service $service, UpdateServiceInteractor $updateServiceInteractor)
     {
-        return Service::findOrFail($id);
+        $updateService = $updateServiceInteractor->execute($service, ServiceRequest::validateAndCreate(request()));
+        return response()->json($updateService);
     }
 
-
-    public function destroy(string $id)
+    public function destroy(Service $service, DeleteServiceInteractor $deleteServiceInteractor)
     {
-        Service::destroy($id);
+        $deleteServiceInteractor->execute($service);
         return response()->json(null, 204);
     }
 }
