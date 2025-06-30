@@ -1,21 +1,8 @@
 @include('includes.header')
-@include('includes.sidebar')
+@include('includes.sidebar', ['pageTitle' => 'Service'])
 
 <div class="main_content_iner overly_inner ">
     <div class="container-fluid p-0 ">
-        <div class="row">
-            <div class="col-12">
-                <div class="page_title_box d-flex flex-wrap align-items-center justify-content-between">
-                    <div class="page_title_left d-flex align-items-center">
-                        <h3 class="f_s_25 f_w_700 dark_text mr_30" >Services</h3>
-                        <ol class="breadcrumb page_bradcam mb-0">
-                            <li class="breadcrumb-item"><a href="javascript:void(0);">Home</a></li>
-                            <li class="breadcrumb-item active">Services</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="row">
             <div class="col-12">
                 <div class="white_card card_height_100 mb_30">
@@ -26,7 +13,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="col-lg-12">
                         <div class="white_card card_height_100 mb_30">
                             <div class="white_card_body">
@@ -45,15 +32,15 @@
                                                 </div>
                                             </div>
                                             <div class="add_button ms-2">
-                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" onclick="showModal()" data-bs-target="#exampleModalCenter">
                                                     Add New
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="QA_table mb_30">
-                                        <table class="table lms_table_active3 ">
+                                        <table class="table lms_table_active ">
                                             <thead>
                                                 <tr>
                                                     <th scope="col">ID</th>
@@ -64,21 +51,21 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="serviceTable">
-                                                
+
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
-                            
-                            
+
+
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             @include('includes.footer')
-            
+
             <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
@@ -89,7 +76,7 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form id="serviceForm">
+                            <form id="serviceForm" onsubmit="saveService(); return false;">
                                 <input type="hidden" id="service_id">
                                 <div class="white_card_body">
                                     <div class="row">
@@ -112,55 +99,61 @@
                                 </form>
                             </div>
                             <div class="modal-footer">
-                                {{-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> --}}
-                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
-                                <button type="button" class="btn btn-primary" onclick="saveService()">Save</button>
+                                <button type="button" class="btn btn-primary" id="saveBtn">Save</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <script>
                     const apiUrl = '/api/services';
                     loadServices();
-                    
+
                     function loadServices() {
                         $.get(apiUrl, function(data) {
-                            let rows = '';
+                            let table = $('.lms_table_active').DataTable();
+                            table.clear();
+
                             let rowID = 1;
                             data.forEach(service => {
-                                rows += `
-                                <tr>
-                                    <td>${rowID}</td>
-                                    <td>${service.code}</td>
-                                    <td>${service.description}</td>
-                                    <td>${service.price}</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" onclick="editService(${service.id})">Edit</button>
-                                        <button class="btn btn-sm btn-danger" onclick="deleteService(${service.id})">Delete</button>
-                                    </td>
-                                </tr>
-                            `;
+                                table.row.add([
+                                rowID,
+                                service.code,
+                                service.description,
+                                service.price,
+                                `
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" onclick="editService('${service.id}')">Edit</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteService('${service.id}')">Delete</button>
+                                    `
+                                ]);
                                 rowID++;
                             });
-                            $('#serviceTable').html(rows);
+
+                            table.draw();
                         });
                     }
-                    
+
                     function saveService() {
                         const service_id = $('#service_id').val();
                         const data = {
+                            id: $('#service_id').val(),
                             code: $('#code').val(),
                             description: $('#description').val(),
                             price: $('#price').val()
                         };
-                        
+
                         if (service_id) {
                             $.ajax({
                                 url: `${apiUrl}/${service_id}`,
                                 method: 'PUT',
                                 data: data,
                                 success: function() {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Updated Successfully",
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    });
                                     loadServices();
                                     closeModal();
                                     $('#service_id').val('');
@@ -168,9 +161,19 @@
                                 error: function (xhr) {
                                     if (xhr.status === 422) {
                                         const response = xhr.responseJSON;
-                                        alert(response.message);
+                                        Swal.fire({
+                                            icon: "error",
+                                            title: response.message,
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        });
                                     } else {
-                                        alert('Something went wrong.');
+                                        Swal.fire({
+                                            icon: "error",
+                                            title: "Something went wrong",
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        });
                                     }
                                 }
                             });
@@ -180,53 +183,116 @@
                                 method: 'POST',
                                 data: data,
                                 success: function() {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Saved Successfully",
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    });
                                     loadServices();
                                     closeModal();
                                 },
                                 error: function (xhr) {
                                     if (xhr.status === 422) {
                                         const response = xhr.responseJSON;
-                                        alert(response.message);
+                                        Swal.fire({
+                                            icon: "error",
+                                            title: response.message,
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        });
                                     } else {
-                                        alert('Something went wrong.');
+                                        Swal.fire({
+                                            icon: "error",
+                                            title: "Something went wrong",
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        });
                                     }
                                 }
                             });
                         }
                     }
-                    
+
                     function closeModal() {
                         const modalElement = document.getElementById('exampleModalCenter');
-                        const modal = bootstrap.Modal.getInstance(modalElement); 
-                        
+                        const modal = bootstrap.Modal.getInstance(modalElement);
+
                         if (modal) {
-                            modal.hide(); 
+                            modal.hide();
                             $('#serviceForm')[0].reset();
                         }
                     }
-                    
+
+                    function showModal() {
+                        $('#serviceForm')[0].reset();
+                        $('#service_id').val("");
+                        $('#exampleModalLongTitle').text('Add Service');
+                        $('#saveBtn').text('Save');
+                    }
+
                     function editService(service_id) {
                         $.get(`${apiUrl}/${service_id}`, function(service) {
                             $('#service_id').val(service.id);
                             $('#code').val(service.code);
                             $('#description').val(service.description);
                             $('#price').val(service.price);
+                            $('#exampleModalLongTitle').text('Edit Service');
+                            $('#saveBtn').text('Update');
                         });
                     }
-                    
+
                     function deleteService(service_id) {
                         if (confirm('Delete this service?')) {
                             $.ajax({
                                 url: `${apiUrl}/${service_id}`,
                                 method: 'DELETE',
-                                success: loadServices
+                                success: function() {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Deleted Successfully",
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    });
+                                    loadServices();
+                                }
                             });
                         }
                     }
 
-                    
-                    
+
+                    $(document).on('keydown', 'input, select, textarea, button', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+
+                            const focusables = $('input, select, textarea, button')
+                            .filter(':visible:not([readonly]):not([disabled])');
+
+                            const index = focusables.index(this);
+
+                            if (index > -1 && index + 1 < focusables.length) {
+                                const next = focusables.eq(index + 1);
+                                next.focus();
+
+                                if (next.is('button') && next.text().trim() === 'Save') {
+                                    next.click();
+                                }
+                            } else {
+                                saveService();
+                            }
+                        }
+                    });
+
+
+                    $('#price').on('keydown', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            saveService();
+                        }
+                    });
+
+
+
                 </script>
-                
-                
-                
+
+

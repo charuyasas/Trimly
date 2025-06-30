@@ -33,9 +33,11 @@
     29 => 'Carbon\\Laravel\\ServiceProvider',
     30 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     31 => 'Termwind\\Laravel\\TermwindServiceProvider',
-    32 => 'App\\Providers\\RouteServiceProvider',
-    33 => 'App\\Providers\\FortifyServiceProvider',
-    34 => 'App\\Providers\\JetstreamServiceProvider',
+    32 => 'Spatie\\LaravelData\\LaravelDataServiceProvider',
+    33 => 'Spatie\\StructureDiscoverer\\StructureDiscovererServiceProvider',
+    34 => 'App\\Providers\\RouteServiceProvider',
+    35 => 'App\\Providers\\FortifyServiceProvider',
+    36 => 'App\\Providers\\JetstreamServiceProvider',
   ),
   'eager' => 
   array (
@@ -57,9 +59,11 @@
     15 => 'Carbon\\Laravel\\ServiceProvider',
     16 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     17 => 'Termwind\\Laravel\\TermwindServiceProvider',
-    18 => 'App\\Providers\\RouteServiceProvider',
-    19 => 'App\\Providers\\FortifyServiceProvider',
-    20 => 'App\\Providers\\JetstreamServiceProvider',
+    18 => 'Spatie\\LaravelData\\LaravelDataServiceProvider',
+    19 => 'Spatie\\StructureDiscoverer\\StructureDiscovererServiceProvider',
+    20 => 'App\\Providers\\RouteServiceProvider',
+    21 => 'App\\Providers\\FortifyServiceProvider',
+    22 => 'App\\Providers\\JetstreamServiceProvider',
   ),
   'deferred' => 
   array (

@@ -14,7 +14,7 @@ Route::get('/services', function () {
     return view('services');
 });
 
-Route::get('/employee', function () {
+Route::get('/employees', function () {
     return view('employee');
 });
 
