@@ -31,7 +31,8 @@
         Sunday, 12 January
         </p>
 
-    
+
+  
 
     </div>
     <div class="CHAT_POPUP_BOTTOM">
