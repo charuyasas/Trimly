@@ -274,7 +274,7 @@
                                 const next = focusables.eq(index + 1);
                                 next.focus();
 
-                                if (next.is('button') && next.text().trim() === 'Save') {
+                                if (next.is('button') && next.text().trim() === 'Save' || next.is('button') && next.text().trim() === 'Update') {
                                     next.click();
                                 }
                             } else {
@@ -282,6 +282,13 @@
                             }
                         }
                     });
+
+                    $(document).on('click', 'button', function () {
+                        if ($(this).text().trim() === 'Save' || $(this).text().trim() === 'Update') {
+                            saveService();
+                        }
+                    });
+
 
 
                     $('#price').on('keydown', function (e) {

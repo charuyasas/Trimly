@@ -25,11 +25,6 @@
                                         <input type="text" class="form-control" id="cbo_tokenNo">
                                         <input type="hidden" id="invoice_id">
                                     </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label" for="dtm_invoiceDate">Date <code>*</code></label>
-                                        <input type="text" class="form-control" id="dtm_invoiceDate" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" disabled>
-
-                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -49,13 +44,13 @@
                                         <input type="text" class="form-control" id="cbo_item" name="item" placeholder="Select item..." tabindex="3" >
                                         <input type="hidden" id="item_id">
                                     </div>
-                                    <div class="col-md-1">
-                                        <label class="form-label" for="txt_qty">Qty <code>*</code></label>
-                                        <input type="number" class="form-control" id="txt_qty" name="qty" tabindex="4" min=1 onchange="calculateSubTotal();">
-                                    </div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="txt_price">Price <code>*</code></label>
                                         <input type="text" class="form-control text-end" id="txt_price" disabled>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <label class="form-label" for="txt_qty">Qty <code>*</code></label>
+                                        <input type="number" class="form-control" id="txt_qty" name="qty" tabindex="4" min=1 onchange="calculateSubTotal();">
                                     </div>
                                     <div class="col-md-1">
                                         <label class="form-label" for="txt_discount">Discount</label>
@@ -98,15 +93,15 @@
                             <div class="QA_table mb_30">
                                 <table class="table" id="itemTbl">
                                     <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Item</th>
-                                        <th scope="col">Qty</th>
-                                        <th scope="col">Price</th>
-                                        <th scope="col">Dis. %</th>
-                                        <th scope="col">Dis. Amount</th>
-                                        <th scope="col">Sub Total</th>
-                                    </tr>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Item</th>
+                                            <th scope="col">Price</th>
+                                            <th scope="col">Qty</th>
+                                            <th scope="col">Dis. %</th>
+                                            <th scope="col">Dis. Amount</th>
+                                            <th scope="col">Sub Total</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
 
@@ -135,38 +130,38 @@
                             <div class="QA_table mb_30">
                                 <table class="table table-clear QA_table" id="invoice_details" >
                                     <tbody>
-                                    <tr>
-                                        <td class="left" width="45%">
-                                            <strong>Return Amount</strong>
-                                        </td>
-                                        <td class="right"><input type="text" class="form-control text-end" id="txt_return" value="0.00"></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="left">
-                                            <strong>Total Amount</strong>
-                                        </td>
-                                        <td class="right"><input type="text" class="form-control text-end" id="txt_total" disabled  value="0.00"></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="left">
-                                            <strong>Bill Discount %</strong>
-                                        </td>
-                                        <td class="right"><input type="text" class="form-control text-end" id="txt_totdiscount" onkeyup="calculateGrandTotal();"  value="0"></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="left">
-                                            <strong>Bill Dis. Amount</strong>
-                                        </td>
-                                        <td class="right" ><input type="text" class="form-control text-end" id="txt_totdiscount_amount" onkeyup="calculateGrandTotal();" value="0.00"></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="left">
-                                            <strong>Grand Total</strong>
-                                        </td>
-                                        <td class="right">
+                                        <tr>
+                                            <td class="left" width="45%">
+                                                <strong>Return Amount</strong>
+                                            </td>
+                                            <td class="right"><input type="text" class="form-control text-end" id="txt_return" value="0.00"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left">
+                                                <strong>Total Amount</strong>
+                                            </td>
+                                            <td class="right"><input type="text" class="form-control text-end" id="txt_total" disabled  value="0.00"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left">
+                                                <strong>Bill Discount %</strong>
+                                            </td>
+                                            <td class="right"><input type="text" class="form-control text-end" id="txt_totdiscount" onkeyup="calculateGrandTotal();"  value="0"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left">
+                                                <strong>Bill Dis. Amount</strong>
+                                            </td>
+                                            <td class="right" ><input type="text" class="form-control text-end" id="txt_totdiscount_amount" onkeyup="calculateGrandTotal();" value="0.00"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left">
+                                                <strong>Grand Total</strong>
+                                            </td>
+                                            <td class="right">
                                                 <strong><input type="text" class="form-control text-end" id="txt_grandtotal" disabled  value="0.00"></strong>
-                                        </td>
-                                    </tr>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -250,7 +245,7 @@
                 if (request.term.length < 1) return;
 
                 $.ajax({
-                    url: '/api/invoice-list',
+                    url: '/api/invoice-list-dropdown',
                     dataType: 'json',
                     data: {
                         q: request.term
@@ -313,7 +308,7 @@
                         response($.map(data, function (item) {
                             return {
                                 label: item.label,
-                                value: item.label,
+                                value: item.value,
                                 id: item.value,
                                 price: item.price
                             };
@@ -386,7 +381,8 @@
         var customer = $("#customer_id").val();
         var tokenNo = $("#cbo_tokenNo").val();
         var invoiceID = $("#invoice_id").val();
-let itemID = $("#item_id").val();
+        let itemID = $("#item_id").val();
+
         if(employee == ''){
             alert("Please enter 'Employee'!");
             return false;
@@ -412,24 +408,23 @@ let itemID = $("#item_id").val();
         let itemDescription = description[1];
 
         const isDuplicate = itemsList.some(item => item.item_id === itemID);
-    if (isDuplicate) {
-        alert("Item already exists.");
-        return false;
-    }
+        if (isDuplicate) {
+            alert("Item already exists.");
+            return false;
+        }
 
-            itemsList .push({
-        invoice_id: invoiceID,
-        item_id: itemID,
-        item_description: itemDescription,
-        quantity: qty,
-        amount: unitPrice,
-        discount_percentage: discount,
-        discount_amount: discount_amount,
-        sub_total: sub_total
-    });
+        itemsList.push({
+            invoice_id: invoiceID,
+            item_id: itemID,
+            item_description: itemDescription,
+            quantity: qty,
+            amount: unitPrice,
+            discount_percentage: discount,
+            discount_amount: discount_amount,
+            sub_total: sub_total
+        });
 
-
-         invoice = {
+        invoice = {
             id: invoiceID,
             invoice_no: tokenNo,
             employee_no: employee,
@@ -455,7 +450,8 @@ let itemID = $("#item_id").val();
                 $("#txt_discount_amount").val('');
                 $("#txt_sub_total").val('');
                 $("#cbo_item").val('');
-$("#txt_discount").prop("disabled", false);
+
+                $("#txt_discount").prop("disabled", false);
                 $("#txt_discount_amount").prop("disabled", false);
 
                 $("#cbo_tokenNo").val(invoiceData.invoice_no);
@@ -486,7 +482,8 @@ $("#txt_discount").prop("disabled", false);
 
                 $("#cbo_tokenNo").val(res.token_no);
                 $("#invoice_id").val(res.invoice_id);
-$("#txt_totdiscount").val(res.discount_percentage);
+
+                $("#txt_totdiscount").val(res.discount_percentage);
                 $("#txt_totdiscount_amount").val(res.discount_amount);
 
                 invoice = res;
@@ -502,7 +499,9 @@ $("#txt_totdiscount").val(res.discount_percentage);
 
     function renderItemsTable(items) {
         let tbody = $("#itemTbl tbody");
-        tbody.empty(); let subTotal = 0;
+        tbody.empty();
+        let subTotal = 0;
+
         items.forEach((item, index) => {
             let row = `
             <tr>
@@ -515,9 +514,12 @@ $("#txt_totdiscount").val(res.discount_percentage);
                 <td class="text-end">${item.sub_total}</td>
             </tr>
         `;
-            subTotal += parseFloat(item.sub_total);tbody.append(row);
+
+            subTotal += parseFloat(item.sub_total);
+            tbody.append(row);
         });
-    $("#txt_total").val(subTotal.toFixed(2));
+
+        $("#txt_total").val(subTotal.toFixed(2));
         calculateGrandTotal();
     }
 
@@ -543,7 +545,7 @@ $("#txt_totdiscount").val(res.discount_percentage);
         $("#txt_grandtotal").val(parseFloat(grandTotal).toFixed(2));
     }
 
-function finishInvoice() {
+    function finishInvoice() {
         var invoiceId = $("#invoice_id").val();
 
         invoice.discount_percentage = $("#txt_totdiscount").val();

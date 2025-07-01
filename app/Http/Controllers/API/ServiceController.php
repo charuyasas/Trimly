@@ -41,5 +41,5 @@ class ServiceController extends Controller
         $deleteServiceInteractor->execute($service);
         return response()->json(null, 204);
     }
-    
+
 }

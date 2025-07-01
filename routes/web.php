@@ -19,7 +19,11 @@ Route::get('/employees', function () {
 });
 
 Route::get('/invoice', function () {
-    return view('invoice');
+    return view('invoice/invoice');
+});
+
+Route::get('/invoiceList', function () {
+    return view('invoice/invoice-list');
 });
 
 Route::middleware([

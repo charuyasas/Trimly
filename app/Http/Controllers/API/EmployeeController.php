@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\UseCases\Employee\DeleteEmployeeInteractor;
 use App\UseCases\Employee\ListEmployeeInteractor;
+use App\UseCases\Employee\LoadEmployeemDropdownInteractor;
 use App\UseCases\Employee\Requests\EmployeeRequest;
 use App\UseCases\Employee\ShowEmployeeInteractor;
 use App\UseCases\Employee\StoreEmployeeInteractor;
 use App\UseCases\Employee\updateEmployeeInteractor;
+use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
@@ -41,28 +43,10 @@ class EmployeeController extends Controller
         return response()->json(null, 204);
     }
 
-    public function loadEmployeeDropdown(Request $request)
+    public function loadEmployeeDropdown(LoadEmployeemDropdownInteractor $loadEmployeemDropdownInteractor)
     {
-        $search = $request->get('q');
-
-        $employees = \App\Models\Employee::where('employee_id', 'like', "%$search%")
-                        ->orWhere('name', 'like', "%$search%")
-                        ->limit(10)
-                        ->orderBy('employee_id', 'asc')
-                        ->get();
-
-        $results = [];
-
-        foreach ($employees as $emp) {
-            $results[] = [
-                'label' => $emp->employee_id . ' - ' . $emp->name,
-                'value' => $emp->id
-            ];
-        }
-
-        return response()->json($results);
+        return response()->json($loadEmployeemDropdownInteractor->execute(request('q')));
     }
 
-    
 
 }
