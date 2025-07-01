@@ -38,7 +38,7 @@
             </a>
         </li>
         <li class="">
-            <a  href="/invoice" aria-expanded="false">
+            <a   class="has-arrow" href="#" aria-expanded="false">
               <div class="nav_icon_small">
                 <img src="{{ asset('assets/img/menu-icon/20.svg') }}" alt="">
             </div>
@@ -46,6 +46,10 @@
                 <span>Sales Invoice</span>
             </div>
             </a>
+            <ul>
+              <li><a href="/invoice">Add New</a></li>
+              <li><a href="/invoiceList">List</a></li>
+            </ul>
         </li>
       </ul>
 </nav>
@@ -61,6 +65,7 @@
                     <div class="line_icon open_miniSide d-none d-lg-block">
                         <img src="{{ asset('assets/img/line_img.png') }}" alt="">
                     </div>
+
                     <div class="page_title_left d-flex align-items-center me-auto" style="padding-left: 50px;">
                         <h3 class="f_s_25 f_w_700 dark_text mr_30">{{ $pageTitle ?? 'Default Title' }}</h3>
                         <ol class="breadcrumb page_bradcam mb-0">
@@ -70,6 +75,7 @@
                     </div>
 
                     <div class="header_right d-flex justify-content-between align-items-center">
+                        <div id="datetime" style="font-size: 20px; font-weight: bold;"></div>
                         <div class="serach_field-area d-flex align-items-center">
                         <div class="search_inner">
                             <form action="#">

@@ -56,7 +56,7 @@ class CustomerController extends Controller
     {
         $search = $request->get('q');
 
-        $customer = \App\Models\Customer::where('phone', 'like', "%$search%")
+        $customer = Customer::where('phone', 'like', "%$search%")
                         ->orWhere('name', 'like', "%$search%")
                         ->limit(10)
                         ->get();

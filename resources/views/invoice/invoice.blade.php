@@ -44,13 +44,13 @@
                                         <input type="text" class="form-control" id="cbo_item" name="item" placeholder="Select item..." tabindex="3" >
                                         <input type="hidden" id="item_id">
                                     </div>
-                                    <div class="col-md-1">
-                                        <label class="form-label" for="txt_qty">Qty <code>*</code></label>
-                                        <input type="number" class="form-control" id="txt_qty" name="qty" tabindex="4" min=1 onchange="calculateSubTotal();">
-                                    </div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="txt_price">Price <code>*</code></label>
                                         <input type="text" class="form-control text-end" id="txt_price" disabled>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <label class="form-label" for="txt_qty">Qty <code>*</code></label>
+                                        <input type="number" class="form-control" id="txt_qty" name="qty" tabindex="4" min=1 onchange="calculateSubTotal();">
                                     </div>
                                     <div class="col-md-1">
                                         <label class="form-label" for="txt_discount">Discount</label>
@@ -96,8 +96,8 @@
                                         <tr>
                                             <th scope="col">#</th>
                                             <th scope="col">Item</th>
-                                            <th scope="col">Qty</th>
                                             <th scope="col">Price</th>
+                                            <th scope="col">Qty</th>
                                             <th scope="col">Dis. %</th>
                                             <th scope="col">Dis. Amount</th>
                                             <th scope="col">Sub Total</th>
@@ -245,7 +245,7 @@
                 if (request.term.length < 1) return;
 
                 $.ajax({
-                    url: '/api/invoice-list',
+                    url: '/api/invoice-list-dropdown',
                     dataType: 'json',
                     data: {
                         q: request.term
@@ -308,7 +308,7 @@
                         response($.map(data, function (item) {
                             return {
                                 label: item.label,
-                                value: item.label,
+                                value: item.value,
                                 id: item.value,
                                 price: item.price
                             };
