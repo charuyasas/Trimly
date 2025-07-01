@@ -17,7 +17,8 @@ Route::get('/employees-list', [EmployeeController::class, 'loadEmployeeDropdown'
 
 Route::apiResource('invoices', InvoiceController::class);
 Route::get('/item-list', [InvoiceController::class, 'loadItemDropdown']);
-Route::get('/invoice-list', [InvoiceController::class, 'loadInvoiceDropdown']);
+Route::get('/invoice-list', [InvoiceController::class, 'index']);
+Route::get('/invoice-list-dropdown', [InvoiceController::class, 'loadInvoiceDropdown']);
 Route::post('/new-invoice',[InvoiceController::class, 'store']);
 Route::post('/finish-invoice/{id}',[InvoiceController::class, 'finishInvoice']);
 Route::get('/invoice-items/{id}', [InvoiceController::class, 'getInvoiceItems']);

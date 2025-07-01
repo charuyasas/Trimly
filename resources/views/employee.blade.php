@@ -233,7 +233,7 @@
                     function showModal() {
                         $('#employeeForm')[0].reset();
                         $('#employee_id').val("");
-                        $('#exampleModalLongTitle').text('Add Service');
+                        $('#exampleModalLongTitle').text('Add Employee');
                         $('#saveBtn').text('Save');
                     }
 
@@ -244,7 +244,7 @@
                             $('#employee_name').val(employee.name);
                             $('#employee_address').val(employee.address);
                             $('#employee_contactno').val(employee.contact_no);
-                            $('#exampleModalLongTitle').text('Edit Service');
+                            $('#exampleModalLongTitle').text('Edit Employee');
                             $('#saveBtn').text('Update');
                         });
                     }
@@ -280,7 +280,7 @@
                                 const next = focusables.eq(index + 1);
                                 next.focus();
 
-                                if (next.is('button') && next.text().trim() === 'Save') {
+                                if (next.is('button') && next.text().trim() === 'Save' || next.is('button') && next.text().trim() === 'Update') {
                                     next.click();
                                 }
                             } else {
@@ -288,6 +288,13 @@
                             }
                         }
                     });
+
+                    $(document).on('click', 'button', function () {
+                        if ($(this).text().trim() === 'Save' || $(this).text().trim() === 'Update') {
+                            saveEmployee();
+                        }
+                    });
+
 
 
                     $('#employee_contactno').on('keydown', function (e) {
@@ -299,5 +306,3 @@
 
 
                 </script>
-
-

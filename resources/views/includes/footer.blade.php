@@ -31,7 +31,7 @@
         Sunday, 12 January
         </p>
 
-    
+
 
     </div>
     <div class="CHAT_POPUP_BOTTOM">
@@ -118,5 +118,19 @@
 <script src="{{ asset('assets/js/custom.js') }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function updateDateTime() {
+    const now = new Date();
+
+    const date = now.toLocaleDateString('en-GB');
+    const time = now.toLocaleTimeString('en-GB', { hour12: false });
+
+    document.getElementById('datetime').innerHTML = date + '&nbsp;&nbsp;&nbsp;' + time;
+}
+
+setInterval(updateDateTime, 1000);
+updateDateTime();
+</script>
 </body>
 </html>
