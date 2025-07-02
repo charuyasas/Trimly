@@ -50,22 +50,23 @@
                                     </div>
                                     <div class="col-md-1">
                                         <label class="form-label" for="txt_qty">Qty <code>*</code></label>
-                                        <input type="number" class="form-control" id="txt_qty" name="qty" tabindex="4" min=1 onchange="calculateSubTotal();">
+                                        <input type="number" class="form-control" id="txt_qty" name="qty" tabindex="4" min=1 onchange="calculateSubTotal('qty');">
                                     </div>
                                     <div class="col-md-1">
                                         <label class="form-label" for="txt_discount">Discount</label>
-                                        <input type="text" class="form-control" tabindex="5" id="txt_discount" onkeyup="calculateSubTotal()">
+                                        <input type="text" class="form-control" tabindex="5" id="txt_discount" onkeyup="calculateSubTotal('percentage')">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="txt_discount_amount">Dis. Amount</label>
-                                        <input type="text" class="form-control text-end" id="txt_discount_amount" onkeyup="calculateSubTotal()">
+                                        <input type="text" class="form-control text-end" id="txt_discount_amount" onkeyup="calculateSubTotal('amount')">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="txt_sub_total">Sub Total <code>*</code></label>
                                         <input type="text" class="form-control text-end" id="txt_sub_total" disabled>
                                     </div>
                                     <div class="col-md-1 d-flex align-items-end">
-                                        <button type="button" class="btn btn-secondary" id="btn_add"> <i class="fas fa-plus"></i></button>
+                                        <button type="button" class="btn btn-secondary" id="btn_add"> <i class="fas fa-plus"></i></button>&nbsp;&nbsp;
+                                        <button type="button" class="btn btn-secondary" onclick="itemRefresh()"> <i class="fas fa-sync-alt"></i></button>
                                     </div>
                                 </div>
                             </form>
@@ -212,87 +213,59 @@
             }
         });
 
-        $("#cbo_customer").autocomplete({
-            source: function (request, response) {
-                if (request.term.length < 1) return;
+       let selectedTokenLabel = ''; // store selected label
 
-                $.ajax({
-                    url: '/api/customer-list',
-                    dataType: 'json',
-                    data: {
-                        q: request.term
-                    },
-                    success: function (data) {
-                        response(data);
+$("#cbo_tokenNo").autocomplete({
+    source: function (request, response) {
+        if (request.term.length < 1) return;
 
-                        if (data.length === 1) {
-                            $("#cbo_customer").val(data[0].label);
-                            $("#customer_id").val(data[0].value);
-                        }
-                    }
-                });
+        $.ajax({
+            url: '/api/invoice-list-dropdown',
+            dataType: 'json',
+            data: {
+                q: request.term
             },
-            minLength: 1,
-            select: function (event, ui) {
-                $("#cbo_customer").val(ui.item.label);
-                $("#customer_id").val(ui.item.value);
-                return false;
-            }
-        });
+            success: function (data) {
+                response(data);
 
-        $("#cbo_tokenNo").autocomplete({
-            source: function (request, response) {
-                if (request.term.length < 1) return;
-
-                $.ajax({
-                    url: '/api/invoice-list-dropdown',
-                    dataType: 'json',
-                    data: {
-                        q: request.term
-                    },
-                    success: function (data) {
-                        response(data);
-
-                        if (data.length === 1) {
-                            $("#cbo_tokenNo").val(data[0].label);
-                            $("#invoice_id").val(data[0].value);
-                            fetchInvoiceDetails(data[0].value);
-
-                        }
-                    }
-                });
-            },
-            minLength: 1,
-            select: function (event, ui) {
-                $("#cbo_tokenNo").val(ui.item.label);
-                $("#invoice_id").val(ui.item.value);
-                fetchInvoiceDetails(ui.item.value);
-
-                return false;
-            },
-            change: function (event, ui) {
-                if (!ui.item) {
-                    $("#cbo_tokenNo").val('');
-                    $("#invoice_id").val('');
-                    $("#employee_id").val('');
-                    $("#cbo_employee").val();
-
-                    $("#customer_id").val('');
-                    $("#cbo_customer").val('');
-
-                    $("#cbo_tokenNo").val('');
-                    $("#invoice_id").val('');
-
-                    $("#txt_totdiscount").val('');
-                    $("#txt_totdiscount_amount").val('');
-
-                    invoice = res;
-                    itemsList = res.items;
-                    renderItemsTable(itemsList);
-
+                if (data.length === 1) {
+                    selectedTokenLabel = data[0].label;
+                    $("#cbo_tokenNo").val(data[0].label);
+                    $("#invoice_id").val(data[0].value);
+                    fetchInvoiceDetails(data[0].value);
                 }
             }
         });
+    },
+    minLength: 1,
+    select: function (event, ui) {
+        selectedTokenLabel = ui.item.label;
+        $("#cbo_tokenNo").val(ui.item.label);
+        $("#invoice_id").val(ui.item.value);
+        fetchInvoiceDetails(ui.item.value);
+        return false;
+    }
+});
+
+$("#cbo_tokenNo").on('input', function () {
+    const currentValue = $(this).val();
+    if (currentValue !== selectedTokenLabel) {
+        selectedTokenLabel = '';
+        $("#invoice_id").val('');
+        $("#employee_id").val('');
+        $("#cbo_employee").val('');
+
+        $("#customer_id").val('');
+        $("#cbo_customer").val('');
+
+        $("#txt_totdiscount").val('');
+        $("#txt_totdiscount_amount").val('');
+
+        invoice = null;
+        itemsList = [];
+        renderItemsTable([]);
+    }
+});
 
         $("#cbo_item").autocomplete({
             source: function (request, response) {
@@ -348,24 +321,29 @@
         itemSelectedFromAutocomplete = false;
     });
 
-    function calculateSubTotal() {
+    function calculateSubTotal(type) {
         let unitPrice = $("#txt_price").val();
         let qty = $("#txt_qty").val();
         let discount = $("#txt_discount").val();
         let discount_amount = $("#txt_discount_amount").val();
         let subTotal = unitPrice*qty;
 
-        if(discount != ""){
+        if(type == 'percentage'){
             $("#txt_discount_amount").prop("disabled", true);
             discount_amount = (subTotal*discount)/100;
+            if(discount_amount == 0){
+                $("#txt_discount_amount").prop("disabled", false);
+            }
             $("#txt_discount_amount").val(discount_amount);
             subTotal = subTotal-((subTotal*discount)/100);
-
-        }else if(discount_amount != ""){
-            $("#txt_discount").prop("disabled", true);
+        }else if(type == 'amount'){
+            if(discount_amount == 0 || discount_amount == ''){
+                $("#txt_discount").prop("disabled", false);
+            }else{
+                $("#txt_discount").prop("disabled", true);
+            }
             subTotal = subTotal-discount_amount;
-
-        }else{
+        }else if(discount == '' && discount_amount == ''){
             $("#txt_discount").prop("disabled", false);
             $("#txt_discount_amount").prop("disabled", false);
         }
@@ -469,6 +447,16 @@
 
     });
 
+    function itemRefresh() {
+        $("#item_id").val('');
+        $("#txt_price").val('');
+        $("#txt_qty").val('');
+        $("#txt_discount").val('');
+        $("#txt_discount_amount").val('');
+        $("#txt_sub_total").val('');
+        $("#cbo_item").val('');
+    }
+
     function fetchInvoiceDetails(invoiceId) {
         $.ajax({
             url: `/api/invoice-items/${invoiceId}`,
@@ -531,6 +519,8 @@
 
         if(discount > 0){
             $("#txt_totdiscount_amount").prop("disabled", true);
+            // discountAmount = (grandTotal*discount)/100;
+            // $('#txt_totdiscount_amount').val(discountAmount);
             grandTotal = grandTotal-((grandTotal*discount)/100);
 
         }else if(discount_amount > 0){
