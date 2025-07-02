@@ -76,7 +76,6 @@
             </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary" id="btnBooking" onclick="saveBooking()">Save Booking</button>
         </div>
       </form>
@@ -123,7 +122,6 @@
                     </div>
                 </form>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
                     <button type="button" class="btn btn-primary" onclick="saveCustomer()">Save</button>
                 </div>
             </div>
@@ -425,6 +423,7 @@ $("#cbo_employee").autocomplete({
         });
     },
     minLength: 1,
+    appendTo: "#bookingModal",
     select: function (event, ui) {
         $("#cbo_employee").val(ui.item.label);
         $("#employee_id").val(ui.item.value);
@@ -449,6 +448,7 @@ $("#cbo_customer").autocomplete({
         });
     },
     minLength: 1,
+    appendTo: "#bookingModal",
     select: function (event, ui) {
         $("#cbo_customer").val(ui.item.label);
         $("#customer_id").val(ui.item.value);
@@ -473,6 +473,7 @@ $("#cbo_service").autocomplete({
         });
     },
     minLength: 1,
+    appendTo: "#bookingModal",
     select: function (event, ui) {
         $("#cbo_service").val(ui.item.label);
         $("#service_id").val(ui.item.value);
@@ -527,11 +528,6 @@ $("#cbo_service").autocomplete({
     }
 
     dateInput.addEventListener('change', updateTimeLimits);
-});
-dateInput.addEventListener('change', function () {
-    startTimeInput.value = '';
-    endTimeInput.value = '';
-    updateTimeLimits();
 });
 
 //save customer function
@@ -593,7 +589,8 @@ function saveCustomer() {
 
             const form = $(this).closest('form');
             const focusables = form.find('input, select, textarea, button')
-                .filter(':visible:not([readonly]):not([disabled])');
+                .filter(':visible:not([readonly]):not([disabled])')
+                .not('#addCustomerBtn');
 
             const index = focusables.index(this);
 
@@ -613,6 +610,7 @@ function saveCustomer() {
             }
         }
     });
+
 
 </script>
 
