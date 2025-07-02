@@ -3,11 +3,11 @@ namespace App\UseCases\Invoice;
 
 use App\Models\Invoice;
 
- class ShowInvoiceInteractor {
+class ShowInvoiceInteractor {
 
     public function execute(Invoice $invoice)
-{
-    return $invoice->items()
+    {
+        return $invoice->items()
         ->with('service:id,code')
         ->get()
         ->map(function ($item) {
@@ -22,7 +22,7 @@ use App\Models\Invoice;
                 'item_code' => $item->service->code
             ];
         });
+    }
+
+
 }
-
-
- }

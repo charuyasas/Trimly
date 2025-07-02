@@ -14,7 +14,6 @@ use App\UseCases\Invoice\{
     ShowInvoiceInteractor
 };
 use App\UseCases\Invoice\Requests\InvoiceRequest;
-use App\UseCases\Invoice\Requests\FinishInvoiceRequest;
 
 class InvoiceController extends Controller
 {
@@ -37,10 +36,9 @@ class InvoiceController extends Controller
     }
 
     public function finishInvoice($id, FinishInvoiceInteractor $finishInvoiceInteractor)
-
     {
-
-        $result = $finishInvoiceInteractor->execute($id, FinishInvoiceRequest::validateAndCreate(request()));
+        request()->merge(['id' => $id]);
+        $result = $finishInvoiceInteractor->execute($id, InvoiceRequest::validateAndCreate(request()));
 
         return response()->json($result);
     }
