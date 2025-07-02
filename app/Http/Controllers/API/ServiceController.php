@@ -10,6 +10,7 @@ use App\UseCases\Service\Requests\ServiceRequest;
 use App\UseCases\Service\ShowServiceInteractor;
 use App\UseCases\Service\StoreServiceInteractor;
 use App\UseCases\Service\UpdateServiceInteractor;
+use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {

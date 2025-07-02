@@ -10,6 +10,7 @@ use App\UseCases\Employee\Requests\EmployeeRequest;
 use App\UseCases\Employee\ShowEmployeeInteractor;
 use App\UseCases\Employee\StoreEmployeeInteractor;
 use App\UseCases\Employee\updateEmployeeInteractor;
+use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {

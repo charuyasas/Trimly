@@ -33,7 +33,7 @@
     <div class="modal-content">
       <form id="bookingForm">
         <div class="modal-header">
-          <h5 class="modal-title">Booking</h5>
+          <h5 class="modal-title" id="bookingModalTitle">Booking</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -77,7 +77,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Save Booking</button>
+          <button type="button" class="btn btn-primary" id="btnBooking" onclick="saveBooking()">Save Booking</button>
         </div>
       </form>
     </div>
@@ -89,7 +89,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Customer</h5>
+                <h5 class="modal-title">Add New Customer</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -152,6 +152,8 @@ function loadCalendar() {
         $('#customer_id, #employee_id, #service_id').val('');
         $('#status').val('pending');
         $('#notes').val('');
+        $('#bookingModalTitle').text('Add Booking');
+        $('#btnBooking').text('Save');
         $('#bookingModal').modal('show');
       }
      }
@@ -296,14 +298,15 @@ function loadCalendar() {
         // Enable/disable form fields based on status
       if (status !== 'pending') {
         $('#bookingForm select, #bookingForm input, #bookingForm textarea').attr('disabled', true);
-        $('#bookingForm button[type="submit"]').hide();
+        $('#btnBooking').hide();
         $('#addCustomerBtn').hide();
       } else {
         $('#bookingForm select, #bookingForm input, #bookingForm textarea').removeAttr('disabled');
-        $('#bookingForm button[type="submit"]').show();
+        $('#btnBooking').show();
         $('#addCustomerBtn').show();
       }
-
+        $('#bookingModalTitle').text('Update Booking');
+        $('#btnBooking').text('Update');
         $('#bookingModal').modal('show');
       });
     }
@@ -315,7 +318,8 @@ function loadCalendar() {
 //not disable form fields with add button
 $('#bookingModal').on('hidden.bs.modal', function () {
   $('#bookingForm select, #bookingForm input, #bookingForm textarea').removeAttr('disabled');
-  $('#bookingForm button[type="submit"]').show();
+  $('#btnBooking').show();
+  $('#addCustomerBtn').show();
 });
 
 
@@ -329,15 +333,25 @@ function updateBookingStatus(id, newStatus) {
     success: function () {
     //   calendar.refetchEvents();
        loadCalendar(); // Reload calendar to reflect changes
+        Swal.fire({
+            icon: 'success',
+            title: 'Booking status updated!',
+            showConfirmButton: false,
+            timer: 1500
+        });
     },
     error: function (xhr) {
-      alert(xhr.responseJSON?.message || 'Status update failed.');
+        Swal.fire({
+            icon: 'error',
+            title: xhr.responseJSON?.message || 'Status update failed!',
+            showConfirmButton: false,
+            timer: 1500
+        });
     }
   });
 }
 
-$('#bookingForm').on('submit', function(e) {
-    e.preventDefault();
+function saveBooking() {
     const id = $('#booking_id').val();
     const method = id ? 'PUT' : 'POST';
     const url = id ? `/api/bookings/${id}` : '/api/bookings';
@@ -367,16 +381,32 @@ $('#bookingForm').on('submit', function(e) {
          $('#end_time').empty();
          $('#status').val('pending');
          $('#notes').val('');
+         Swal.fire({
+            icon: 'success',
+            title: 'Booking saved successfully!',
+            showConfirmButton: false,
+            timer: 1500
+        });
         },
         error: function(xhr) {
             if (xhr.status === 409 && xhr.responseJSON?.suggested_start_time) {
-                alert(`Time slot is already taken.\nTry:\nStart: ${xhr.responseJSON.suggested_start_time}\nEnd: ${xhr.responseJSON.suggested_end_time}`);
-            } else {
-                alert(xhr.responseJSON?.message || 'Booking failed');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Time slot is already taken',
+                    html: `Try:<br>Start: <strong>${xhr.responseJSON.suggested_start_time}</strong><br>End: <strong>${xhr.responseJSON.suggested_end_time}</strong>`,
+                    confirmButtonText: 'OK'
+                });
+             } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: xhr.responseJSON?.message || 'Booking failed!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             }
         }
     });
-});
+}
 
 $("#cbo_employee").autocomplete({
     source: function (request, response) {
@@ -519,13 +549,28 @@ function saveCustomer() {
             data: data,
             success: function() {
                 closeModal();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Customer added successfully!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             },
             error: function(xhr) {
                 if (xhr.status === 422) {
                     const response = xhr.responseJSON;
-                    alert(response.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        text: response.message
+                    });
                 } else {
-                    alert('Something went wrong.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Something went wrong!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                 }
             }
         });
@@ -540,6 +585,34 @@ function saveCustomer() {
             $('#customer_id').val('');
         }
     }
+
+    // Handle Enter key to navigate through form fields
+    $(document).on('keydown', '#bookingForm input, #bookingForm select, #bookingForm textarea, #customerForm input, #customerForm select, #customerForm textarea', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+
+            const form = $(this).closest('form');
+            const focusables = form.find('input, select, textarea, button')
+                .filter(':visible:not([readonly]):not([disabled])');
+
+            const index = focusables.index(this);
+
+            if (index > -1 && index + 1 < focusables.length) {
+                const next = focusables.eq(index + 1);
+                next.focus();
+
+                if (next.is('button') && /save|update/i.test(next.text().trim())) {
+                    setTimeout(() => next.click(), 100);
+                }
+            } else {
+                if (form.attr('id') === 'customerForm') {
+                    saveCustomer();
+                } else if (form.attr('id') === 'bookingForm') {
+                    saveBooking();
+                }
+            }
+        }
+    });
 
 </script>
 
