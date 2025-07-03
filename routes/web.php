@@ -26,6 +26,10 @@ Route::get('/invoiceList', function () {
     return view('invoice/invoice-list');
 });
 
+Route::get('/postingAccount', function () {
+    return view('accounts/posting-accounts');
+});
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

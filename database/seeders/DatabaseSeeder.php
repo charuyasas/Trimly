@@ -17,11 +17,10 @@ class DatabaseSeeder extends Seeder
             DefaultUserSeeder::class,
             EmployeeSeeder::class,
             ServicesSeeder::class,
-            CustomerSeeder::class
-        ]);
-
-        $this->call([
             CustomerSeeder::class,
+            MainAccountSeeder::class,
+            HeadingAccountSeeder::class,
+            TitleAccountSeeder::class
         ]);
 
     }
