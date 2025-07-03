@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class InvoiceItem extends Model
@@ -32,6 +31,6 @@ class InvoiceItem extends Model
 
     public function service()
     {
-        return $this->belongsTo(\App\Models\Service::class, 'item_id', 'id');
+        return $this->belongsTo(Service::class, 'item_id', 'id');
     }
 }
