@@ -51,6 +51,19 @@
               <li><a href="/invoiceList">List</a></li>
             </ul>
         </li>
+        <li class="">
+            <a   class="has-arrow" href="#" aria-expanded="false">
+              <div class="nav_icon_small">
+                <img src="{{ asset('assets/img/menu-icon/21.svg') }}" alt="">
+            </div>
+            <div class="nav_title">
+                <span>Accounts</span>
+            </div>
+            </a>
+            <ul>
+              <li><a href="/postingAccount">Posting Accounts</a></li>
+            </ul>
+        </li>
       </ul>
 </nav>
 

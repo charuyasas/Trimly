@@ -4722,7 +4722,7 @@ table.dataTable {
 .sidebar #sidebar_menu > li ul {
   padding: 0px 0px 5px 40px;
   background: transparent;
-  border-radius: 0 0 4px 4px;
+  border-radius: 0 4px 4px 4px;
   margin-left: 30px;
   background: #fff;
 }
@@ -13553,7 +13553,7 @@ table.lms_table_active3.dataTable thead .sorting_desc::after {
 
 /* line 113, G:/admin_project/8 admin/management_html/scss/_mini_menu.scss */
 .sidebar.mini_sidebar #sidebar_menu > li:hover > a, .sidebar.mini_sidebar #sidebar_menu > li.mm-active > a {
-  width: 330px !important;
+  width: 250px !important;
 }
 
 /* line 117, G:/admin_project/8 admin/management_html/scss/_mini_menu.scss */
@@ -13604,7 +13604,7 @@ table.lms_table_active3.dataTable thead .sorting_desc::after {
 /* line 152, G:/admin_project/8 admin/management_html/scss/_mini_menu.scss */
 .sidebar.mini_sidebar #sidebar_menu > li.mm-active ul {
   left: 100%;
-  left: 136px;
+  left: 96px;
   position: absolute;
   top: 100%;
   width: 194px;
@@ -13722,7 +13722,7 @@ table.lms_table_active3.dataTable thead .sorting_desc::after {
 
 /* line 255, G:/admin_project/8 admin/management_html/scss/_mini_menu.scss */
 .sidebar.dark_sidebar.mini_sidebar #sidebar_menu > li.mm-active ul {
-  width: 194px;
+  width: 185px;
 }
 
 /* line 1, G:/admin_project/8 admin/management_html/scss/_profilebox_new.scss */

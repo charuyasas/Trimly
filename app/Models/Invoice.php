@@ -34,7 +34,7 @@ class Invoice extends Model
     ];
 
     public function items(){
-        return $this->hasMany(\App\Models\InvoiceItem::class, 'invoice_id');
+        return $this->hasMany(InvoiceItem::class, 'invoice_id');
     }
 
     public function employee() {
