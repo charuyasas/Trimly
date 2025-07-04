@@ -1,0 +1,11 @@
+<?php
+
+namespace App\UseCases\Supplier;
+
+use App\Models\Supplier;
+
+class DeleteSupplierInteractor {
+    public function execute(Supplier $supplier) {
+        return $supplier->delete();
+    }
+}
