@@ -11,6 +11,8 @@ use App\UseCases\Customer\StoreCustomerInteractor;
 use App\UseCases\Customer\ShowCustomerInteractor;
 use App\UseCases\Customer\UpdateCustomerInteractor;
 use App\UseCases\Customer\DeleteCustomerInteractor;
+use App\UseCases\PostingAccount\Requests\PostingAccountRequest;
+use App\UseCases\PostingAccount\StorePostingAccountInteractor;
 
 class CustomerController extends Controller
 {
@@ -19,10 +21,16 @@ class CustomerController extends Controller
         return $list->execute();
     }
 
-    public function store(StoreCustomerInteractor $store)
+    public function store(StoreCustomerInteractor $store, StorePostingAccountInteractor $storePostingAccountInteractor)
     {
-        $data = CustomerRequest::validateAndCreate(request());
-        return response()->json($store->execute($data), 201);
+        $ledgerCode = $this->createLedgerCode($storePostingAccountInteractor);
+        $customerData = array_merge(
+            request()->all(),
+            ['ledger_code' => $ledgerCode]
+        );
+
+        $newCustomer = CustomerRequest::validateAndCreate($customerData);
+        return response()->json($store->execute($newCustomer), 201);
     }
 
     public function show(Customer $customer, ShowCustomerInteractor $show)
@@ -45,7 +53,6 @@ class CustomerController extends Controller
     public function loadCustomerDropdown(Request $request)
     {
         $search = $request->get('search_key');
-
         $customer = Customer::where('phone', 'like', "%$search%")
             ->orWhere('name', 'like', "%$search%")
             ->limit(10)
@@ -61,5 +68,19 @@ class CustomerController extends Controller
         }
 
         return response()->json($results);
+    }
+
+    public function createLedgerCode(StorePostingAccountInteractor $storePostingAccountInteractor)
+    {
+        $data = [
+            'posting_code'     => null,
+            'posting_account'  => 'Customer Account',
+            'main_code'        => 1,
+            'heading_code'     => 2,
+            'title_code'       => 5,
+        ];
+
+        $newPostingAccount = $storePostingAccountInteractor->execute(PostingAccountRequest::validateAndCreate($data));
+        return $newPostingAccount['ledger_code'];
     }
 }
