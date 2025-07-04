@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\UseCases\Employee\Requests;
 
@@ -19,6 +19,8 @@ class EmployeeRequest extends Data
     public string $address;
     #[SpatieRule('required', 'digits:10')]
     public string $contact_no;
+    #[SpatieRule('required')]
+    public string $ledger_code;
 
     public static function rules(): array
     {
