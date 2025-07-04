@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
             CustomerSeeder::class,
             MainAccountSeeder::class,
             HeadingAccountSeeder::class,
-            TitleAccountSeeder::class
+            TitleAccountSeeder::class,
+            SupplierSeeder::class
         ]);
 
     }
