@@ -23,16 +23,7 @@ class EmployeeController extends Controller
 
     public function store(StoreEmployeeInteractor $storeEmployeeInteractor, StorePostingAccountInteractor $storePostingAccountInteractor)
     {
-        $data = [
-            'posting_code'     => null,
-            'posting_account'  => 'Supplier Account',
-            'main_code'        => 1,
-            'heading_code'     => 1,
-            'title_code'       => 1,
-        ];
-
-        $newPostingAccount = $storePostingAccountInteractor->execute(PostingAccountRequest::validateAndCreate($data));
-        $ledgerCode = $newPostingAccount['ledger_code'];
+        $ledgerCode = $this->createLedgerCode($storePostingAccountInteractor);
         $employeeData = array_merge(
             request()->all(),
             ['ledger_code' => $ledgerCode]
@@ -62,6 +53,20 @@ class EmployeeController extends Controller
     public function loadEmployeeDropdown(LoadEmployeemDropdownInteractor $loadEmployeemDropdownInteractor)
     {
         return response()->json($loadEmployeemDropdownInteractor->execute(request('search_key')));
+    }
+
+    public function createLedgerCode(StorePostingAccountInteractor $storePostingAccountInteractor)
+    {
+        $data = [
+            'posting_code'     => null,
+            'posting_account'  => 'Employee Account',
+            'main_code'        => 4,
+            'heading_code'     => 8,
+            'title_code'       => 9,
+        ];
+
+        $newPostingAccount = $storePostingAccountInteractor->execute(PostingAccountRequest::validateAndCreate($data));
+        return $newPostingAccount['ledger_code'];
     }
 
 
