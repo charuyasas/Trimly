@@ -12,11 +12,11 @@ class TitleAccount extends Model
 
     protected $dates = ['deleted_at'];
 
-    public function mainAcc() {
+    public function mainAccount() {
         return $this->belongsTo(MainAccount::class, 'main_code', 'main_code');
     }
 
-    public function headingAcc() {
+    public function headingAccount() {
         return $this->belongsTo(HeadingAccount::class, 'heading_code', 'heading_code');
     }
 }

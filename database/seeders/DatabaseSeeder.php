@@ -17,7 +17,10 @@ class DatabaseSeeder extends Seeder
             DefaultUserSeeder::class,
             EmployeeSeeder::class,
             ServicesSeeder::class,
-            CustomerSeeder::class
+            CustomerSeeder::class,
+            MainAccountSeeder::class,
+            HeadingAccountSeeder::class,
+            TitleAccountSeeder::class
         ]);
 
     }

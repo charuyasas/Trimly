@@ -9,7 +9,7 @@ class MainAccountSeeder extends Seeder
 {
     public function run(): void
     {
-        $accounts = ['Cost of Sale', 'Equity', 'Expenses'];
+        $accounts = ['Asset', 'Cost Of Sale', 'Equity', 'Expenses', 'Income', 'Liability', 'Other Expenses', 'Other Income'];
 
         foreach ($accounts as $account) {
             MainAccount::create(['main_account' => $account]);

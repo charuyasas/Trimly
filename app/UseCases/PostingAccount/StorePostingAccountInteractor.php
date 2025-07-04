@@ -8,9 +8,9 @@ use App\UseCases\PostingAccount\Requests\PostingAccountRequest;
 
  class StorePostingAccountInteractor {
 
-    public function execute(PostingAccountRequest $employeeRequest){
-        $employee = PostingAccount::create($employeeRequest->toArray());
-        return $employee->toArray();
+    public function execute(PostingAccountRequest $postingAccountRequest){
+        $postingAccount = PostingAccount::create($postingAccountRequest->toArray());
+        return $postingAccount->toArray();
     }
 
  }

@@ -10,7 +10,6 @@ use App\UseCases\PostingAccount\Requests\PostingAccountRequest;
 use App\UseCases\PostingAccount\ShowPostingAccountInteractor;
 use App\UseCases\PostingAccount\StorePostingAccountInteractor;
 use App\UseCases\PostingAccount\updatePostingAccountInteractor;
-use Illuminate\Http\Request;
 
 class PostingAccountController extends Controller
 {

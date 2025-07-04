@@ -7,9 +7,9 @@ use App\UseCases\HeadingAccount\LoadHeadingAccountDropdownInteractor;
 
 class HeadingAccountController extends Controller
 {
-    public function loadHeadingAccountDropdown($mainAcc, LoadHeadingAccountDropdownInteractor $loadHeadingAccountmDropdownInteractor)
+    public function loadHeadingAccountDropdown($mainAccount, LoadHeadingAccountDropdownInteractor $loadHeadingAccountmDropdownInteractor)
     {
-        return response()->json($loadHeadingAccountmDropdownInteractor->execute(request('q'),$mainAcc));
+        return response()->json($loadHeadingAccountmDropdownInteractor->execute(request('search_key'),$mainAccount));
     }
 
 }

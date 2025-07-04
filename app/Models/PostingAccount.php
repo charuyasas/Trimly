@@ -13,27 +13,20 @@ class PostingAccount extends Model
     public $incrementing = true;
     protected $keyType = 'int';
     protected $guarded = [];
-
     protected $dates = ['deleted_at'];
-
     protected $primaryKey = 'posting_code';
 
-    public function getRouteKeyName()
-    {
-        return 'posting_code';
-    }
-
-    public function mainAcc()
+    public function mainAccount()
     {
         return $this->belongsTo(MainAccount::class, 'main_code', 'main_code');
     }
 
-    public function headingAcc()
+    public function headingAccount()
     {
         return $this->belongsTo(HeadingAccount::class, 'heading_code', 'heading_code');
     }
 
-    public function titleAcc()
+    public function titleAccount()
     {
         return $this->belongsTo(TitleAccount::class, 'title_code', 'title_code');
     }
