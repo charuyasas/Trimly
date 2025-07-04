@@ -23,6 +23,9 @@ class CustomerRequest extends Data
     #[SpatieRule('nullable'), Max(255)]
     public ?string $address;
 
+    #[SpatieRule('required')]
+    public string $ledger_code;
+
     public static function rules(): array
    {
     return [
