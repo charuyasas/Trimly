@@ -11,7 +11,7 @@ class Customer extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'email', 'phone', 'address'];
+    protected $fillable = ['name', 'email', 'phone', 'address', 'ledger_code'];
 
     public $incrementing = false;
     protected $keyType = 'string';
