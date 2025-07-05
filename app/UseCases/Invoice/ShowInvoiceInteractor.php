@@ -19,7 +19,7 @@ class ShowInvoiceInteractor {
                 'discount_percentage' => $item->discount_percentage,
                 'discount_amount' => $item->discount_amount,
                 'sub_total' => $item->sub_total,
-                'item_code' => $item->service->code
+                'item_code' => $item->service?->code
             ];
         });
     }
