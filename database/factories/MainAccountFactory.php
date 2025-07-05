@@ -12,6 +12,7 @@ class MainAccountFactory extends Factory
     public function definition(): array
     {
         return [
+            'main_code' => $this->faker->unique()->numberBetween(1000, 9999),
             'main_account' => $this->faker->word, 
         ];
     }
