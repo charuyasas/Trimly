@@ -47,6 +47,16 @@
             </div>
             </a>
         </li>
+         <li class="">
+            <a  href="/supplier" aria-expanded="false">
+              <div class="nav_icon_small">
+                <img src="{{ asset('assets/img/menu-icon/3.svg') }}" alt="">
+            </div>
+            <div class="nav_title">
+                <span>Suppliers</span>
+            </div>
+            </a>
+        </li>
         <li class="">
             <a   class="has-arrow" href="#" aria-expanded="false">
               <div class="nav_icon_small">

@@ -13,6 +13,9 @@ use App\Http\Controllers\API\InvoiceController;
 use App\Http\Controllers\API\MainAccountController;
 use App\Http\Controllers\API\PostingAccountController;
 use App\Http\Controllers\API\TitleAccountController;
+use App\Http\Controllers\API\SupplierController;
+
+Route::apiResource('suppliers', SupplierController::class);
 
 Route::apiResource('bookings', BookingController::class);
 
