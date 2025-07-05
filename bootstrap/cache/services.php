@@ -36,8 +36,9 @@
     32 => 'Spatie\\LaravelData\\LaravelDataServiceProvider',
     33 => 'Spatie\\StructureDiscoverer\\StructureDiscovererServiceProvider',
     34 => 'App\\Providers\\RouteServiceProvider',
-    35 => 'App\\Providers\\FortifyServiceProvider',
-    36 => 'App\\Providers\\JetstreamServiceProvider',
+    35 => 'App\\Providers\\AppServiceProvider',
+    36 => 'App\\Providers\\FortifyServiceProvider',
+    37 => 'App\\Providers\\JetstreamServiceProvider',
   ),
   'eager' => 
   array (
@@ -62,8 +63,9 @@
     18 => 'Spatie\\LaravelData\\LaravelDataServiceProvider',
     19 => 'Spatie\\StructureDiscoverer\\StructureDiscovererServiceProvider',
     20 => 'App\\Providers\\RouteServiceProvider',
-    21 => 'App\\Providers\\FortifyServiceProvider',
-    22 => 'App\\Providers\\JetstreamServiceProvider',
+    21 => 'App\\Providers\\AppServiceProvider',
+    22 => 'App\\Providers\\FortifyServiceProvider',
+    23 => 'App\\Providers\\JetstreamServiceProvider',
   ),
   'deferred' => 
   array (
