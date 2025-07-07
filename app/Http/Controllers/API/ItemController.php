@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Item;
+use Illuminate\Http\Request;
 use App\UseCases\Item\Requests\ItemRequest;
 use App\UseCases\Item\StoreItemInteractor;
 use App\UseCases\Item\UpdateItemInteractor;
@@ -41,4 +42,24 @@ class ItemController extends Controller
         $interactor->execute($item);
         return response()->json(null, 204);
     }
+
+    public function loadItemDropdown(Request $request)
+    {
+        $searchKey = $request->input('search_key');
+
+        $items = Item::where('description', 'like', "%{$searchKey}%")
+            ->orWhere('code', 'like', "%{$searchKey}%")
+            ->limit(10)
+            ->get();
+
+        $results = $items->map(function ($item) {
+            return [
+                'label' => "{$item->code} - {$item->description}",
+                'value' => $item->id,
+            ];
+        });
+
+        return response()->json($results);
+    }
+
 }

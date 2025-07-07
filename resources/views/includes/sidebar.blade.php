@@ -58,6 +58,16 @@
             </a>
         </li>
         <li class="">
+            <a  href="/grn" aria-expanded="false">
+                <div class="nav_icon_small">
+                    <img src="{{ asset('assets/img/menu-icon/14.svg') }}" alt="">
+                </div>
+                <div class="nav_title">
+                    <span>GRN</span>
+                </div>
+            </a>
+        </li>
+        <li class="">
             <a   class="has-arrow" href="#" aria-expanded="false">
                 <div class="nav_icon_small">
                     <img src="{{ asset('assets/img/menu-icon/16.svg') }}" alt="">
