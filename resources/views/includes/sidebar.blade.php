@@ -59,6 +59,21 @@
         </li>
         <li class="">
             <a   class="has-arrow" href="#" aria-expanded="false">
+                <div class="nav_icon_small">
+                    <img src="{{ asset('assets/img/menu-icon/16.svg') }}" alt="">
+                </div>
+                <div class="nav_title">
+                    <span>Item Master</span>
+                </div>
+            </a>
+            <ul>
+                <li><a href="/categories">Categories</a></li>
+                <li><a href="">Sub Categories</a></li>
+                <li><a href="">Items</a></li>
+            </ul>
+        </li>
+        <li class="">
+            <a   class="has-arrow" href="#" aria-expanded="false">
               <div class="nav_icon_small">
                 <img src="{{ asset('assets/img/menu-icon/20.svg') }}" alt="">
             </div>
