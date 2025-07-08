@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
             MainAccountSeeder::class,
             HeadingAccountSeeder::class,
             TitleAccountSeeder::class,
+            CategorySeeder::class,
+            SubCategorySeeder::class,
             SupplierSeeder::class
         ]);
 

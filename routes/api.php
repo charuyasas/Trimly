@@ -16,13 +16,18 @@ use App\Http\Controllers\API\TitleAccountController;
 use App\Http\Controllers\API\SupplierController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\SubCategoryController;
+use App\Http\Controllers\API\ItemController;
+
+Route::apiResource('items', ItemController::class);
 
 Route::apiResource('sub-categories', SubCategoryController::class);
+Route::get('/sub-categories-list', [SubCategoryController::class, 'loadSubCategoryDropdown']);
 
 Route::apiResource('categories', CategoryController::class);
 Route::get('/categories-list', [CategoryController::class, 'loadCategoryDropdown']);
 
 Route::apiResource('suppliers', SupplierController::class);
+Route::get('/suppliers-list', [SupplierController::class, 'loadSupplierDropdown']);
 
 Route::apiResource('bookings', BookingController::class);
 

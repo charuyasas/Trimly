@@ -36,5 +36,20 @@ class SubCategoryController extends Controller
         $interactor->execute($subCategory);
         return response()->json(null, 204);
     }
+
+    public function loadSubCategoryDropdown()
+    {
+        return response()->json(
+            SubCategory::where('name', 'like', '%' . request('search_key') . '%')
+                ->orderBy('name')
+                ->limit(10)
+                ->get()
+                ->map(fn($sub) => [
+                    'label' => $sub->name,
+                    'value' => $sub->id
+                ])
+        );
+    }
+
 }
 
