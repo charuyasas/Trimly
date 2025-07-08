@@ -17,8 +17,6 @@ class CategoryRequest extends Data
     {
         return [
             'name' => [
-                'required',
-                'max:255',
                 Rule::unique('categories', 'name')->ignore(request()->input('id')),
             ],
         ];

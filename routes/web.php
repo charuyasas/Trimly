@@ -6,6 +6,10 @@ Route::get('/', function () {
     return view('index');
 });
 
+Route::get('/items', function () {
+    return view('items');
+});
+
 Route::get('/sub-categories', function () {
     return view('sub-categories');
 });

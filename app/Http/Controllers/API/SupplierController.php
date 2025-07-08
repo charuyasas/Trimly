@@ -53,6 +53,20 @@ class SupplierController extends Controller
         return response()->json(null, 204);
     }
 
+    public function loadSupplierDropdown()
+    {
+        return response()->json(
+            Supplier::where('name', 'like', '%' . request('search_key') . '%')
+                ->orderBy('name')
+                ->limit(10)
+                ->get()
+                ->map(fn($supplier) => [
+                    'label' => $supplier->name,
+                    'value' => $supplier->id
+                ])
+        );
+    }
+
     private function createLedgerCode(StorePostingAccountInteractor $postingAccountInteractor): string
     {
         $data = [

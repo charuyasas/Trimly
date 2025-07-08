@@ -69,7 +69,7 @@
             <ul>
                 <li><a href="/categories">Categories</a></li>
                 <li><a href="/sub-categories">Sub Categories</a></li>
-                <li><a href="">Items</a></li>
+                <li><a href="/items">Items</a></li>
             </ul>
         </li>
         <li class="">
