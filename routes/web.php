@@ -6,6 +6,10 @@ Route::get('/', function () {
     return view('index');
 });
 
+Route::get('/categories', function () {
+    return view('categories');
+});
+
 Route::get('/supplier', function () {
     return view('supplier');
 });
@@ -46,7 +50,7 @@ Route::middleware([
     Route::get('/', function () {
         return view('index');
     })->name('index');
-    
+
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');

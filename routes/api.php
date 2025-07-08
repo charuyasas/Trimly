@@ -14,6 +14,9 @@ use App\Http\Controllers\API\MainAccountController;
 use App\Http\Controllers\API\PostingAccountController;
 use App\Http\Controllers\API\TitleAccountController;
 use App\Http\Controllers\API\SupplierController;
+use App\Http\Controllers\API\CategoryController;
+
+Route::apiResource('categories', CategoryController::class);
 
 Route::apiResource('suppliers', SupplierController::class);
 
