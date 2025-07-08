@@ -15,8 +15,12 @@ use App\Http\Controllers\API\PostingAccountController;
 use App\Http\Controllers\API\TitleAccountController;
 use App\Http\Controllers\API\SupplierController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\SubCategoryController;
+
+Route::apiResource('sub-categories', SubCategoryController::class);
 
 Route::apiResource('categories', CategoryController::class);
+Route::get('/categories-list', [CategoryController::class, 'loadCategoryDropdown']);
 
 Route::apiResource('suppliers', SupplierController::class);
 

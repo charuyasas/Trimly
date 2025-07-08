@@ -35,4 +35,18 @@ class CategoryController extends Controller
         $interactor->execute($category);
         return response()->json(null, 204);
     }
+
+    public function loadCategoryDropdown()
+    {
+        return response()->json(
+            Category::where('name', 'like', '%' . request('search_key') . '%')
+                ->orderBy('name')
+                ->limit(10)
+                ->get()
+                ->map(fn($cat) => [
+                    'label' => $cat->name,
+                    'value' => $cat->id
+                ])
+        );
+    }
 }
