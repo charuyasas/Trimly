@@ -63,6 +63,8 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
 @include('includes.footer')
 
@@ -280,13 +282,12 @@
     $('#customer_id').val('');
     $('.modal-title').text('Add Customer');
     $('#saveBtn').text('Save');
-    modal.show();
     }
 
     //tab navigation for Enter key
      $(document).on('keydown', 'input, select, textarea', function(e) {
         if (e.key === 'Enter') {
-            e.preventDefault(); 
+            e.preventDefault();
 
             const form = $(this).closest('form');
             const focusables = form.find('input, select, textarea, button')
@@ -302,9 +303,5 @@
         }
     });
 
-    // Prevent full form submission if user presses Enter accidentally
-    $('#customerForm').on('submit', function (e) {
-        e.preventDefault();
-    });
 
 </script>

@@ -16,12 +16,12 @@ use App\UseCases\PostingAccount\StorePostingAccountInteractor;
 
 class CustomerController extends Controller
 {
-    public function index(ListCustomerInteractor $list)
+    public function index(ListCustomerInteractor $list): \Illuminate\Database\Eloquent\Collection
     {
         return $list->execute();
     }
 
-    public function store(StoreCustomerInteractor $store, StorePostingAccountInteractor $storePostingAccountInteractor)
+    public function store(StoreCustomerInteractor $store, StorePostingAccountInteractor $storePostingAccountInteractor): \Illuminate\Http\JsonResponse
     {
         $ledgerCode = $this->createLedgerCode($storePostingAccountInteractor);
         $customerData = array_merge(
@@ -33,24 +33,24 @@ class CustomerController extends Controller
         return response()->json($store->execute($newCustomer), 201);
     }
 
-    public function show(Customer $customer, ShowCustomerInteractor $show)
+    public function show(Customer $customer, ShowCustomerInteractor $show): Customer
     {
         return $show->execute($customer);
     }
 
-    public function update(Customer $customer, UpdateCustomerInteractor $update)
+    public function update(Customer $customer, UpdateCustomerInteractor $update): \Illuminate\Http\JsonResponse
     {
         $data = CustomerRequest::validateAndCreate(request());
         return response()->json($update->execute($customer, $data));
     }
 
-    public function destroy(Customer $customer, DeleteCustomerInteractor $delete)
+    public function destroy(Customer $customer, DeleteCustomerInteractor $delete): \Illuminate\Http\JsonResponse
     {
         $delete->execute($customer);
         return response()->json(null, 204);
     }
 
-    public function loadCustomerDropdown(Request $request)
+    public function loadCustomerDropdown(Request $request): \Illuminate\Http\JsonResponse
     {
         $search = $request->get('search_key');
         $customer = Customer::where('phone', 'like', "%$search%")
