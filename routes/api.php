@@ -17,14 +17,18 @@ use App\Http\Controllers\API\SupplierController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\SubCategoryController;
 use App\Http\Controllers\API\ItemController;
+use App\Http\Controllers\API\GrnController;
 
 Route::apiResource('items', ItemController::class);
+Route::get('/items-list', [ItemController::class, 'loadItemDropdown']);
 
 Route::apiResource('sub-categories', SubCategoryController::class);
 Route::get('/sub-categories-list', [SubCategoryController::class, 'loadSubCategoryDropdown']);
 
 Route::apiResource('categories', CategoryController::class);
 Route::get('/categories-list', [CategoryController::class, 'loadCategoryDropdown']);
+
+Route::apiResource('grn', GrnController::class);
 
 Route::apiResource('suppliers', SupplierController::class);
 Route::get('/suppliers-list', [SupplierController::class, 'loadSupplierDropdown']);
