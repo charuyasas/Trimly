@@ -20,6 +20,7 @@ use App\Http\Controllers\API\ItemController;
 use App\Http\Controllers\API\GrnController;
 
 Route::apiResource('items', ItemController::class);
+Route::get('/items-list', [ItemController::class, 'loadItemDropdown']);
 
 Route::apiResource('sub-categories', SubCategoryController::class);
 Route::get('/sub-categories-list', [SubCategoryController::class, 'loadSubCategoryDropdown']);

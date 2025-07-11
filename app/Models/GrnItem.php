@@ -3,13 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
-class Grn extends Model
+class GrnItem extends Model
 {
-    use SoftDeletes;
-
     protected $guarded = [];
     public $incrementing = false;
     protected $keyType = 'string';
@@ -20,14 +17,9 @@ class Grn extends Model
         static::creating(fn($model) => $model->id = (string) Str::uuid());
     }
 
-    public function items()
+    public function grn()
     {
-        return $this->hasMany(GrnItem::class);
-    }
-
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
+        return $this->belongsTo(Grn::class);
     }
 }
 
