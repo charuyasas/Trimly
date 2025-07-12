@@ -6,7 +6,7 @@ use App\Models\Customer;
 
 class ListCustomerInteractor
 {
-    public function execute()
+    public function execute(): \Illuminate\Database\Eloquent\Collection
     {
         return Customer::all();
     }

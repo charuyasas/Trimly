@@ -63,6 +63,8 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
 @include('includes.footer')
 
@@ -301,9 +303,5 @@
         }
     });
 
-    // Prevent full form submission if user presses Enter accidentally
-    $('#customerForm').on('submit', function (e) {
-        e.preventDefault();
-    });
 
 </script>
