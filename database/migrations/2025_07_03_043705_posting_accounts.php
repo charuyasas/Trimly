@@ -15,7 +15,8 @@ return new class extends Migration
             $table->unsignedInteger('main_code');
             $table->unsignedInteger('heading_code');
             $table->unsignedInteger('title_code');
-            $table->string('ledger_code')->nullable();
+            $table->string('ledger_code')->unique()->nullable();
+
             $table->softDeletes();
             $table->timestamps();
 

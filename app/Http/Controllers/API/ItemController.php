@@ -56,6 +56,7 @@ class ItemController extends Controller
             return [
                 'label' => "{$item->code} - {$item->description}",
                 'value' => $item->id,
+                'retail_price' => $item->retail_price
             ];
         });
 

@@ -29,11 +29,11 @@ class FinishInvoiceInteractor
             }
 
             $invoice->grand_total = round(max(0, $baseTotal - $discountAmount), 2);
-            $invoice->status = true;
+            $invoice->status = Invoice::STATUS['FINISHED'];
             $invoice->save();
 
             DB::commit();
-            
+
             return [
                 'message' => 'Invoice finalized successfully.',
                 'invoice' => $invoice->makeHidden(['created_at', 'updated_at', 'deleted_at']),

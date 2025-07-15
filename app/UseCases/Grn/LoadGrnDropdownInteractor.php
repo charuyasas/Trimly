@@ -9,6 +9,7 @@ class LoadGrnDropdownInteractor
     public function execute($search)
     {
         return Grn::where('grn_number', 'like', "%$search%")
+            ->where('status', 0)
             ->limit(10)
             ->orderBy('grn_number', 'asc')
             ->get()

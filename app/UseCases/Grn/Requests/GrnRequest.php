@@ -19,6 +19,12 @@ class GrnRequest extends Data
 
     public ?string $note;
 
+    #[SpatieRule('nullable', 'numeric', 'min:0')]
+    public ?float $grand_total = null;
+
+    #[SpatieRule('nullable')]
+    public string $supplier_ledger_code;
+
     #[SpatieRule('sometimes','required')]
     public float $discount_amount;
     #[SpatieRule('sometimes','required')]

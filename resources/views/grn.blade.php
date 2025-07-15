@@ -4,15 +4,72 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <!-- GRN Modal Button -->
-<div class="main_content_iner overly_inner">
-    <div class="container-fluid p-0">
+<div class="main_content_iner overly_inner ">
+    <div class="container-fluid p-0 ">
         <div class="row">
-            <div class="col-12 mb-3 d-flex justify-content-end">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grnModal" onclick="openAddGRNModal()">Add New GRN</button>
+            <div class="col-12">
+                <div class="white_card card_height_100 mb_30">
+                    <div class="white_card_header">
+                        <div class="box_header m-0">
+                            <div class="main-title">
+                                <h3 class="m-0">GRN </h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12">
+                        <div class="white_card card_height_100 mb_30">
+                            <div class="white_card_body">
+                                <div class="QA_section">
+                                    <div class="white_box_tittle list_header">
+                                        <h4></h4>
+                                        <div class="box_right d-flex lms_block">
+                                            <div class="serach_field_2">
+                                                <div class="search_inner">
+                                                    <form Active="#">
+                                                        <div class="search_field">
+                                                            <input type="text" placeholder="Search content here..." class="searchBox" data-target="employeeTable">
+                                                        </div>
+                                                        <button type="submit"> <i class="ti-search"></i> </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            <div class="add_button ms-2">
+                                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grnModal" onclick="openAddGRNModal()">Add New GRN</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="QA_table mb_30">
+                                        <table class="table lms_table_active ">
+                                            <thead>
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">GRN Number</th>
+                                                <th scope="col">GRN Date</th>
+                                                <th scope="col">Supplier And Supplier Invoice Number</th>
+                                                <th scope="col">Discount Type</th>
+                                                <th scope="col">Store Location</th>
+                                                <th scope="col">Total Before Discount</th>
+                                                <th scope="col">Total FOC</th>
+                                                <th scope="col">Total Discount</th>
+                                                <th scope="col">Grand Total</th>
+                                                <th scope="col">View Grn</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="grnTable">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
+
+            @include('includes.footer')
 
 <!-- GRN Modal -->
 <div class="modal fade" id="grnModal" tabindex="-1" aria-labelledby="grnModalLabel" aria-hidden="true">
@@ -64,6 +121,7 @@
                                     <label>Supplier</label>
                                     <input type="text" class="form-control" id="supplier_name" placeholder="Search Supplier..." autocomplete="off">
                                     <input type="hidden" id="supplier_id">
+                                    <input type="hidden" id="supplier_ledger_code">
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label>Supplier Invoice Number</label>
@@ -194,12 +252,98 @@
     </div>
 </div>
 
-@include('includes.footer')
+            <div class="modal fade" id="grnDetailModal" tabindex="-1" role="dialog" aria-labelledby="grnDetailModalTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">GRN Details</h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="itemTable">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Item Code</th>
+                                        <th scope="col">Item Description</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Qty</th>
+                                        <th scope="col">Discount Percentage (%)</th>
+                                        <th scope="col">Discount Amount</th>
+                                        <th scope="col">Sub Total</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                    <tfoot>
+                                    <tr>
+                                        <td colspan="7" class="text-end fw-bold">Grand Total</td>
+                                        <td id="grandTotal" class="text-end fw-bold">0.00</td>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="closeModal()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
 
 <script>
+
+    const apiUrl = '/api/grn';
+    loadGRN();
+
+    function loadGRN() {
+        $.get(apiUrl, function(data) {
+            let table = $('.lms_table_active').DataTable();
+            table.clear();
+
+            let rowID = 1;
+            data.forEach(grn => {
+                table.row.add([
+                    rowID,
+                    grn.grn_number,
+                    grn.grn_date,
+                    grn.supplier_invoice_number,
+                    grn.grn_type,
+                    grn.store_location,
+                    grn.total_before_discount,
+                    grn.total_foc,
+                    grn.discount_amount,
+                    grn.grand_total,
+                    `
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#grnDetailModal" onclick="loadInvoiceDetails('${grn.id}','${grn.invoice_no}')">View</button>
+                            `
+                ]);
+                rowID++;
+            });
+
+            table.draw();
+        });
+    }
+
+    function closeModal() {
+        const modalElement = document.getElementById('invoiceDetailModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+
+        if (modal) {
+            modal.hide();
+        }
+    }
     let grnItems = [];
     let discountConfig = { amount: 0, isPercentage: false };
     let editingIndex = null;
+    var itemSelectedFromAutocomplete = false;
+    var SupplierSelectedFromAutocomplete = false;
 
     function openAddGRNModal() {
         $('#grnForm')[0].reset();
@@ -286,6 +430,7 @@
             grn_date: $("#grn_date").val(),
             supplier_id: supplierID,
             supplier_invoice_number: $("#supplier_invoice_number").val(),
+            supplier_ledger_code: $("#supplier_ledger_code").val(),
             grn_type: grnType,
             store_location: $("#store_location").val(),
             note: $("#note").val(),
@@ -337,11 +482,19 @@
                 dataType: 'json',
                 data: { search_key: request.term },
                 success: function (data) {
-                    response(data);
-                    // Auto-fill if only one result
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.label,
+                            value: item.value,
+                            id: item.value,
+                            ledger_code: item.ledger_code
+                        };
+                    }));
                     if (data.length === 1) {
                         $("#supplier_name").val(data[0].label);
                         $("#supplier_id").val(data[0].value);
+                        $("#supplier_ledger_code").val(data[0].ledger_code);
+                        SupplierSelectedFromAutocomplete = true;
                     }
                 }
             });
@@ -351,8 +504,17 @@
         select: function (event, ui) {
             $("#supplier_name").val(ui.item.label);
             $("#supplier_id").val(ui.item.value);
+            $("#supplier_ledger_code").val(ui.item.ledger_code);
+            SupplierSelectedFromAutocomplete = true;
             return false;
         }
+    });
+
+    $("#supplier_name").on("input", function () {
+        if (!SupplierSelectedFromAutocomplete) {
+            $("#supplier_ledger_code").val('');
+        }
+        SupplierSelectedFromAutocomplete = false;
     });
 
     // Autocomplete for item
@@ -364,10 +526,20 @@
                 dataType: 'json',
                 data: { search_key: request.term },
                 success: function (data) {
-                    response(data);
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.label,
+                            value: item.value,
+                            id: item.value,
+                            retail_price: item.retail_price
+                        };
+                    }));
                     if (data.length === 1) {
                         $("#item_name").val(data[0].label);
                         $("#item_id").val(data[0].value);
+                        $("#price").val(data[0].retail_price);
+                        $("#qty").val(1);
+                        itemSelectedFromAutocomplete = true;
                     }
                 }
             });
@@ -377,8 +549,19 @@
         select: function (event, ui) {
             $("#item_name").val(ui.item.label);
             $("#item_id").val(ui.item.value);
+            $("#price").val(ui.item.retail_price);
+            $("#qty").val(1);
+            itemSelectedFromAutocomplete = true;
             return false;
         }
+    });
+
+    $("#item_name").on("input", function () {
+        if (!itemSelectedFromAutocomplete) {
+            $("#price").val('');
+            $("#qty").val('');
+        }
+        itemSelectedFromAutocomplete = false;
     });
 
     function renderGrnItems() {
@@ -511,7 +694,7 @@
     }
 
     function clearDiscount() {
-        $('#bill_discount_amount').val('');
+        // $('#bill_discount_amount').val('');
         $('#is_percentage').prop('checked', false);
         discountConfig = { amount: 0, isPercentage: false };
         calculateGrnTotals();
@@ -560,6 +743,7 @@
         }
 
         GrnDetails.discount_amount = parseFloat($('#bill_discount_amount').val());
+        GrnDetails.grand_total = parseFloat($('#grandTotal').text());
         GrnDetails.is_percentage = $('#is_percentage').is(':checked') ? 1 : 0;
         GrnDetails.store_location = $('#store_location').val();
         GrnDetails.note = $('#note').val();
@@ -632,7 +816,7 @@
 
     $("#grn_number").autocomplete({
         source: function (request, response) {
-            if (request.term.length < 1) return;
+            if (request.term.length < 3) return;
 
             $.ajax({
                 url: '/api/grn-list-dropdown',
@@ -643,7 +827,7 @@
                 success: function (data) {
                     response(data);
 
-                    if (data.length === 1) {
+                    if (data.length === 3) {
                         selectedGrnLabel = data[0].label;
                         $("#grn_number").val(data[0].label);
                         $("#grn_id").val(data[0].value);
@@ -673,7 +857,7 @@
             $("#supplier_invoice_number").val('');
             $("#store_location").val('');
             $("#note").val('');
-            $("#bill_discount_amount").val('');
+            // $("#bill_discount_amount").val('');
             $('#is_percentage').prop('checked', false);
             itemsList = [];
             renderGrnItems();
@@ -695,6 +879,7 @@
                 $("#supplier_id").val(res.grn.supplier_id);
                 $("#supplier_name").val(res.grn.supplier_name);
                 $("#supplier_invoice_number").val(res.grn.supplier_invoice_number);
+                $("#supplier_ledger_code").val(res.grn.supplier_ledger_code);
                 $("#store_location").val(res.grn.store_location);
                 $("#note").val(res.grn.note);
                 $("#bill_discount_amount").val(res.grn.discount_amount);
@@ -717,5 +902,24 @@
             }
         });
     }
+
+    $(document).on('keydown', 'input, select, textarea, button', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+
+            const focusables = $('input, select, textarea, button')
+                .filter(':visible:not([readonly]):not([disabled])');
+
+            const index = focusables.index(this);
+
+            if ($(this).is('button')) {
+                $(this).click(); // Optional: trigger button click
+            }
+
+            if (index > -1 && index + 1 < focusables.length) {
+                focusables.eq(index + 1).focus();
+            }
+        }
+    });
 
 </script>
