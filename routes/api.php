@@ -28,21 +28,20 @@ Route::get('/sub-categories-list', [SubCategoryController::class, 'loadSubCatego
 Route::apiResource('categories', CategoryController::class);
 Route::get('/categories-list', [CategoryController::class, 'loadCategoryDropdown']);
 
+Route::apiResource('grn', GrnController::class);
 Route::post('/new-grn', [GrnController::class, 'store']);
 Route::get('/grn-list-dropdown', [GrnController::class, 'loadGrnDropdown']);
-Route::apiResource('grn', GrnController::class);
 Route::get('/grn-details/{id}', [GrnController::class, 'getGrnDetails']);
 Route::post('/grn-finalize/{id}', [GrnController::class, 'finalize']);
 
 Route::apiResource('suppliers', SupplierController::class);
 Route::get('/suppliers-list', [SupplierController::class, 'loadSupplierDropdown']);
 
-Route::apiResource('bookings', BookingController::class);
-
 Route::apiResource('customers', CustomerController::class);
 Route::get('/customer-list', [CustomerController::class, 'loadCustomerDropdown']);
 
 Route::apiResource('services', ServiceController::class);
+Route::get('/service-list', [ServiceController::class, 'loadServiceDropdown']);
 
 Route::apiResource('employees', EmployeeController::class);
 Route::get('/employees-list', [EmployeeController::class, 'loadEmployeeDropdown']);
@@ -65,6 +64,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::apiResource('bookings', BookingController::class);
+Route::get('/bookings/{id}', [BookingController::class, 'show']);
 Route::get('/calendar/employees', function () {
     return Employee::select('id', 'name as title')->get();
 });
@@ -86,11 +87,9 @@ Route::get('/calendar/bookings', function () {
 });
 
 
-Route::get('/bookings/{id}', [BookingController::class, 'show']);
 
-Route::get('/employees-list', [EmployeeController::class, 'loadEmployeeDropdown']);
 
-Route::get('/customer-list', [CustomerController::class, 'loadCustomerDropdown']);
 
-Route::get('/service-list', [ServiceController::class, 'loadServiceDropdown']);
+
+
 

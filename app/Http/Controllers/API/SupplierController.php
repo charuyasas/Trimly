@@ -62,7 +62,8 @@ class SupplierController extends Controller
                 ->get()
                 ->map(fn($supplier) => [
                     'label' => $supplier->name,
-                    'value' => $supplier->id
+                    'value' => $supplier->id,
+                    'ledger_code' => $supplier->ledger_code
                 ])
         );
     }

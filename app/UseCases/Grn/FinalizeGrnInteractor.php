@@ -6,7 +6,7 @@ use App\Models\Grn;
 use App\UseCases\Grn\Requests\GrnRequest;
 use Illuminate\Support\Facades\DB;
 
-class FinishGrnInteractor
+class FinalizeGrnInteractor
 {
     public function execute(string $id, GrnRequest $request): array
     {

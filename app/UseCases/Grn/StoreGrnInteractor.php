@@ -85,12 +85,27 @@ class StoreGrnInteractor
                         'grn_date' => $request->grn_date,
                         'supplier_id' => $request->supplier_id,
                         'supplier_invoice_number' => $request->supplier_invoice_number,
+                        'supplier_ledger_code' => $request->supplier_ledger_code,
                         'grn_type' => $request->grn_type,
                         'store_location' => $request->store_location,
                         'note' => $request->note,
                         'discount_amount' => $request->discount_amount ?? 0,
                         'is_percentage' => $request->is_percentage,
-                        'items' => $grn->items()->get()->makeHidden(['created_at', 'updated_at', 'deleted_at']),
+                        'items' => $grn->items->map(function ($item) {
+                            return [
+                                'id' => $item->id ?? '',
+                                'grn_id' => $item->grn_id ?? '',
+                                'item_id' => $item->item_id ?? '',
+                                'item_name' => $item->item_name ?? '',
+                                'qty' => $item->qty ?? '',
+                                'foc' => $item->foc ?? '',
+                                'price' => $item->price ?? '',
+                                'margin' => $item->margin ?? '',
+                                'discount' => $item->discount ?? '',
+                                'final_price' => $item->final_price ?? '',
+                                'subtotal' => $item->subtotal ?? '',
+                            ];
+                        }),
                     ],
                 ],
                 'status' => 201

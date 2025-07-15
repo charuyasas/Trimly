@@ -29,9 +29,8 @@ class Invoice extends Model
     }
 
     const STATUS = [
-        0 => 'pending',
-        1 => 'complete',
-        2 => 'finish',
+        'PENDING' => 0,
+        'FINISH' => 1,
     ];
 
     public function items(){

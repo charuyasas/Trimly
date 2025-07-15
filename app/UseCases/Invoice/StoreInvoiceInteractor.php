@@ -50,7 +50,7 @@ class StoreInvoiceInteractor
                     'grand_total' => $grandTotal,
                     'discount_percentage' => $invoiceRequest->discount_percentage ?? 0,
                     'discount_amount' => $invoiceRequest->discount_amount ?? 0,
-                    'status' => 0,
+                    'status' => Invoice::STATUS['PENDING'],
                 ]);
             }
 
