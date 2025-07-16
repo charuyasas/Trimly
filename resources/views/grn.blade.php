@@ -28,7 +28,7 @@
                                                 <div class="search_inner">
                                                     <form Active="#">
                                                         <div class="search_field">
-                                                            <input type="text" placeholder="Search content here..." class="searchBox" data-target="employeeTable">
+                                                            <input type="text" placeholder="Search content here..." class="searchBox" data-target="grnTable">
                                                         </div>
                                                         <button type="submit"> <i class="ti-search"></i> </button>
                                                     </form>
@@ -68,8 +68,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
-            @include('includes.footer')
+@include('includes.footer')
 
 <!-- GRN Modal -->
 <div class="modal fade" id="grnModal" tabindex="-1" aria-labelledby="grnModalLabel" aria-hidden="true">
@@ -252,50 +255,48 @@
     </div>
 </div>
 
-            <div class="modal fade" id="grnDetailModal" tabindex="-1" role="dialog" aria-labelledby="grnDetailModalTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">GRN Details</h5>
-                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped" id="itemTable">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Item Code</th>
-                                        <th scope="col">Item Description</th>
-                                        <th scope="col">Price</th>
-                                        <th scope="col">Qty</th>
-                                        <th scope="col">Discount Percentage (%)</th>
-                                        <th scope="col">Discount Amount</th>
-                                        <th scope="col">Sub Total</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
+<div class="modal fade" id="grnDetailModal" tabindex="-1" role="dialog" aria-labelledby="grnDetailModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document" style="max-width: 95%; height: 90vh;">
+        <div class="modal-content" style="height: 100%; overflow-y: auto;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">GRN Details</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-striped" id="grnDetailTable">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Item Code</th>
+                            <th scope="col">Item Description</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Qty</th>
+                            <th scope="col">Discount Percentage (%)</th>
+                            <th scope="col">Discount Amount</th>
+                            <th scope="col">Sub Total</th>
+                        </tr>
+                        </thead>
+                        <tbody>
 
-                                    </tbody>
-                                    <tfoot>
-                                    <tr>
-                                        <td colspan="7" class="text-end fw-bold">Grand Total</td>
-                                        <td id="grandTotal" class="text-end fw-bold">0.00</td>
-                                    </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" onclick="closeModal()">Close</button>
-                        </div>
-                    </div>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="7" class="text-end fw-bold">Grand Total</td>
+                            <td class="text-end fw-bold" id="grandTotal">0.00</td>
+                        </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
-
-
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 
@@ -313,7 +314,7 @@
                     rowID,
                     grn.grn_number,
                     grn.grn_date,
-                    grn.supplier_invoice_number,
+                    `${grn.supplier?.name ?? 'N/A'} - ${grn.supplier_invoice_number}`,
                     grn.grn_type,
                     grn.store_location,
                     grn.total_before_discount,
@@ -321,8 +322,8 @@
                     grn.discount_amount,
                     grn.grand_total,
                     `
-                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#grnDetailModal" onclick="loadInvoiceDetails('${grn.id}','${grn.invoice_no}')">View</button>
-                            `
+                      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#grnDetailModal" onclick="viewGrnDetails('${grn.id}')">View</button>
+                    `
                 ]);
                 rowID++;
             });
@@ -331,14 +332,70 @@
         });
     }
 
+    $(document).ready(function () {
+        const table = $('.lms_table_active').DataTable();
+
+        $('.searchBox').on('keyup', function () {
+            const searchValue = $(this).val();
+            table.search(searchValue).draw();
+        });
+
+        $('#grnModal').on('hidden.bs.modal', function () {
+            loadGRN();
+        });
+    });
+
+    function viewGrnDetails(grnId) {
+        $.ajax({
+            url: `/api/grn-details/${grnId}`,
+            method: 'GET',
+            success: function (res) {
+                const items = res.grn.items || [];
+                const tbody = $('#grnDetailTable tbody');
+                tbody.empty();
+
+                let grandTotal = 0;
+
+                items.forEach((item, index) => {
+                    const discountPct = parseFloat(item.discount || 0);
+                    const price = parseFloat(item.price || 0);
+                    const qty = parseFloat(item.qty || 0);
+                    const discountAmt = (price * qty * discountPct) / 100;
+                    const subtotal = (price * qty) - discountAmt;
+                    grandTotal += subtotal;
+
+                    tbody.append(`
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.item_id}</td>
+                        <td>${item.item_name}</td>
+                        <td>${price.toFixed(2)}</td>
+                        <td>${qty}</td>
+                        <td>${discountPct.toFixed(2)}</td>
+                        <td>${discountAmt.toFixed(2)}</td>
+                        <td>${subtotal.toFixed(2)}</td>
+                    </tr>
+                `);
+                });
+
+                $('#grnDetailModal #grandTotal').text(grandTotal.toFixed(2));
+            },
+            error: function (xhr) {
+                console.error("Error loading GRN details", xhr);
+                Swal.fire('Error', 'Could not load GRN details.', 'error');
+            }
+        });
+    }
+
     function closeModal() {
-        const modalElement = document.getElementById('invoiceDetailModal');
+        const modalElement = document.getElementById('grnDetailModal');
         const modal = bootstrap.Modal.getInstance(modalElement);
 
         if (modal) {
             modal.hide();
         }
     }
+
     let grnItems = [];
     let discountConfig = { amount: 0, isPercentage: false };
     let editingIndex = null;

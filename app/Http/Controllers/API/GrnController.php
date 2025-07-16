@@ -46,7 +46,7 @@ class GrnController extends Controller
         $stockdebitEntryData = collect($request->items)->map(function ($item) {
             return [
                 'item_code'     => $item->item_id ?? '',
-                'ledger_code'   => '2-10-12-1000',
+                'ledger_code'   => '1-2-6-1000',
                 'description'   => 'GRN - ' . ($item->item_name ?? ''),
                 'debit'         => $item->qty ?? 0,
             ];
@@ -58,7 +58,7 @@ class GrnController extends Controller
 
         $journalEntries = [
             [
-                'ledger_code'    => '2-10-12-1000',
+                'ledger_code'    => '1-2-6-1000',
                 'reference_type' => JournalEntry::STATUS['GRN'],
                 'reference_id'   => 'GRN - ' . $grnNumber,
                 'debit'          => $grandTotal,

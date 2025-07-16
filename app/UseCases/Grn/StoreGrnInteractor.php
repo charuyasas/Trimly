@@ -46,6 +46,10 @@ class StoreGrnInteractor
 
                 $grn->items()->delete();
             } else {
+                if (Grn::where('grn_number', $request->grn_number)->exists()) {
+                    throw new \Exception("GRN Number already exists.");
+                }
+
                 $grn = Grn::create([
                     'grn_number' => $request->grn_number,
                     'grn_date' => $request->grn_date,
