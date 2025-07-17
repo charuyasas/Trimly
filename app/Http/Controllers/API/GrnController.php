@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Constance\AccountsLedgerCodes;
 use App\Http\Controllers\Controller;
 use App\Models\JournalEntry;
+use App\Models\StockSheet;
 use App\UseCases\Grn\ListGrnInteractor;
 use App\UseCases\Grn\Requests\GrnRequest;
 use App\UseCases\Grn\StoreGrnInteractor;
@@ -14,15 +16,17 @@ use App\UseCases\Grn\DeleteGrnItemInteractor;
 use App\UseCases\Grn\UpdateGrnItemInteractor;
 use App\UseCases\JournalEntry\Requests\JournalEntryRequest;
 use App\UseCases\JournalEntry\StoreJournalEntryInteractor;
+use App\UseCases\StockSheet\Requests\StockSheetEntryDataRequest;
 use App\UseCases\StockSheet\Requests\StockSheetRequest;
 use App\UseCases\StockSheet\StoreStockSheetInteractor;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class GrnController extends Controller
 {
 
-    public function index(ListGrnInteractor $listGrnInteractor): \Illuminate\Database\Eloquent\Collection
+    public function index(ListGrnInteractor $listGrnInteractor): Collection
     {
         return $listGrnInteractor->execute();
     }
@@ -46,22 +50,24 @@ class GrnController extends Controller
 
     public function finalize($id, GrnRequest $request, FinalizeGrnInteractor $interactor, StoreStockSheetInteractor $storeStockSheetInteractor, StoreJournalEntryInteractor $storeJournalEntryInteractor): JsonResponse
     {
-        $stockdebitEntryData = collect($request->items)->map(function ($item) {
+        $grnNumber = $request->grn_number;
+        $grandTotal = $request->grand_total;
+
+        $stockdebitEntryData = collect($request->items)->map(function ($item) use ($grnNumber) {
             return [
                 'item_code'     => $item->item_id ?? '',
-                'ledger_code'   => '1-2-6-1000',
+                'ledger_code'   => AccountsLedgerCodes::LEDGER_CODES['MainStore'],
                 'description'   => 'GRN - ' . ($item->item_name ?? ''),
-                'debit'         => $item->qty ?? 0,
+                'credit'         => $item->qty ?? 0,
+                'reference_type' => StockSheet::STATUS['GRN'],
+                'reference_id'   => 'GRN - ' . $grnNumber,
             ];
         })->toArray();
         $this->grnItemsToStockTable($storeStockSheetInteractor, $stockdebitEntryData);
 
-        $grnNumber = $request->grn_number;
-        $grandTotal = $request->grand_total;
-
         $journalEntries = [
             [
-                'ledger_code'    => '1-2-6-1000',
+                'ledger_code'    => AccountsLedgerCodes::LEDGER_CODES['MainStore'],
                 'reference_type' => JournalEntry::STATUS['GRN'],
                 'reference_id'   => 'GRN - ' . $grnNumber,
                 'debit'          => $grandTotal,
@@ -84,7 +90,7 @@ class GrnController extends Controller
     public function grnItemsToStockTable(StoreStockSheetInteractor $storeStockSheetInteractor, array $entries): void
     {
         foreach ($entries as $entry) {
-            $stockRequest = StockSheetRequest::validateAndCreate($entry);
+            $stockRequest = StockSheetEntryDataRequest::validateAndCreate($entry);
             $storeStockSheetInteractor->execute($stockRequest);
         }
 

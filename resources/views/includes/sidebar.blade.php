@@ -97,6 +97,16 @@
             </ul>
         </li>
         <li class="">
+            <a  href="/stockIssue" aria-expanded="false">
+                <div class="nav_icon_small">
+                    <img src="{{ asset('assets/img/menu-icon/13.svg') }}" alt="">
+                </div>
+                <div class="nav_title">
+                    <span>Stock Issuing</span>
+                </div>
+            </a>
+        </li>
+        <li class="">
             <a   class="has-arrow" href="#" aria-expanded="false">
               <div class="nav_icon_small">
                 <img src="{{ asset('assets/img/menu-icon/21.svg') }}" alt="">
