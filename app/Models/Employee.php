@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -28,5 +29,10 @@ class Employee extends Model
                 $model->id = (string) Str::uuid();
             }
         });
+    }
+
+    public function stockSheets(): HasMany
+    {
+        return $this->hasMany(StockSheet::class, 'ledger_code', 'ledger_code');
     }
 }

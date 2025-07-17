@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\StockController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\ServiceController;
@@ -47,6 +48,14 @@ Route::get('/service-list', [ServiceController::class, 'loadServiceDropdown']);
 
 Route::apiResource('employees', EmployeeController::class);
 Route::get('/employees-list', [EmployeeController::class, 'loadEmployeeDropdown']);
+
+Route::apiResource('employee-stock', StockController::class);
+Route::post('/employee-stock-issue', [StockController::class, 'store']);
+//Route::middleware('auth:sanctum')->group(function () {
+//    Route::post('/employee-stock-issue', [StockController::class, 'store']);
+//});
+Route::get('/available-stock', [StockController::class, 'getAvailableStock']);
+Route::get('/store-list', [StockController::class, 'loadStoreDropdown']);
 
 Route::apiResource('invoices', InvoiceController::class);
 Route::get('/item-list', [InvoiceController::class, 'loadItemDropdown']);

@@ -2,14 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\Employee;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\UseCases\Employee\SeedEmployeesInteractor;
 
 class EmployeeSeeder extends Seeder
 {
     public function run(): void
     {
-        Employee::factory(50)->create();
+        app(SeedEmployeesInteractor::class)->execute(50);
     }
 }

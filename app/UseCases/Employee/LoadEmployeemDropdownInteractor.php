@@ -14,6 +14,7 @@ class LoadEmployeemDropdownInteractor
                         ->orderBy('employee_id', 'asc')
                         ->get()
             ->map(fn($employee) => [
+                'employee_ledger_code' => $employee->ledger_code,
                 'label' => $employee->employee_id . ' - ' . $employee->name,
                 'value' => $employee->id
             ]);

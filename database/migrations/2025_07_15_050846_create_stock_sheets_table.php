@@ -16,8 +16,12 @@ return new class extends Migration
             $table->uuid('item_code');
             $table->string('ledger_code');
             $table->string('description');
+            $table->string('reference_type');
+            $table->string('reference_id');
             $table->integer('credit')->default(0);
             $table->integer('debit')->default(0);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
 
             $table->foreign('item_code')->references('id')->on('items')->onDelete('cascade');
@@ -30,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stock_sheet');
+        Schema::dropIfExists('stock_sheets');
     }
 };

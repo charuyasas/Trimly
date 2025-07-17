@@ -18,9 +18,15 @@ return new class extends Migration
             $table->string('reference_id');
             $table->decimal('credit')->default(0.00);
             $table->decimal('debit')->default(0.00);
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+
             $table->timestamps();
 
             $table->foreign('ledger_code')->references('ledger_code')->on('posting_accounts')->onDelete('cascade');
+            $table->foreign('created_by')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('updated_by')->references('id')->on('users')->nullOnDelete();
+
         });
     }
 

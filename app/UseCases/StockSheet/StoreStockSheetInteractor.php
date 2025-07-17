@@ -3,15 +3,15 @@
 namespace App\UseCases\StockSheet;
 
 use App\Models\StockSheet;
-use App\UseCases\StockSheet\Requests\StockSheetRequest;
+use App\UseCases\StockSheet\Requests\StockSheetEntryDataRequest;
 use Illuminate\Support\Collection;
 
 
-class StoreStockSheetInteractor extends Collection
+class StoreStockSheetInteractor
 {
-
-    public function execute(StockSheetRequest $stockSheetRequest){
-        $stockSheet = StockSheet::create($stockSheetRequest->toArray());
+    public function execute(StockSheetEntryDataRequest $stockSheetEntryDataRequest)
+    {
+        $stockSheet = StockSheet::create($stockSheetEntryDataRequest->toArray());
         return $stockSheet->toArray();
     }
 

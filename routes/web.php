@@ -54,6 +54,10 @@ Route::get('/postingAccount', function () {
     return view('accounts/posting-accounts');
 });
 
+Route::get('/stockIssue', function () {
+    return view('employee-stock-issue');
+});
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
