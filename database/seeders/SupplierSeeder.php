@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
+use App\UseCases\Supplier\SeedSuppliersInteractor;
 use Illuminate\Database\Seeder;
-use App\Models\Supplier;
 
 class SupplierSeeder extends Seeder
 {
     public function run(): void
     {
-        Supplier::factory()->count(20)->create();
+        app(SeedSuppliersInteractor::class)->execute(20);
     }
 }
