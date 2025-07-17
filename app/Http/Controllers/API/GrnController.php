@@ -10,11 +10,14 @@ use App\UseCases\Grn\StoreGrnInteractor;
 use App\UseCases\Grn\LoadGrnDropdownInteractor;
 use App\UseCases\Grn\GetGrnDetailsInteractor;
 use App\UseCases\Grn\FinalizeGrnInteractor;
+use App\UseCases\Grn\DeleteGrnItemInteractor;
+use App\UseCases\Grn\UpdateGrnItemInteractor;
 use App\UseCases\JournalEntry\Requests\JournalEntryRequest;
 use App\UseCases\JournalEntry\StoreJournalEntryInteractor;
 use App\UseCases\StockSheet\Requests\StockSheetRequest;
 use App\UseCases\StockSheet\StoreStockSheetInteractor;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class GrnController extends Controller
 {
@@ -95,8 +98,40 @@ class GrnController extends Controller
         }
     }
 
+    public function deleteItem(string $id): JsonResponse
+    {
+        $interactor = new DeleteGrnItemInteractor();
+        $result = $interactor->execute($id);
 
+        if ($result['status'] === 200) {
+            return response()->json(['message' => 'Item deleted'], 200);
+        } else {
+            return response()->json(['message' => 'Failed to delete item', 'error' => $result['error']], 500);
+        }
+    }
 
+    public function updateItem(Request $request, string $id): JsonResponse
+    {
+        $validated = $request->validate([
+            'item_name' => 'required|string|max:255',
+            'qty' => 'required|numeric|min:0',
+            'foc' => 'nullable|numeric|min:0',
+            'price' => 'required|numeric|min:0',
+            'margin' => 'nullable|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0',
+            'final_price' => 'required|numeric|min:0',
+            'subtotal' => 'required|numeric|min:0',
+        ]);
+
+        $interactor = new UpdateGrnItemInteractor();
+        $result = $interactor->execute($id, $validated);
+
+        if ($result['status'] === 200) {
+            return response()->json(['message' => 'Item updated', 'item' => $result['item']]);
+        } else {
+            return response()->json(['message' => 'Failed to update item', 'error' => $result['error']], 500);
+        }
+    }
 
 }
 
