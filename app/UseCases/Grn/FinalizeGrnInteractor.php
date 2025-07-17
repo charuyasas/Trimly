@@ -17,19 +17,19 @@ class FinalizeGrnInteractor
             $totalBefore = $grn->items->sum('subtotal');
             $totalFOC = $grn->items->sum(fn($item) => $item->final_price * $item->foc);
 
-            $discountAmount = $request->discount_amount ?? 0;
+            $discountInput = $request->discount_amount ?? 0;
             $isPercentage = $request->is_percentage ?? false;
 
-            if ($isPercentage) {
-                $discountAmount = ($totalBefore * $discountAmount) / 100;
-            }
+            $calculatedDiscount = $isPercentage
+                ? ($totalBefore * $discountInput / 100)
+                : $discountInput;
 
-            $grandTotal = round(max(0, $totalBefore - $discountAmount), 2);
+            $grandTotal = round(max(0, $totalBefore - $calculatedDiscount), 2);
 
             $grn->grand_total = $grandTotal;
             $grn->total_before_discount = $totalBefore;
             $grn->total_foc = $totalFOC;
-            $grn->discount_amount = $isPercentage ? 0 : ($request->discount_amount ?? 0);
+            $grn->discount_amount = $discountInput; // Save raw input value
             $grn->is_percentage = $isPercentage;
             $grn->store_location = $request->store_location;
             $grn->note = $request->note;

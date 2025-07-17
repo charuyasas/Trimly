@@ -33,6 +33,8 @@ Route::post('/new-grn', [GrnController::class, 'store']);
 Route::get('/grn-list-dropdown', [GrnController::class, 'loadGrnDropdown']);
 Route::get('/grn-details/{id}', [GrnController::class, 'getGrnDetails']);
 Route::post('/grn-finalize/{id}', [GrnController::class, 'finalize']);
+Route::delete('/grn-item-delete/{id}', [GrnController::class, 'deleteItem']);
+Route::put('/grn-item-update/{id}', [GrnController::class, 'updateItem']);
 
 Route::apiResource('suppliers', SupplierController::class);
 Route::get('/suppliers-list', [SupplierController::class, 'loadSupplierDropdown']);

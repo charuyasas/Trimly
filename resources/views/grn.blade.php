@@ -1,6 +1,8 @@
 @include('includes.header')
 @include('includes.sidebar', ['pageTitle' => 'GRN'])
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <!-- GRN Modal Button -->
@@ -36,6 +38,54 @@
                                             </div>
                                             <div class="add_button ms-2">
                                                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grnModal" onclick="openAddGRNModal()">Add New GRN</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Filter GRNs Toggle Header -->
+                                    <div class="d-flex justify-content-between align-items-center mb-3 border rounded px-4 py-3 bg-white shadow-sm">
+                                        <h6 class="fw-semibold text-dark mb-0 fs-6">Filter GRNs</h6>
+                                        <button class="btn btn-light border d-flex align-items-center justify-content-center rounded-circle shadow-sm"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#grnFilters"
+                                                aria-expanded="false"
+                                                aria-controls="grnFilters"
+                                                style="width: 38px; height: 38px;">
+                                            <i class="ti-plus fs-5 text-primary"></i>
+                                        </button>
+                                    </div>
+
+
+                                    <!-- Collapsible Filters Panel -->
+                                    <div class="collapse mb-3" id="grnFilters">
+                                        <div class="card card-body shadow-sm p-4">
+                                            <div class="row g-3">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Search</label>
+                                                    <input type="text" class="form-control" id="filter_search" placeholder="Search GRNs by number, supplier, or invoice number">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Suppliers</label>
+                                                    <input type="text" class="form-control" id="filter_supplier_name" placeholder="Search supplier..." autocomplete="off">
+                                                    <input type="hidden" id="filter_supplier_id">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Date Range</label>
+                                                    <input type="text" class="form-control" id="filter_date_range" placeholder="Select Date Range">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Subtotal Min (LKR)</label>
+                                                    <input type="number" class="form-control" id="filter_subtotal_min" placeholder="Min">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Subtotal Max (LKR)</label>
+                                                    <input type="number" class="form-control" id="filter_subtotal_max" placeholder="Max">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-end gap-2 mt-3">
+                                                <button class="btn btn-secondary" onclick="clearGrnFilters()">Clear Filters</button>
+                                                <button class="btn btn-primary" onclick="applyGrnFilters()">Apply Filters</button>
                                             </div>
                                         </div>
                                     </div>
@@ -156,6 +206,7 @@
                                     <div class="col-md-2">
                                         <input type="text" class="form-control" id="item_name" placeholder="Search Item..." autocomplete="off">
                                         <input type="hidden" id="item_id">
+                                        <input type="hidden" id="grn_item_id">
                                     </div>
                                     <div class="col-md-1"><input type="number" id="qty" class="form-control" placeholder="Qty"></div>
                                     <div class="col-md-1"><input type="number" id="foc" class="form-control" placeholder="FOC"></div>
@@ -259,44 +310,77 @@
     <div class="modal-dialog modal-xl modal-dialog-centered" role="document" style="max-width: 95%; height: 90vh;">
         <div class="modal-content" style="height: 100%; overflow-y: auto;">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">GRN Details</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">GRN Details - <span id="modalGrnNumber">0000</span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <div class="table-responsive">
-                    <table class="table table-striped" id="grnDetailTable">
-                        <thead>
+            <div class="modal-body p-4">
+
+                <!-- Summary Section -->
+                <div class="row mb-4 px-4 py-3 rounded shadow-sm" style="background-color: #f8f9fa;">
+                    <div class="col-md-3 mb-3">
+                        <p class="mb-1 text-muted fw-semibold">GRN Number</p>
+                        <h6 id="modalGrnNumberDisplay" class="mb-0 text-dark fw-semibold">-</h6>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <p class="mb-1 text-muted fw-semibold">Date</p>
+                        <h6 id="modalGrnDate" class="mb-0 text-dark fw-semibold">-</h6>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <p class="mb-1 text-muted fw-semibold">Supplier & Invoice</p>
+                        <h6 id="modalSupplierAndInvoice" class="mb-0 text-dark fw-semibold">-</h6>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <p class="mb-1 text-muted fw-semibold">Discount Type</p>
+                        <h6 id="modalDiscountType" class="mb-0 text-dark fw-semibold">-</h6>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <p class="mb-1 text-muted fw-semibold">Store Location</p>
+                        <h6 id="modalStoreLocation" class="mb-0 text-dark fw-semibold">-</h6>
+                    </div>
+                    <div class="col-md-9 mb-3">
+                        <p class="mb-1 text-muted fw-semibold">Note</p>
+                        <h6 id="modalNote" class="mb-0 text-dark fw-semibold">-</h6>
+                    </div>
+                </div>
+
+                <!-- Table Section -->
+                <div class="table-responsive mb-3">
+                    <table class="table table-bordered text-center align-middle">
+                        <thead class="table-light">
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Item Code</th>
-                            <th scope="col">Item Description</th>
-                            <th scope="col">Price</th>
-                            <th scope="col">Qty</th>
-                            <th scope="col">Discount Percentage (%)</th>
-                            <th scope="col">Discount Amount</th>
-                            <th scope="col">Sub Total</th>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>FOC</th>
+                            <th>Purchase Price</th>
+                            <th>Margin</th>
+                            <th>Discount</th>
+                            <th>Final Retail Price</th>
+                            <th>Sub Total</th>
                         </tr>
                         </thead>
-                        <tbody>
-
-                        </tbody>
-                        <tfoot>
+                        <tbody id="grnDetailTableBody">
                         <tr>
-                            <td colspan="7" class="text-end fw-bold">Grand Total</td>
-                            <td class="text-end fw-bold" id="grandTotal">0.00</td>
+                            <td colspan="8" class="text-danger text-center fw-semibold">Warning: Item details are missing for all GRN items.</td>
                         </tr>
-                        </tfoot>
+                        </tbody>
                     </table>
+                </div>
+
+                <!-- Totals Section -->
+                <div class="text-end">
+                    <p><strong>Total Before Discount:</strong> LKR <span id="modalTotalBefore">0.00</span></p>
+                    <p><strong>Total Discount:</strong> (<span id="modalTotalDiscount">0.00</span>)</p>
+                    <p><strong>Total FOC:</strong> LKR <span id="modalTotalFOC">0.00</span></p>
+                    <h5 class="fw-bold text-danger">Grand Total: LKR <span id="modalGrandTotal">0.00</span></h5>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="closeModal()">Close</button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
+
 
 <script>
 
@@ -350,38 +434,75 @@
             url: `/api/grn-details/${grnId}`,
             method: 'GET',
             success: function (res) {
-                const items = res.grn.items || [];
-                const tbody = $('#grnDetailTable tbody');
-                tbody.empty();
+                const grn = res.grn;
+                const items = grn.items || [];
 
+                $('#modalGrnNumber').text(grn.grn_number);
+                $('#modalGrnNumberDisplay').text(grn.grn_number);
+                $('#modalGrnDate').text(grn.grn_date);
+                $('#modalStoreLocation').text(grn.store_location || '-');
+                $('#modalNote').text(grn.note || '-');
+                $('#modalSupplierAndInvoice').text(`${grn.supplier_name ?? 'N/A'} - ${grn.supplier_invoice_number}`);
+                $('#modalDiscountType').text(grn.grn_type);
+
+                // Render item table
+                const tbody = $('#grnDetailTableBody').empty();
                 let grandTotal = 0;
+                let totalBefore = 0;
+                let totalFOC = 0;
 
-                items.forEach((item, index) => {
-                    const discountPct = parseFloat(item.discount || 0);
-                    const price = parseFloat(item.price || 0);
-                    const qty = parseFloat(item.qty || 0);
-                    const discountAmt = (price * qty * discountPct) / 100;
-                    const subtotal = (price * qty) - discountAmt;
-                    grandTotal += subtotal;
+                if (items.length === 0) {
+                    tbody.append(`<tr>
+                    <td colspan="8" class="text-danger text-center fw-semibold">
+                        Warning: Item details are missing for all GRN items.
+                    </td>
+                </tr>`);
+                } else {
+                    items.forEach(item => {
+                        const price = parseFloat(item.price || 0);
+                        const qty = parseFloat(item.qty || 0);
+                        const foc = parseFloat(item.foc || 0);
+                        const margin = parseFloat(item.margin || 0);
+                        const discount = parseFloat(item.discount || 0);
+                        const finalPrice = parseFloat(item.final_price || 0);
+                        const subtotal = parseFloat(item.subtotal || 0);
 
-                    tbody.append(`
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${item.item_id}</td>
-                        <td>${item.item_name}</td>
-                        <td>${price.toFixed(2)}</td>
-                        <td>${qty}</td>
-                        <td>${discountPct.toFixed(2)}</td>
-                        <td>${discountAmt.toFixed(2)}</td>
-                        <td>${subtotal.toFixed(2)}</td>
-                    </tr>
-                `);
-                });
+                        totalBefore += subtotal;
+                        totalFOC += foc * finalPrice;
+                        grandTotal += subtotal;
 
-                $('#grnDetailModal #grandTotal').text(grandTotal.toFixed(2));
+                        tbody.append(`
+                        <tr>
+                            <td>${item.item_name ?? 'N/A'}</td>
+                            <td>${qty}</td>
+                            <td>${foc}</td>
+                            <td>${price.toFixed(2)}</td>
+                            <td>${margin.toFixed(2)}</td>
+                            <td>${discount.toFixed(2)}</td>
+                            <td>${finalPrice.toFixed(2)}</td>
+                            <td>${subtotal.toFixed(2)}</td>
+                        </tr>
+                    `);
+                    });
+                }
+
+                let billDiscount = parseFloat(grn.discount_amount || 0);
+                let discountDisplay = grn.is_percentage == 1
+                    ? `${billDiscount.toFixed(2)}%`
+                    : `LKR ${billDiscount.toFixed(2)}`;
+
+                if (grn.is_percentage == 1) {
+                    grandTotal = grandTotal * (1 - billDiscount / 100);
+                } else {
+                    grandTotal -= billDiscount;
+                }
+
+                $('#modalTotalBefore').text(totalBefore.toFixed(2));
+                $('#modalTotalDiscount').text(discountDisplay);
+                $('#modalTotalFOC').text(totalFOC.toFixed(2));
+                $('#modalGrandTotal').text(grandTotal.toFixed(2));
             },
-            error: function (xhr) {
-                console.error("Error loading GRN details", xhr);
+            error: function () {
                 Swal.fire('Error', 'Could not load GRN details.', 'error');
             }
         });
@@ -670,6 +791,7 @@
 
         $('#item_name').val(item.item_name);
         $('#item_id').val(item.item_id);
+        $('#grn_item_id').val(item.id || '');
         $('#qty').val(item.qty);
         $('#foc').val(item.foc);
         $('#price').val(item.price);
@@ -689,32 +811,57 @@
     }
 
     function updateItem() {
-        if (editingIndex === null) return;
+        const itemDBId = $('#grn_item_id').val();  // GRN Item DB id
+
+        if (!itemDBId) {
+            Swal.fire('Error', 'Missing item ID for update', 'error');
+            return;
+        }
 
         const item = {
-            item_id: $('#item_id').val(),
             item_name: $('#item_name').val(),
             qty: parseFloat($('#qty').val()) || 0,
             foc: parseFloat($('#foc').val()) || 0,
             price: parseFloat($('#price').val()) || 0,
             margin: parseFloat($('#margin').val()) || 0,
-            discount: parseFloat($('#discount').val()) || 0,
+            discount: parseFloat($('#discount').val()) || 0
         };
 
         const grnType = $('input[name="grn_type"]:checked').val();
+
         item.final_price = grnType === 'Profit Margin'
             ? item.price * (1 + item.margin / 100)
             : item.price * (1 - item.discount / 100);
 
-        const base = item.final_price * item.qty;
-        item.subtotal = item.discount > 0 ? base - ((base * item.discount) / 100) : base;
+        item.subtotal = item.final_price * item.qty;
 
-        itemsList[editingIndex] = item;
-        editingIndex = null;
+        axios.put(`/api/grn-item-update/${itemDBId}`, {
+            ...item,
+            final_price: item.final_price,
+            subtotal: item.subtotal
+        })
+            .then(res => {
+                if (editingIndex !== null) {
+                    itemsList[editingIndex] = {
+                        ...item,
+                        item_id: $('#item_id').val(),
+                        id: itemDBId,
+                        item_name: $('#item_name').val(),
+                        final_price: item.final_price,
+                        subtotal: item.subtotal
+                    };
+                }
 
-        resetItemForm();
-        renderGrnItems();
-        calculateGrnTotals();
+                Swal.fire('Updated', 'Item updated successfully', 'success');
+                editingIndex = null;
+                renderGrnItems();
+                resetItemForm();
+                calculateGrnTotals();
+                loadGRN();
+            })
+            .catch(err => {
+                Swal.fire('Error', 'Failed to update item.', 'error');
+            });
     }
 
     function cancelEdit() {
@@ -728,15 +875,49 @@
     function resetItemForm() {
         $('#item_name, #item_id, #qty, #foc, #price, #margin, #discount, #discount_amount').val('');
         editingIndex = null;
-
+        $('#grn_item_id').val('');
         $('#btn_add_item').removeClass('d-none');
         $('#edit_action_group').addClass('d-none');
     }
 
     function removeItem(index) {
-        itemsList.splice(index, 1);
-        renderGrnItems();
-        calculateGrnTotals();
+        const item = itemsList[index];
+
+        // Confirm deletion
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to remove this item from the GRN.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+
+            // If item has a DB id (i.e. already saved), delete from backend
+            if (item.id) {
+                $.ajax({
+                    url: `/api/grn-item-delete/${item.id}`,
+                    type: 'DELETE',
+                    success: function () {
+                        itemsList.splice(index, 1);
+                        renderGrnItems();
+                        calculateGrnTotals();
+                        loadGRN();
+                        Swal.fire('Deleted!', 'Item has been removed.', 'success');
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Failed to delete item.', 'error');
+                    }
+                });
+            } else {
+                // Frontend only (unsaved item)
+                itemsList.splice(index, 1);
+                renderGrnItems();
+                calculateGrnTotals();
+            }
+        });
     }
 
     function applyDiscount() {
@@ -979,4 +1160,134 @@
         }
     });
 
+    function applyGrnFilters() {
+        const search = $('#filter_search').val().trim().toLowerCase();
+        const supplier = $('#filter_supplier_id').val();
+        const dateRange = $('#filter_date_range').val();
+        const subtotalMin = parseFloat($('#filter_subtotal_min').val()) || 0;
+        const subtotalMax = parseFloat($('#filter_subtotal_max').val()) || Infinity;
+
+        $.get(apiUrl, function(data) {
+            const table = $('.lms_table_active').DataTable();
+            table.clear();
+
+            let rowID = 1;
+
+            data.filter(grn => {
+                const matchSearch = !search || (
+                    grn.grn_number?.toLowerCase().includes(search) ||
+                    grn.supplier?.name?.toLowerCase().includes(search) ||
+                    grn.supplier_invoice_number?.toLowerCase().includes(search)
+                );
+
+                const matchSupplier = !supplier || grn.supplier_id == supplier;
+
+                const dateRange = $('#filter_date_range').val().trim();
+                let matchDate = true;
+
+                if (dateRange && dateRange.includes(' - ')) {
+                    const [startStr, endStr] = dateRange.split(' - ');
+                    const start = moment(startStr, 'YYYY-MM-DD').startOf('day');
+                    const end = moment(endStr, 'YYYY-MM-DD').endOf('day');
+
+                    matchDate = grn.grn_date && moment(grn.grn_date).isBetween(start, end, null, '[]');
+                }
+
+                const subtotal = parseFloat(grn.total_before_discount || 0);
+                const matchSubtotal = subtotal >= subtotalMin && subtotal <= subtotalMax;
+
+                return matchSearch && matchSupplier && matchDate && matchSubtotal;
+            }).forEach(grn => {
+                table.row.add([
+                    rowID++,
+                    grn.grn_number,
+                    grn.grn_date,
+                    `${grn.supplier?.name ?? 'N/A'} - ${grn.supplier_invoice_number}`,
+                    grn.grn_type,
+                    grn.store_location,
+                    grn.total_before_discount,
+                    grn.total_foc,
+                    grn.discount_amount,
+                    grn.grand_total,
+                    `<button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#grnDetailModal" onclick="viewGrnDetails('${grn.id}')">View</button>`
+                ]);
+            });
+
+            table.draw();
+        });
+    }
+
+    function clearGrnFilters() {
+        $('#filter_search, #filter_supplier_name, #filter_date_range, #filter_subtotal_min, #filter_subtotal_max, #filter_supplier_id').val('');
+        loadGRN();
+    }
+
+    let filterSupplierSelected = false;
+
+    $("#filter_supplier_name").autocomplete({
+        source: function (request, response) {
+            if (request.term.length < 1) return;
+
+            $.ajax({
+                url: '/api/suppliers-list',
+                dataType: 'json',
+                data: { search_key: request.term },
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.label,
+                            value: item.value,
+                            id: item.value,
+                            ledger_code: item.ledger_code
+                        };
+                    }));
+
+                    // Auto select if exactly one match
+                    if (data.length === 1) {
+                        $("#filter_supplier_name").val(data[0].label);
+                        $("#filter_supplier_id").val(data[0].value);
+                        filterSupplierSelected = true;
+                    }
+                }
+            });
+        },
+        minLength: 1,
+        appendTo: "#grnFilters", // match the filter collapsible wrapper
+        select: function (event, ui) {
+            $("#filter_supplier_name").val(ui.item.label);
+            $("#filter_supplier_id").val(ui.item.value);
+            filterSupplierSelected = true;
+            return false;
+        }
+    });
+
+
+    $("#filter_supplier_name").on("input", function () {
+        if (!filterSupplierSelected) {
+            $("#filter_supplier_id").val('');
+        }
+        filterSupplierSelected = false;
+    });
+
+
+    $(function () {
+        $('#filter_date_range').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+
+        $('#filter_date_range').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+
+        $('#filter_date_range').on('cancel.daterangepicker', function () {
+            $(this).val('');
+        });
+    });
+
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
