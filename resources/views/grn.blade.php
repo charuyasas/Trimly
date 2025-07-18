@@ -195,90 +195,122 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end mt-4">
-                                <button type="button" class="btn btn-primary" onclick="goToStep(2)">NEXT</button>
+                                <button type="button" class="btn btn-primary" id="grn_step1_next" onclick="goToStep(2)">NEXT</button>
                             </div>
                         </div>
 
                         <!-- STEP 2 – ITEM ENTRY -->
+                        <!-- STEP 2 – ITEM ENTRY -->
                         <div class="tab-pane fade" id="grnStep2">
-                            <div class="border p-3 rounded mb-3">
-                                <div class="row g-2 align-items-start">
-                                    <div class="col-md-2">
-                                        <input type="text" class="form-control" id="item_name" placeholder="Search Item..." autocomplete="off">
-                                        <input type="hidden" id="item_id">
-                                        <input type="hidden" id="grn_item_id">
+                            <div class="row">
+                                <!-- Left Side: Item Form and Table (col-md-9) -->
+                                <div class="col-md-9">
+                                    <!-- Item Entry Form -->
+                                    <div class="border p-3 rounded mb-3">
+                                        <div class="row g-2 align-items-start">
+                                            <div class="col-md-2">
+                                                <input type="text" class="form-control" id="item_name" placeholder="Search Item..." autocomplete="off">
+                                                <input type="hidden" id="item_id">
+                                                <input type="hidden" id="grn_item_id">
+                                            </div>
+                                            <div class="col-md-1"><input type="number" id="qty" class="form-control" placeholder="Qty"></div>
+                                            <div class="col-md-1"><input type="number" id="foc" class="form-control" placeholder="FOC"></div>
+                                            <div class="col-md-2"><input type="number" id="price" class="form-control" placeholder="Purchase Price"></div>
+                                            <!-- MARGIN input group -->
+                                            <div class="col-md-2" id="margin_group">
+                                                <input type="number" id="margin" class="form-control" placeholder="Margin">
+                                            </div>
+                                            <!-- DISCOUNT input group -->
+                                            <div class="col-md-2 d-none" id="discount_group">
+                                                <input type="number" id="discount" class="form-control" placeholder="Discount">
+                                            </div>
+                                            <!-- DISCOUNT AMOUNT field -->
+                                            <div class="col-md-2 d-none" id="discount_amount_group">
+                                                <input type="text" id="discount_amount" class="form-control" placeholder="Dis. Amount" disabled>
+                                            </div>
+                                            <div class="col-md-2 text-center" id="item-action-buttons">
+                                                <button type="button" class="btn btn-outline-secondary" id="btn_add_item" onclick="addItem()">+</button>
+                                                <div class="d-none" id="edit_action_group">
+                                                    <button type="button" class="btn btn-outline-primary me-2" onclick="updateItem()">Update</button>
+                                                    <button type="button" class="btn btn-outline-danger" onclick="cancelEdit()">Cancel</button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-md-1"><input type="number" id="qty" class="form-control" placeholder="Qty"></div>
-                                    <div class="col-md-1"><input type="number" id="foc" class="form-control" placeholder="FOC"></div>
-                                    <div class="col-md-2"><input type="number" id="price" class="form-control" placeholder="Purchase Price"></div>
-                                    <!-- MARGIN input group -->
-                                    <div class="col-md-2" id="margin_group">
-                                        <input type="number" id="margin" class="form-control" placeholder="Margin">
-                                    </div>
-                                    <!-- DISCOUNT input group -->
-                                    <div class="col-md-2 d-none" id="discount_group">
-                                        <input type="number" id="discount" class="form-control" placeholder="Discount">
-                                    </div>
-                                    <!-- DISCOUNT AMOUNT field (auto-calculated) -->
-                                    <div class="col-md-2 d-none" id="discount_amount_group">
-                                        <input type="text" id="discount_amount" class="form-control" placeholder="Dis. Amount" disabled>
-                                    </div>
-                                    <div class="col-md-2 text-center" id="item-action-buttons">
-                                        <button type="button" class="btn btn-outline-secondary" id="btn_add_item" onclick="addItem()">+</button>
 
-                                        <div class="d-none" id="edit_action_group">
-                                            <button type="button" class="btn btn-outline-primary me-2" onclick="updateItem()">Update</button>
-                                            <button type="button" class="btn btn-outline-danger" onclick="cancelEdit()">Cancel</button>
+                                    <!-- Item Table -->
+                                    <table class="table table-bordered text-center mb-4">
+                                        <thead class="table-light">
+                                        <tr>
+                                            <th>Action</th>
+                                            <th>Item Name</th>
+                                            <th>Qty</th>
+                                            <th>FOC</th>
+                                            <th>Price</th>
+                                            <th>Margin</th>
+                                            <th>Discount</th>
+                                            <th>Final Price</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="itemTable"></tbody>
+                                    </table>
+
+                                    <!-- Bill Discount Section -->
+                                    <div id="discountSection" class="mt-4 border rounded p-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <strong>Add Discount For Bill Value</strong>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleDiscountSection()">−</button>
+                                        </div>
+                                        <div class="form-check form-switch d-flex align-items-center gap-2 mb-3">
+                                            <input class="form-check-input" type="checkbox" id="is_percentage">
+                                            <label class="form-check-label fw-semibold" for="is_percentage">Is Percentage Based</label>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <input type="number" class="form-control" id="bill_discount_amount" value="0.00" placeholder="Discount Amount">
+                                            <span id="discountUnitLabel">LKR</span>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <table class="table table-bordered text-center mb-4">
-                                <thead class="table-light">
-                                <tr>
-                                    <th>Action</th>
-                                    <th>Item Name</th>
-                                    <th>Qty</th>
-                                    <th>FOC</th>
-                                    <th>Price</th>
-                                    <th>Margin</th>
-                                    <th>Discount</th>
-                                    <th>Final Price</th>
-                                    <th>Subtotal</th>
-                                </tr>
-                                </thead>
-                                <tbody id="itemTable"></tbody>
-                            </table>
+                                <!-- Right Side: Stock Info Panel (col-md-3) -->
+                                <div class="col-md-3">
+                                    <div class="p-4 bg-white rounded-3 shadow-sm">
+                                        <h5 class="fw-bold text-center mb-4 border-bottom pb-2">STOCK INFORMATION</h5>
 
-                            <!-- Bill Discount -->
-                            <div id="discountSection" class="mt-4 border rounded p-3">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <strong>Add Discount For Bill Value</strong>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleDiscountSection()">−</button>
-                                </div>
-                                <div class="form-check form-switch d-flex align-items-center gap-2 mb-3">
-                                    <input class="form-check-input" type="checkbox" id="is_percentage">
-                                    <label class="form-check-label fw-semibold" for="is_percentage">Is Percentage Based</label>
-                                </div>
-                                <div class="d-flex align-items-center gap-2 mb-2">
-                                    <input type="number" class="form-control" id="bill_discount_amount" value="0.00" placeholder="Discount Amount">
-                                    <span id="discountUnitLabel">LKR</span>
-                                </div>
-                                <div class="d-flex gap-2 mt-2">
-                                    <button type="button" class="btn btn-success" onclick="applyDiscount()">✔</button>
-                                    <button type="button" class="btn btn-danger" onclick="clearDiscount()">✖</button>
-                                </div>
-                            </div>
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span class="text-muted fs-6">Old Quantity</span>
+                                            <span class="fw-bold text-danger fs-5" id="old_stock_qty">0</span>
+                                        </div>
 
-                            <div class="text-end pe-2">
-                                <p>Total Before Discount: LKR <span id="totalBefore">0.00</span></p>
-                                <p>Total FOC: LKR <span id="totalFOC">0.00</span></p>
-                                <h5 class="text-danger fw-bold">Grand Total: LKR <span id="grandTotal">0.00</span></h5>
-                            </div>
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span class="text-muted fs-6">New Quantity</span>
+                                            <span class="fw-bold text-success fs-5" id="new_stock_qty">0</span>
+                                        </div>
 
-                            <div class="d-flex justify-content-end mt-4">
-                                <button type="button" class="btn btn-primary" onclick="goToStep(3)">NEXT</button>
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span class="text-muted fs-6">Last Cost</span>
+                                            <span class="fw-bold text-primary fs-5" id="last_cost">0.00</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span class="text-muted fs-6">Average Cost</span>
+                                            <span class="fw-bold text-info fs-5" id="avg_cost">0.00</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Totals -->
+                                    <div class="text-end pe-2 mt-4">
+                                        <p class="fs-6">Total Before Discount: LKR <span id="totalBefore" class="fw-semibold text-dark">0.00</span></p>
+                                        <p class="fs-6">Total FOC: LKR <span id="totalFOC" class="fw-semibold text-dark">0.00</span></p>
+                                        <h4 class="text-danger fw-bold">Grand Total: LKR <span id="grandTotal" class="text-danger">0.00</span></h4>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-primary" id="grn_step2_next" onclick="goToStep(3)">NEXT</button>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
 
@@ -296,7 +328,7 @@
                             </div>
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary" onclick="goToStep(2)">Back</button>
-                                <button type="submit" class="btn btn-dark">Finalize GRN</button>
+                                <button type="submit" class="btn btn-dark" id="grn_finalize_btn">Finalize GRN</button>
                             </div>
                         </div>
                     </div>
@@ -367,11 +399,11 @@
                 </div>
 
                 <!-- Totals Section -->
-                <div class="text-end">
-                    <p><strong>Total Before Discount:</strong> LKR <span id="modalTotalBefore">0.00</span></p>
-                    <p><strong>Total Discount:</strong> (<span id="modalTotalDiscount">0.00</span>)</p>
-                    <p><strong>Total FOC:</strong> LKR <span id="modalTotalFOC">0.00</span></p>
-                    <h5 class="fw-bold text-danger">Grand Total: LKR <span id="modalGrandTotal">0.00</span></h5>
+                <div class="text-end fs-6">
+                    <p><strong>Total Before Discount:</strong> LKR <span id="modalTotalBefore" class="fw-semibold text-dark">0.00</span></p>
+                    <p><strong>Total Discount:</strong> (<span id="modalTotalDiscount" class="fw-semibold text-primary">0.00</span>)</p>
+                    <p><strong>Total FOC:</strong> LKR <span id="modalTotalFOC" class="fw-semibold text-dark">0.00</span></p>
+                    <h4 class="fw-bold text-danger">Grand Total: LKR <span id="modalGrandTotal">0.00</span></h4>
                 </div>
             </div>
             <div class="modal-footer">
@@ -539,6 +571,7 @@
     let GrnDetails = [];
 
     function addItem() {
+
         const grnNumber = $("#grn_number").val();
         const grnID = $("#grn_id").val();
         const grnDate = $("#grn_date").val();
@@ -566,7 +599,12 @@
             return false;
         }
 
-        const itemID = $("#item_id").val();
+       const itemID = $("#item_id").val();
+        if (!itemID) {
+            alert("Please select a valid item.");
+            return false;
+        }
+
         const itemDescription = $("#item_name").val();
         const qty = parseFloat($("#qty").val()) || 0;
         const foc = parseFloat($("#foc").val()) || 0;
@@ -582,10 +620,9 @@
         }
 
         const subtotal = finalPrice * qty;
-
         const isDuplicate = itemsList.some(item => item.item_id === itemID);
         if (isDuplicate) {
-            alert("Item already exists.");
+            alert("Duplicate Item, Item already exists in the GRN list.");
             return false;
         }
 
@@ -738,6 +775,7 @@
         if (!itemSelectedFromAutocomplete) {
             $("#price").val('');
             $("#qty").val('');
+            $("#item_id").val('');
         }
         itemSelectedFromAutocomplete = false;
     });
@@ -756,11 +794,11 @@
                 <td>${item.item_name}</td>
                 <td>${item.qty}</td>
                 <td>${item.foc}</td>
-                <td>${item.price}</td>
-                <td>${item.margin}</td>
-                <td>${item.discount}</td>
-                <td>${item.final_price}</td>
-                <td>${item.subtotal}</td>
+                <td>${parseFloat(item.price).toFixed(2)}</td>
+                <td>${item.margin !== null ? parseFloat(item.margin).toFixed(2) : '-'}</td>
+                <td>${item.discount !== null ? parseFloat(item.discount).toFixed(2) : '-'}</td>
+                <td>${parseFloat(item.final_price).toFixed(2)}</td>
+                <td>${parseFloat(item.subtotal).toFixed(2)}</td>
             </tr>
         `);
         });
@@ -951,7 +989,18 @@
         if (step === 3 && itemsList.length === 0) {
             return Swal.fire('Validation', 'Please add at least one item.', 'warning');
         }
+
         switchTab(step);
+
+        // Focus search item input when entering step 2
+        if (step === 2) {
+            setTimeout(() => $('#item_name').focus(), 150);
+        }
+
+        // Optional: focus store location when entering step 3
+        if (step === 3) {
+            setTimeout(() => $('#store_location').focus(), 150);
+        }
     }
 
     function validateStep1() {
@@ -1005,6 +1054,11 @@
         $('input[name="grn_type"]').on('change', function () {
             handleGrnTypeToggle();
         });
+
+        $('#bill_discount_amount').on('blur', function () {
+            discountJustApplied = false;
+        });
+
     });
 
     function handleGrnTypeToggle() {
@@ -1019,6 +1073,10 @@
             $('#margin_group').addClass('d-none');
             $('#margin').val('');
         }
+    }
+
+    function toggleDiscountSection() {
+        $('#discountSection').toggleClass('d-none');
     }
 
     // Whenever discount % changes, compute and show discount amount
@@ -1054,52 +1112,58 @@
 
     $("#grn_number").autocomplete({
         source: function (request, response) {
-            if (request.term.length < 3) return;
+            if (request.term.length < 1) return;
 
             $.ajax({
                 url: '/api/grn-list-dropdown',
                 dataType: 'json',
-                data: {
-                    q: request.term
-                },
+                data: { q: request.term },
                 success: function (data) {
-                    response(data);
-
-                    if (data.length === 3) {
-                        selectedGrnLabel = data[0].label;
-                        $("#grn_number").val(data[0].label);
-                        $("#grn_id").val(data[0].value);
-                        fetchGrnDetails(data[0].value);
-                    }
+                    // Format: each item should have label (display) and value (id)
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.label,  // This is the GRN number shown in the list & textbox
+                            value: item.label,  // This ensures only GRN number is inserted into the text box
+                            id: item.value      // The actual GRN id (e.g. UUID or numeric id)
+                        };
+                    }));
                 }
             });
         },
         minLength: 1,
         appendTo: "#grnModal",
         select: function (event, ui) {
-            selectedGrnLabel = ui.item.label;
+            // Set visible GRN number only
             $("#grn_number").val(ui.item.label);
-            $("#grn_id").val(ui.item.value);
-            fetchGrnDetails(ui.item.value);
+
+            // Set hidden GRN ID field
+            $("#grn_id").val(ui.item.id);
+
+            // Save selected label for input tracking
+            selectedGrnLabel = ui.item.label;
+
+            // Fetch full GRN details
+            fetchGrnDetails(ui.item.id);
             return false;
         }
     });
 
-    $("#grn_number").on('input', function () {
-        const currentValue = $(this).val();
-        if (currentValue !== selectedGrnLabel) {
-            selectedGrnLabel = '';
+    // Reset if user types over the selected value
+    $("#grn_number").on("input", function () {
+        if ($(this).val() !== selectedGrnLabel) {
             $("#grn_id").val('');
+            selectedGrnLabel = '';
+            itemsList = [];
+            renderGrnItems();
+            calculateGrnTotals();
+
+            // Optionally clear header fields
             $("#supplier_id").val('');
             $("#supplier_name").val('');
             $("#supplier_invoice_number").val('');
             $("#store_location").val('');
             $("#note").val('');
-            // $("#bill_discount_amount").val('');
             $('#is_percentage').prop('checked', false);
-            itemsList = [];
-            renderGrnItems();
-            calculateGrnTotals();
         }
     });
 
@@ -1141,21 +1205,112 @@
         });
     }
 
-    $(document).on('keydown', 'input, select, textarea, button', function(e) {
+    let discountJustApplied = false;
+
+    $(document).on('keydown', 'input, select, textarea, button', function (e) {
         if (e.key === 'Enter') {
             e.preventDefault();
 
             const focusables = $('input, select, textarea, button')
-                .filter(':visible:not([readonly]):not([disabled])');
+                .filter(':visible:not([readonly]):not([disabled])')
+                .sort((a, b) => $(a).offset().top - $(b).offset().top || $(a).offset().left - $(b).offset().left);
 
             const index = focusables.index(this);
+            const id = $(this).attr('id');
+            const $currentTab = $('.tab-pane.show.active');
 
-            if ($(this).is('button')) {
-                $(this).click(); // Optional: trigger button click
+            // GRN Type → trigger NEXT
+            if ($(this).is(':radio') && id?.startsWith('type_')) {
+                $('#grnStep1 button:contains("NEXT")').click();
+                return;
             }
 
+            // After GRN Date → focus Supplier
+            if (id === 'grn_date') {
+                $('#supplier_name').focus();
+                return;
+            }
+
+            // Step 1 NEXT button
+            if (id === 'grn_step1_next' || ($(this).text().trim() === 'NEXT' && $('#grnStep1').is(':visible'))) {
+                $('#grnStep1 button:contains("NEXT")').click();
+                return;
+            }
+
+            // Step 2 – Add or Update Item (only if all required fields are filled)
+            if ($('#grnStep2').is(':visible')) {
+                const grnType = $('input[name="grn_type"]:checked').val();
+                const itemID = $('#item_id').val();
+                const qty = $('#qty').val();
+                const price = $('#price').val();
+                const margin = $('#margin').val();
+                const discount = $('#discount').val();
+
+                const requiredFilled = itemID && qty && price &&
+                    ((grnType === 'Profit Margin' && margin) ||
+                        (grnType === 'Discount Based' && discount));
+
+                const isOnLastField = grnType === 'Profit Margin'
+                    ? id === 'margin'
+                    : id === 'discount';
+
+                if (requiredFilled && isOnLastField) {
+                    if ($('#edit_action_group').is(':visible')) {
+                        updateItem();  // Edit mode
+                    } else {
+                        addItem();     // Add mode
+                    }
+                    return;
+                }
+            }
+
+            // Bill Discount logic with double-Enter
+            if (id === 'bill_discount_amount') {
+                const discountVal = $('#bill_discount_amount').val();
+                if (discountVal !== '') {
+                    if (!discountJustApplied) {
+                        applyDiscount();
+                        discountJustApplied = true;
+                    } else {
+                        discountJustApplied = false;
+                        goToStep(3);
+                    }
+                }
+                return;
+            }
+
+            // Step 2 NEXT
+            if (id === 'grn_step2_next' || ($(this).text().trim() === 'NEXT' && $('#grnStep2').is(':visible'))) {
+                $('#grnStep2 button:contains("NEXT")').click();
+                return;
+            }
+
+            // Final Step (Step 3)
+            if ($currentTab.attr('id') === 'grnStep3') {
+                if (id === 'store_location') {
+                    $('#note').focus();
+                    return;
+                }
+
+                if (id === 'note') {
+                    $('#grnForm').submit();
+                    return;
+                }
+            }
+
+            // Default: Move to next field
             if (index > -1 && index + 1 < focusables.length) {
                 focusables.eq(index + 1).focus();
+            }
+        }
+    });
+
+    // Close SweetAlert2 "OK" boxes when Enter is pressed
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && Swal.isVisible()) {
+            const confirmButton = Swal.getConfirmButton();
+            if (confirmButton) {
+                confirmButton.click();
             }
         }
     });

@@ -8,6 +8,7 @@ use Spatie\LaravelData\Attributes\DataCollectionOf;
 use App\UseCases\Grn\Requests\GrnItemRequest;
 use Illuminate\Validation\Rule;
 use App\Models\Grn;
+use Illuminate\Http\Request;
 
 class GrnRequest extends Data
 {
@@ -48,11 +49,19 @@ class GrnRequest extends Data
     #[DataCollectionOf(GrnItemRequest::class)]
     public array $items;
 
-    public static function rules(): array
+    public static function rules(Request $request, array $params = []): array
     {
+        $id = $params['id'] ?? $request->route('id');
+
         return [
             'grn_number' => [
-                Rule::unique(Grn::class, 'grn_number')->ignore(request('id'))
+                'required',
+                'string',
+                Rule::unique('grns', 'grn_number')
+                    ->ignore($id)
+                    ->where(function ($query) {
+                        return $query->where('status', true); // Only validate against finalized GRNs
+                    }),
             ],
         ];
     }
