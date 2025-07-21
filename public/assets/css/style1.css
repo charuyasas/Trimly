@@ -2614,6 +2614,27 @@ span > .bg-secondary {
   border: 1px solid #E5ECFF;
 }
 
+.common_input select {
+    height: 47px;
+    line-height: 25px;
+    background-color: transparent;
+    border: 1px solid #E5ECFF;
+    padding: 10px 25px;
+    color: #81879F;
+    font-weight: 400;
+    font-size: 14px;
+    width: 100%;
+    display: block;
+    border-radius: 10px;
+    appearance: none; /* Removes default arrow on most browsers */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%2381879F" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px 16px;
+}
+
 /* line 1924, G:/admin_project/8 admin/management_html/scss/_reset.scss */
 .common_input input::placeholder {
   color: #81879F;

@@ -54,6 +54,14 @@ Route::get('/postingAccount', function () {
     return view('accounts/posting-accounts');
 });
 
+Route::get('/roles', function () {
+    return view('users/roles');
+});
+
+Route::get('/users', function () {
+    return view('users/users');
+});
+
 Route::get('/stockIssue', function () {
     return view('employee-stock-issue');
 });
