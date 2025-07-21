@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            PermissionSeeder::class,
+            RoleSeeder::class,
             DefaultUserSeeder::class,
             EmployeeSeeder::class,
             ServicesSeeder::class,
@@ -23,8 +25,8 @@ class DatabaseSeeder extends Seeder
             TitleAccountSeeder::class,
             CategorySeeder::class,
             SubCategorySeeder::class,
-            SupplierSeeder::class
+            SupplierSeeder::class,
+            SidebarLinkSeeder::class,
         ]);
-
     }
 }

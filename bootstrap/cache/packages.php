@@ -80,6 +80,13 @@
       0 => 'Spatie\\LaravelData\\LaravelDataServiceProvider',
     ),
   ),
+  'spatie/laravel-permission' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Spatie\\Permission\\PermissionServiceProvider',
+    ),
+  ),
   'spatie/php-structure-discoverer' => 
   array (
     'providers' => 

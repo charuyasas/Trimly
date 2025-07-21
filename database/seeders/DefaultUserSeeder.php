@@ -11,7 +11,7 @@ class DefaultUserSeeder extends Seeder
 {
     public function run()
     {
-        User::updateOrCreate(
+        $admin = User::updateOrCreate(
             ['email' => 'admin@example.com'], // prevent duplicate user
             [
                 'name' => 'Admin User',
@@ -21,5 +21,6 @@ class DefaultUserSeeder extends Seeder
                 // add any other default fields if needed
             ]
         );
+        $admin->assignRole('admin');
     }
 }

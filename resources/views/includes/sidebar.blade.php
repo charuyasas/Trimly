@@ -6,100 +6,7 @@
             <i class="ti-close"></i>
         </div>
     </div>
-    <ul id="sidebar_menu">
-        <li class="">
-            <a  href="/services" aria-expanded="false">
-              <div class="nav_icon_small">
-                <img src="{{ asset('assets/img/menu-icon/11.svg') }}" alt="">
-            </div>
-            <div class="nav_title">
-                <span>Services</span>
-            </div>
-            </a>
-        </li>
-        <li class="">
-            <a  href="/customers" aria-expanded="false">
-              <div class="nav_icon_small">
-                <img src="{{ asset('assets/img/menu-icon/5.svg') }}" alt="">
-            </div>
-            <div class="nav_title">
-                <span>Customers</span>
-            </div>
-            </a>
-        </li>
-         <li class="">
-            <a  href="/employee" aria-expanded="false">
-              <div class="nav_icon_small">
-                <img src="{{ asset('assets/img/menu-icon/4.svg') }}" alt="">
-            </div>
-            <div class="nav_title">
-                <span>Employees</span>
-            </div>
-            </a>
-        </li>
-         <li class="">
-            <a  href="/bookings" aria-expanded="false">
-              <div class="nav_icon_small">
-                <img src="{{ asset('assets/img/menu-icon/15.svg') }}" alt="">
-            </div>
-            <div class="nav_title">
-                <span>Bookings</span>
-            </div>
-            </a>
-        </li>
-         <li class="">
-            <a  href="/supplier" aria-expanded="false">
-              <div class="nav_icon_small">
-                <img src="{{ asset('assets/img/menu-icon/3.svg') }}" alt="">
-            </div>
-            <div class="nav_title">
-                <span>Suppliers</span>
-            </div>
-            </a>
-        </li>
-        <li class="">
-            <a   class="has-arrow" href="#" aria-expanded="false">
-                <div class="nav_icon_small">
-                    <img src="{{ asset('assets/img/menu-icon/16.svg') }}" alt="">
-                </div>
-                <div class="nav_title">
-                    <span>Item Master</span>
-                </div>
-            </a>
-            <ul>
-                <li><a href="/categories">Categories</a></li>
-                <li><a href="/sub-categories">Sub Categories</a></li>
-                <li><a href="/items">Items</a></li>
-            </ul>
-        </li>
-        <li class="">
-            <a   class="has-arrow" href="#" aria-expanded="false">
-              <div class="nav_icon_small">
-                <img src="{{ asset('assets/img/menu-icon/20.svg') }}" alt="">
-            </div>
-            <div class="nav_title">
-                <span>Sales Invoice</span>
-            </div>
-            </a>
-            <ul>
-              <li><a href="/invoice">Add New</a></li>
-              <li><a href="/invoiceList">List</a></li>
-            </ul>
-        </li>
-        <li class="">
-            <a   class="has-arrow" href="#" aria-expanded="false">
-              <div class="nav_icon_small">
-                <img src="{{ asset('assets/img/menu-icon/21.svg') }}" alt="">
-            </div>
-            <div class="nav_title">
-                <span>Accounts</span>
-            </div>
-            </a>
-            <ul>
-              <li><a href="/postingAccount">Posting Accounts</a></li>
-            </ul>
-        </li>
-      </ul>
+    <ul id="sidebar_menu"></ul>
 </nav>
 
 <section class="main_content dashboard_part large_header_bg">
@@ -115,10 +22,10 @@
                     </div>
 
                     <div class="page_title_left d-flex align-items-center me-auto" style="padding-left: 50px;">
-                        <h3 class="f_s_25 f_w_700 dark_text mr_30">{{ $pageTitle ?? 'Default Title' }}</h3>
+                        <h3 class="f_s_25 f_w_700 dark_text mr_30">{{ $pageTitle ?? '' }}</h3>
                         <ol class="breadcrumb page_bradcam mb-0">
                             <li class="breadcrumb-item"><a href="javascript:void(0);">Home</a></li>
-                            <li class="breadcrumb-item active">{{ $pageTitle ?? 'Page' }}</li>
+                            <li class="breadcrumb-item active">{{ $pageTitle ?? '' }}</li>
                         </ol>
                     </div>
 
@@ -243,3 +150,35 @@
             </div>
         </div>
     </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(function() {
+    const token = $('meta[name="api-token"]').attr('content');
+    $.ajax({
+        url: '/api/sidebar-links',
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        },
+        success: function(links) {
+            function renderLinks(links) {
+                let html = '';
+                links.forEach(link => {
+                    if (link.children && link.children.length > 0) {
+                        html += `<li><a class=\"has-arrow\" href=\"#\" aria-expanded=\"false\">`;
+                        if (link.icon_path) html += `<div class=\"nav_icon_small\"><img src=\"/${link.icon_path}\" alt=\"\"></div>`;
+                        html += `<div class=\"nav_title\"><span>${link.display_name}</span></div></a><ul>${renderLinks(link.children)}</ul></li>`;
+                    } else {
+                        html += `<li><a href=\"${link.url}\" aria-expanded=\"false\">`;
+                        if (link.icon_path) html += `<div class=\"nav_icon_small\"><img src=\"/${link.icon_path}\" alt=\"\"></div>`;
+                        html += `<div class=\"nav_title\"><span>${link.display_name}</span></div></a></li>`;
+                    }
+                });
+                return html;
+            }
+            $('#sidebar_menu').html(renderLinks(links));
+        }
+    });
+});
+</script>

@@ -4,6 +4,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    @if(Auth::check())
+        <meta name="api-token" content="{{ Auth::user()->api_token }}">
+    @endif
     <title>Management Admin</title>
 
     <link rel="icon" href="img/mini_logo.png" type="image/png">

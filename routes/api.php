@@ -17,6 +17,8 @@ use App\Http\Controllers\API\SupplierController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\SubCategoryController;
 use App\Http\Controllers\API\ItemController;
+use App\Http\Controllers\API\RoleController;
+use App\Http\Controllers\API\SidebarLinkController;
 
 Route::apiResource('items', ItemController::class);
 
@@ -53,9 +55,21 @@ Route::get('/main_account_list', [MainAccountController::class, 'loadMainAccount
 Route::get('/heading_account_list/{mainAcc}', [HeadingAccountController::class, 'loadHeadingAccountDropdown']);
 Route::get('/title_account_list/{mainAcc}/{headingAcc}', [TitleAccountController::class, 'loadTitleAccountDropdown']);
 
+Route::apiResource('roles', RoleController::class);
+
+Route::apiResource('sidebar-links', SidebarLinkController::class)->middleware('auth:sanctum');
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::middleware('auth:sanctum')->get('/user-permissions', function (Request $request) {
+    return response()->json([
+        'permissions' => $request->user()->getAllPermissions()->pluck('name')
+    ]);
+});
+
+Route::middleware('auth:sanctum')->get('/sidebar-links', [SidebarLinkController::class, 'index']);
 
 Route::get('/calendar/employees', function () {
     return Employee::select('id', 'name as title')->get();
