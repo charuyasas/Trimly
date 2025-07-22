@@ -18,6 +18,8 @@ class FinishInvoiceInteractor
 
             $discountAmount = $invoiceRequest->discount_amount ?? 0;
             $discountPercentage = $invoiceRequest->discount_percentage ?? 0;
+            $received_cash = $invoiceRequest->received_cash;
+            $balance = $invoiceRequest->balance;
 
             if ($discountPercentage > 0) {
                 $discountAmount = ($baseTotal * $discountPercentage) / 100;
@@ -30,6 +32,9 @@ class FinishInvoiceInteractor
 
             $invoice->grand_total = round(max(0, $baseTotal - $discountAmount), 2);
             $invoice->status = Invoice::STATUS['FINISHED'];
+            $invoice->received_cash = $received_cash;
+            $invoice->balance = $balance;
+            $invoice->invoice_no = $this->generateNextInvoiceNo();
             $invoice->save();
 
             DB::commit();
@@ -46,5 +51,18 @@ class FinishInvoiceInteractor
                 'error' => $e->getMessage(),
             ];
         }
+    }
+
+    private function generateNextInvoiceNo(): string
+    {
+        $last = Invoice::where('invoice_no', 'like', 'INV%')
+            ->orderBy('invoice_no', 'desc')
+            ->first();
+
+        $next = $last && preg_match('/INV(\d+)/', $last->invoice_no, $matches)
+            ? intval($matches[1]) + 1
+            : 1;
+
+        return 'INV' . str_pad($next, 4, '0', STR_PAD_LEFT);
     }
 }

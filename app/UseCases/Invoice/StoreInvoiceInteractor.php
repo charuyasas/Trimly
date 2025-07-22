@@ -30,7 +30,7 @@ class StoreInvoiceInteractor
                 return ($item->quantity * $item->amount) - ($item->discount_amount ?? 0);
             });
 
-            $invoice = Invoice::where('invoice_no', $invoiceRequest->invoice_no)->first();
+            $invoice = Invoice::where('token_no', $invoiceRequest->token_no)->first();
 
             if ($invoice) {
                 $invoice->update([
@@ -44,7 +44,7 @@ class StoreInvoiceInteractor
                 $invoice->items()->delete();
             } else {
                 $invoice = Invoice::create([
-                    'invoice_no' => $this->generateNextInvoiceNo(),
+                    'token_no' => $this->generateNextTokenNo(),
                     'employee_no' => $invoiceRequest->employee_no,
                     'customer_no' => $invoiceRequest->customer_no,
                     'grand_total' => $grandTotal,
@@ -73,10 +73,9 @@ class StoreInvoiceInteractor
                     'message' => $invoice->wasRecentlyCreated ? 'Invoice created successfully' : 'Invoice updated.',
                     'invoice' => [
                         'id' => $invoice->id,
-                        'invoice_no' => $invoice->invoice_no,
                         'employee_no' => $invoice->employee_no,
                         'customer_no' => $invoice->customer_no,
-                        'token_no' => $invoice->invoice_no,
+                        'token_no' => $invoice->token_no,
                         'items' => $invoice->items()->get()->makeHidden(['created_at', 'updated_at', 'deleted_at']),
                     ],
                 ],
@@ -95,16 +94,15 @@ class StoreInvoiceInteractor
         }
     }
 
-    private function generateNextInvoiceNo(): string
+    private function generateNextTokenNo(): string
     {
-        $last = Invoice::where('invoice_no', 'like', 'INV%')
-            ->orderBy('invoice_no', 'desc')
-            ->first();
 
-        $next = $last && preg_match('/INV(\d+)/', $last->invoice_no, $matches)
-            ? intval($matches[1]) + 1
+        $last = Invoice::orderBy('token_no', 'desc')->first();
+        $next = $last && is_numeric($last->token_no)
+            ? intval($last->token_no) + 1
             : 1;
 
-        return 'INV' . str_pad($next, 4, '0', STR_PAD_LEFT);
+        return str_pad($next, 4, '0', STR_PAD_LEFT);
+
     }
 }
