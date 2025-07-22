@@ -19,7 +19,6 @@ class GetGrnDetailsInteractor
             'supplier_invoice_number' => $grn->supplier_invoice_number,
             'supplier_ledger_code' => $grn->supplier->ledger_code ?? '',
             'grn_type' => $grn->grn_type,
-            'store_location' => $grn->store_location,
             'note' => $grn->note,
             'discount_amount' => $grn->discount_amount ?? '',
             'is_percentage' => $grn->is_percentage,

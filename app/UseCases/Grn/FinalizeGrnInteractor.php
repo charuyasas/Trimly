@@ -31,7 +31,6 @@ class FinalizeGrnInteractor
             $grn->total_foc = $totalFOC;
             $grn->discount_amount = $discountInput; // Save raw input value
             $grn->is_percentage = $isPercentage;
-            $grn->store_location = $request->store_location;
             $grn->note = $request->note;
             $grn->status = true;
             $grn->save();

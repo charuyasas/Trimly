@@ -99,7 +99,6 @@
                                                 <th scope="col">GRN Date</th>
                                                 <th scope="col">Supplier And Supplier Invoice Number</th>
                                                 <th scope="col">Discount Type</th>
-                                                <th scope="col">Store Location</th>
                                                 <th scope="col">Total Before Discount</th>
                                                 <th scope="col">Total FOC</th>
                                                 <th scope="col">Total Discount</th>
@@ -146,11 +145,6 @@
                             <li class="nav-item">
                                 <a class="nav-link disabled" data-target="#grnStep2" onclick="event.preventDefault();">
                                     <strong>2</strong> Item Entry Section
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link disabled" data-target="#grnStep3" onclick="event.preventDefault();">
-                                    <strong>3</strong> Finalization Section
                                 </a>
                             </li>
                         </ul>
@@ -200,7 +194,6 @@
                         </div>
 
                         <!-- STEP 2 – ITEM ENTRY -->
-                        <!-- STEP 2 – ITEM ENTRY -->
                         <div class="tab-pane fade" id="grnStep2">
                             <div class="row">
                                 <!-- Left Side: Item Form and Table (col-md-9) -->
@@ -213,7 +206,7 @@
                                                 <input type="hidden" id="item_id">
                                                 <input type="hidden" id="grn_item_id">
                                             </div>
-                                            <div class="col-md-1"><input type="number" id="qty" class="form-control" placeholder="Qty"></div>
+                                            <div class="col-md-1"><input type="number" id="qty" class="form-control" placeholder="Qty" min="1" step="1"></div>
                                             <div class="col-md-1"><input type="number" id="foc" class="form-control" placeholder="FOC"></div>
                                             <div class="col-md-2"><input type="number" id="price" class="form-control" placeholder="Purchase Price"></div>
                                             <!-- MARGIN input group -->
@@ -239,96 +232,93 @@
                                     </div>
 
                                     <!-- Item Table -->
-                                    <table class="table table-bordered text-center mb-4">
-                                        <thead class="table-light">
-                                        <tr>
-                                            <th>Action</th>
-                                            <th>Item Name</th>
-                                            <th>Qty</th>
-                                            <th>FOC</th>
-                                            <th>Price</th>
-                                            <th>Margin</th>
-                                            <th>Discount</th>
-                                            <th>Final Price</th>
-                                            <th>Subtotal</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="itemTable"></tbody>
-                                    </table>
+                                    <div class="mb-2">
+                                        <input type="text" id="grnTableFilter" class="form-control" placeholder="Filter items..." onkeyup="filterGrnTable()" />
+                                    </div>
 
-                                    <!-- Bill Discount Section -->
-                                    <div id="discountSection" class="mt-4 border rounded p-3">
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <strong>Add Discount For Bill Value</strong>
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleDiscountSection()">−</button>
+                                    <div class="table-responsive" style="max-height: 450px; overflow-y: auto;">
+                                        <table class="table table-bordered text-center mb-4">
+                                            <thead class="table-light">
+                                            <tr>
+                                                <th>Action</th>
+                                                <th>Item Name</th>
+                                                <th>Qty</th>
+                                                <th>FOC</th>
+                                                <th>Price</th>
+                                                <th>Margin</th>
+                                                <th>Discount</th>
+                                                <th>Final Price</th>
+                                                <th>Subtotal</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="itemTable"></tbody>
+                                        </table>
+                                    </div>
+                                    <br>
+                                    <div class="d-flex justify-content-between gap-4 mt-4 align-items-center">
+                                        <!-- Bill Discount Section -->
+                                        <div id="discountSection" class="border rounded p-2 flex-fill" style="max-width: 50%; min-height: 100px;">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <strong>Add Discount For Bill Value</strong>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleDiscountSection()">−</button>
+                                            </div>
+                                            <div class="form-check form-switch d-flex align-items-center gap-2 mb-2">
+                                                <input class="form-check-input" type="checkbox" id="is_percentage">
+                                                <label class="form-check-label fw-semibold" for="is_percentage">Is Percentage Based</label>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <input type="number" class="form-control" id="bill_discount_amount" value="0.00" placeholder="Discount Amount" style="height: 30px; font-size: 0.9rem;">
+                                                <span id="discountUnitLabel" style="font-size: 0.9rem;">LKR</span>
+                                            </div>
                                         </div>
-                                        <div class="form-check form-switch d-flex align-items-center gap-2 mb-3">
-                                            <input class="form-check-input" type="checkbox" id="is_percentage">
-                                            <label class="form-check-label fw-semibold" for="is_percentage">Is Percentage Based</label>
-                                        </div>
-                                        <div class="d-flex align-items-center gap-2 mb-2">
-                                            <input type="number" class="form-control" id="bill_discount_amount" value="0.00" placeholder="Discount Amount">
-                                            <span id="discountUnitLabel">LKR</span>
+
+                                        <!-- Totals -->
+                                        <div class="text-end pe-2 flex-fill" style="max-width: 50%; min-height: 100px;">
+                                            <p class="fs-5 mb-1">Total Before Discount: LKR <span id="totalBefore" class="fw-semibold text-dark">0.00</span></p>
+                                            <p class="fs-5 mb-1">Total FOC: LKR <span id="totalFOC" class="fw-semibold text-dark">0.00</span></p>
+                                            <h4 class="text-danger fw-bold mb-0 fs-4">Grand Total: LKR <span id="grandTotal" class="text-danger">0.00</span></h4>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Right Side: Stock Info Panel (col-md-3) -->
+                                <!-- Right Side: Stock Info Panel -->
                                 <div class="col-md-3">
-                                    <div class="p-4 bg-white rounded-3 shadow-sm">
-                                        <h5 class="fw-bold text-center mb-4 border-bottom pb-2">STOCK INFORMATION</h5>
+                                    <div class="p-4 bg-white rounded-2 border border-opacity-25 shadow-sm">
+                                        <h6 class="fw-bold text-center mb-4 border-bottom pb-3 text-muted fs-5 text-secondary">
+                                            Stock Information
+                                        </h6>
 
-                                        <div class="d-flex justify-content-between mb-3">
-                                            <span class="text-muted fs-6">Old Quantity</span>
-                                            <span class="fw-bold text-danger fs-5" id="old_stock_qty">0</span>
+                                        <div class="d-flex justify-content-between align-items-center mb-4">
+                                            <span class="text-black fs-5">Old Quantity</span>
+                                            <span class="fw-bold text-danger fs-3" id="old_stock_qty">0</span>
                                         </div>
 
-                                        <div class="d-flex justify-content-between mb-3">
-                                            <span class="text-muted fs-6">New Quantity</span>
-                                            <span class="fw-bold text-success fs-5" id="new_stock_qty">0</span>
+                                        <div class="d-flex justify-content-between align-items-center mb-4">
+                                            <span class="text-black fs-5">New Quantity</span>
+                                            <span class="fw-bold text-success fs-3" id="new_stock_qty">0</span>
                                         </div>
 
-                                        <div class="d-flex justify-content-between mb-3">
-                                            <span class="text-muted fs-6">Last Cost</span>
-                                            <span class="fw-bold text-primary fs-5" id="last_cost">0.00</span>
+                                        <div class="d-flex justify-content-between align-items-center mb-4">
+                                            <span class="text-black fs-5">Last Cost</span>
+                                            <span class="fw-bold text-primary fs-3" id="last_cost">0.00</span>
                                         </div>
 
-                                        <div class="d-flex justify-content-between mb-1">
-                                            <span class="text-muted fs-6">Average Cost</span>
-                                            <span class="fw-bold text-info fs-5" id="avg_cost">0.00</span>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-black fs-5">Average Cost</span>
+                                            <span class="fw-bold text-info fs-3" id="avg_cost">0.00</span>
                                         </div>
                                     </div>
-
-                                    <!-- Totals -->
-                                    <div class="text-end pe-2 mt-4">
-                                        <p class="fs-6">Total Before Discount: LKR <span id="totalBefore" class="fw-semibold text-dark">0.00</span></p>
-                                        <p class="fs-6">Total FOC: LKR <span id="totalFOC" class="fw-semibold text-dark">0.00</span></p>
-                                        <h4 class="text-danger fw-bold">Grand Total: LKR <span id="grandTotal" class="text-danger">0.00</span></h4>
+                                    <br>
+                                    <div class="mb-3">
+                                        <label for="note" class="form-label">Note</label>
+                                        <textarea id="note" class="form-control" rows="4" placeholder="Optional notes"></textarea>
                                     </div>
-
-                                    <div class="d-flex justify-content-end mt-4">
-                                        <button type="button" class="btn btn-primary" id="grn_step2_next" onclick="goToStep(3)">NEXT</button>
+                                    <br><br><br><br><br><br><br>
+                                    <!-- Finalization Section -->
+                                    <div class="d-flex justify-content-end mt-3" >
+                                        <button type="submit" class="btn btn-dark" id="grn_finalize_btn">Finalize GRN</button>
                                     </div>
-
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- STEP 3 – FINALIZATION -->
-                        <div class="tab-pane fade" id="grnStep3">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label>Store Location</label>
-                                    <input type="text" id="store_location" class="form-control">
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <label>Note</label>
-                                    <input type="text" id="note" class="form-control" placeholder="Optional notes">
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-secondary" onclick="goToStep(2)">Back</button>
-                                <button type="submit" class="btn btn-dark" id="grn_finalize_btn">Finalize GRN</button>
                             </div>
                         </div>
                     </div>
@@ -365,10 +355,6 @@
                         <p class="mb-1 text-muted fw-semibold">Discount Type</p>
                         <h6 id="modalDiscountType" class="mb-0 text-dark fw-semibold">-</h6>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <p class="mb-1 text-muted fw-semibold">Store Location</p>
-                        <h6 id="modalStoreLocation" class="mb-0 text-dark fw-semibold">-</h6>
-                    </div>
                     <div class="col-md-9 mb-3">
                         <p class="mb-1 text-muted fw-semibold">Note</p>
                         <h6 id="modalNote" class="mb-0 text-dark fw-semibold">-</h6>
@@ -376,7 +362,7 @@
                 </div>
 
                 <!-- Table Section -->
-                <div class="table-responsive mb-3">
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                     <table class="table table-bordered text-center align-middle">
                         <thead class="table-light">
                         <tr>
@@ -397,16 +383,22 @@
                         </tbody>
                     </table>
                 </div>
+                <br><br>
 
                 <!-- Totals Section -->
-                <div class="text-end fs-6">
+                <div class="text-end fs-5">
                     <p><strong>Total Before Discount:</strong> LKR <span id="modalTotalBefore" class="fw-semibold text-dark">0.00</span></p>
                     <p><strong>Total Discount:</strong> (<span id="modalTotalDiscount" class="fw-semibold text-primary">0.00</span>)</p>
                     <p><strong>Total FOC:</strong> LKR <span id="modalTotalFOC" class="fw-semibold text-dark">0.00</span></p>
                     <h4 class="fw-bold text-danger">Grand Total: LKR <span id="modalGrandTotal">0.00</span></h4>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer d-flex justify-content-between">
+                <button class="btn btn-outline-dark btn-lg me-auto d-flex align-items-center gap-2 shadow-sm"
+                        onclick="printGrnDetails()">
+                    <i class="bi bi-printer fs-5"></i> Print GRN
+                </button>
+
                 <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
@@ -432,7 +424,6 @@
                     grn.grn_date,
                     `${grn.supplier?.name ?? 'N/A'} - ${grn.supplier_invoice_number}`,
                     grn.grn_type,
-                    grn.store_location,
                     grn.total_before_discount,
                     grn.total_foc,
                     grn.discount_amount,
@@ -451,15 +442,37 @@
     $(document).ready(function () {
         const table = $('.lms_table_active').DataTable();
 
+        // Live search
         $('.searchBox').on('keyup', function () {
             const searchValue = $(this).val();
             table.search(searchValue).draw();
         });
 
+        // Reload GRN list after modal close
         $('#grnModal').on('hidden.bs.modal', function () {
             loadGRN();
         });
+
     });
+
+    // Real-time update: qty + foc = new_stock_qty
+    function updateNewStockQty() {
+        const qty = parseFloat($('#qty').val()) || 0;
+        const foc = parseFloat($('#foc').val()) || 0;
+        const total = qty + foc;
+
+        $('#new_stock_qty')
+            .text(total)
+            .addClass('highlight-change');
+
+        setTimeout(() => {
+            $('#new_stock_qty').removeClass('highlight-change');
+        }, 300);
+    }
+
+    // Bind real-time update to both inputs
+    $('#qty, #foc').on('input', updateNewStockQty);
+
 
     function viewGrnDetails(grnId) {
         $.ajax({
@@ -472,7 +485,6 @@
                 $('#modalGrnNumber').text(grn.grn_number);
                 $('#modalGrnNumberDisplay').text(grn.grn_number);
                 $('#modalGrnDate').text(grn.grn_date);
-                $('#modalStoreLocation').text(grn.store_location || '-');
                 $('#modalNote').text(grn.note || '-');
                 $('#modalSupplierAndInvoice').text(`${grn.supplier_name ?? 'N/A'} - ${grn.supplier_invoice_number}`);
                 $('#modalDiscountType').text(grn.grn_type);
@@ -505,14 +517,14 @@
 
                         tbody.append(`
                         <tr>
-                            <td>${item.item_name ?? 'N/A'}</td>
+                            <td class="text-start">${item.item_name ?? 'N/A'}</td>
                             <td>${qty}</td>
                             <td>${foc}</td>
-                            <td>${price.toFixed(2)}</td>
+                            <td class="text-end">${price.toFixed(2)}</td>
                             <td>${margin.toFixed(2)}</td>
                             <td>${discount.toFixed(2)}</td>
-                            <td>${finalPrice.toFixed(2)}</td>
-                            <td>${subtotal.toFixed(2)}</td>
+                            <td class="text-end">${finalPrice.toFixed(2)}</td>
+                            <td class="text-end">${subtotal.toFixed(2)}</td>
                         </tr>
                     `);
                     });
@@ -633,8 +645,8 @@
             qty: qty,
             foc: foc,
             price: price,
-            margin: grnType === 'Profit Margin' ? margin : null,
-            discount: grnType === 'Discount Based' ? discount : null,
+            margin: grnType === 'Profit Margin' ? margin : 0,
+            discount: grnType === 'Discount Based' ? discount : 0,
             final_price: finalPrice,
             subtotal: subtotal
         });
@@ -647,7 +659,6 @@
             supplier_invoice_number: $("#supplier_invoice_number").val(),
             supplier_ledger_code: $("#supplier_ledger_code").val(),
             grn_type: grnType,
-            store_location: $("#store_location").val(),
             note: $("#note").val(),
             discount_amount: $("#bill_discount_amount").val(),
             is_percentage:$('#is_percentage').is(':checked') ? 1 : 0,
@@ -673,7 +684,10 @@
                 $("#margin").val('');
                 $("#discount").val('');
                 $("#discount_amount").val('');
-
+                $("#old_stock_qty").text('0');
+                $("#new_stock_qty").text('0');
+                $("#last_cost").text('0.00');
+                $("#avg_cost").text('0.00');
                 $("#grn_number").val(grnDataRes.grn_number);
                 $("#grn_id").val(grnDataRes.id);
             },
@@ -692,6 +706,7 @@
     $("#supplier_name").autocomplete({
         source: function (request, response) {
             if (request.term.length < 1) return;
+
             $.ajax({
                 url: '/api/suppliers-list',
                 dataType: 'json',
@@ -700,11 +715,12 @@
                     response($.map(data, function (item) {
                         return {
                             label: item.label,
-                            value: item.value,
+                            value: item.label,
                             id: item.value,
                             ledger_code: item.ledger_code
                         };
                     }));
+
                     if (data.length === 1) {
                         $("#supplier_name").val(data[0].label);
                         $("#supplier_id").val(data[0].value);
@@ -718,7 +734,7 @@
         appendTo: "#grnModal",
         select: function (event, ui) {
             $("#supplier_name").val(ui.item.label);
-            $("#supplier_id").val(ui.item.value);
+            $("#supplier_id").val(ui.item.id);
             $("#supplier_ledger_code").val(ui.item.ledger_code);
             SupplierSelectedFromAutocomplete = true;
             return false;
@@ -736,49 +752,132 @@
     $("#item_name").autocomplete({
         source: function (request, response) {
             if (request.term.length < 1) return;
+
             $.ajax({
                 url: '/api/items-list',
                 dataType: 'json',
                 data: { search_key: request.term },
                 success: function (data) {
-                    response($.map(data, function (item) {
+                    const mappedItems = $.map(data, function (item) {
                         return {
                             label: item.label,
-                            value: item.value,
+                            value: item.label,
                             id: item.value,
                             retail_price: item.retail_price
                         };
-                    }));
-                    if (data.length === 1) {
-                        $("#item_name").val(data[0].label);
-                        $("#item_id").val(data[0].value);
-                        $("#price").val(data[0].retail_price);
-                        $("#qty").val(1);
-                        itemSelectedFromAutocomplete = true;
+                    });
+
+                    response(mappedItems);
+
+                    // Auto-select if only one result — also load stock
+                    if (mappedItems.length === 1) {
+                        const item = mappedItems[0];
+                        selectItem(item); // will also call loadAvailableStock
                     }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Autocomplete AJAX Error:', error);
                 }
             });
         },
         minLength: 1,
         appendTo: "#grnModal",
         select: function (event, ui) {
-            $("#item_name").val(ui.item.label);
-            $("#item_id").val(ui.item.value);
-            $("#price").val(ui.item.retail_price);
-            $("#qty").val(1);
-            itemSelectedFromAutocomplete = true;
+            selectItem(ui.item); // unified handler
             return false;
         }
     });
+
+    //  Unified selection function: sets values + loads stock
+    function selectItem(item) {
+        if (!item || !item.id) return;
+
+        console.log("Item selected:", item);
+
+        $("#item_name").val(item.label);
+        $("#item_id").val(item.id);
+        $("#price").val(item.retail_price);
+        $("#qty").val(1);
+        $("#foc").val(0);
+        $("#item_name").data("valid", true); // used for validation
+
+        // Load available stock automatically
+        loadAvailableStock(item.id);
+        loadItemCostDetails(item.id);
+        updateNewStockQty();
+
+        // Optional UI effect (new stock qty animation)
+        $('#new_stock_qty')
+            .text(1)
+            .addClass('highlight-change');
+
+        setTimeout(() => {
+            $('#new_stock_qty').removeClass('highlight-change');
+        }, 300);
+    }
+
+    function loadItemCostDetails(itemId) {
+        if (!itemId) return;
+
+        $.get('/api/item-cost-details', { item_id: itemId }, function (data) {
+            const lastCost = parseFloat(data.last_cost ?? 0).toFixed(2);
+            const avgCost = parseFloat(data.avg_cost ?? 0).toFixed(2);
+
+            $("#last_cost").text(lastCost);
+            $("#avg_cost").text(avgCost);
+        }).fail(function (xhr, status, error) {
+            console.error('Failed to load item cost details:', error);
+            $("#last_cost").text('0.00');
+            $("#avg_cost").text('0.00');
+        });
+    }
+
+    // LOAD STOCK FUNCTION
+    function loadAvailableStock(itemId = null) {
+        const item_id = itemId || $("#item_id").val();
+        const store = '1-2-6-1000';
+
+        if (!item_id) {
+            console.warn('No item_id provided to loadAvailableStock.');
+            return;
+        }
+
+        $.get('/api/available-stock', { item_id, store }, function (data) {
+            const available = data.available_stock ?? 0;
+
+            // Update old quantity display
+            $("#old_stock_qty").text(available).addClass('highlight-change');
+
+            setTimeout(() => {
+                $('#old_stock_qty').removeClass('highlight-change');
+            }, 300);
+        }).fail(function (xhr, status, error) {
+            console.error('Stock load error:', error);
+            $("#old_stock_qty").text('0');
+        });
+    }
 
     $("#item_name").on("input", function () {
         if (!itemSelectedFromAutocomplete) {
             $("#price").val('');
             $("#qty").val('');
             $("#item_id").val('');
+            $("#new_stock_qty").text('0');
+            $("#old_stock_qty").text('0');
+            $("#last_cost").text('0.00');
+            $("#avg_cost").text('0.00');
         }
         itemSelectedFromAutocomplete = false;
     });
+
+    //filter GRN Items
+    function filterGrnTable() {
+        const filterValue = $('#grnTableFilter').val().toLowerCase();
+        $('#itemTable tr').each(function () {
+            const rowText = $(this).text().toLowerCase();
+            $(this).toggle(rowText.includes(filterValue));
+        });
+    }
 
     function renderGrnItems() {
         const tbody = $('#itemTable').empty();
@@ -791,14 +890,14 @@
                     <a href="javascript:void(0)" onclick="editItem(${index})" class="text-primary">Edit</a> |
                     <a href="javascript:void(0)" onclick="removeItem(${index})" class="text-danger">Delete</a>
                 </td>
-                <td>${item.item_name}</td>
-                <td>${item.qty}</td>
-                <td>${item.foc}</td>
-                <td>${parseFloat(item.price).toFixed(2)}</td>
-                <td>${item.margin !== null ? parseFloat(item.margin).toFixed(2) : '-'}</td>
-                <td>${item.discount !== null ? parseFloat(item.discount).toFixed(2) : '-'}</td>
-                <td>${parseFloat(item.final_price).toFixed(2)}</td>
-                <td>${parseFloat(item.subtotal).toFixed(2)}</td>
+                <td class="text-start">${item.item_name}</td>
+                <td class="text-end">${item.qty}</td>
+                <td class="text-end">${item.foc}</td>
+                <td class="text-end">${parseFloat(item.price).toFixed(2)}</td>
+                <td class="text-end">${item.margin !== null ? parseFloat(item.margin).toFixed(2) : '-'}</td>
+                <td class="text-end">${item.discount !== null ? parseFloat(item.discount).toFixed(2) : '-'}</td>
+                <td class="text-end">${parseFloat(item.final_price).toFixed(2)}</td>
+                <td class="text-end">${parseFloat(item.subtotal).toFixed(2)}</td>
             </tr>
         `);
         });
@@ -986,9 +1085,6 @@
 
     function goToStep(step) {
         if (step === 2 && !validateStep1()) return;
-        if (step === 3 && itemsList.length === 0) {
-            return Swal.fire('Validation', 'Please add at least one item.', 'warning');
-        }
 
         switchTab(step);
 
@@ -997,10 +1093,6 @@
             setTimeout(() => $('#item_name').focus(), 150);
         }
 
-        // Optional: focus store location when entering step 3
-        if (step === 3) {
-            setTimeout(() => $('#store_location').focus(), 150);
-        }
     }
 
     function validateStep1() {
@@ -1032,7 +1124,6 @@
         GrnDetails.discount_amount = parseFloat($('#bill_discount_amount').val());
         GrnDetails.grand_total = parseFloat($('#grandTotal').text());
         GrnDetails.is_percentage = $('#is_percentage').is(':checked') ? 1 : 0;
-        GrnDetails.store_location = $('#store_location').val();
         GrnDetails.note = $('#note').val();
 
         axios.post(`/api/grn-finalize/${grnID}`, GrnDetails)
@@ -1161,7 +1252,6 @@
             $("#supplier_id").val('');
             $("#supplier_name").val('');
             $("#supplier_invoice_number").val('');
-            $("#store_location").val('');
             $("#note").val('');
             $('#is_percentage').prop('checked', false);
         }
@@ -1182,7 +1272,6 @@
                 $("#supplier_name").val(res.grn.supplier_name);
                 $("#supplier_invoice_number").val(res.grn.supplier_invoice_number);
                 $("#supplier_ledger_code").val(res.grn.supplier_ledger_code);
-                $("#store_location").val(res.grn.store_location);
                 $("#note").val(res.grn.note);
                 $("#bill_discount_amount").val(res.grn.discount_amount);
                 $('#is_percentage').prop('checked', res.grn.is_percentage === 1);
@@ -1193,6 +1282,8 @@
                 } else {
                     $('#type_margin').prop('checked', true);
                 }
+
+                handleGrnTypeToggle();
 
                 // Load items
                 itemsList = GrnDetails.items;
@@ -1247,8 +1338,7 @@
                 const discount = $('#discount').val();
 
                 const requiredFilled = itemID && qty && price &&
-                    ((grnType === 'Profit Margin' && margin) ||
-                        (grnType === 'Discount Based' && discount));
+                    (grnType === 'Profit Margin' || grnType === 'Discount Based');
 
                 const isOnLastField = grnType === 'Profit Margin'
                     ? id === 'margin'
@@ -1273,7 +1363,7 @@
                         discountJustApplied = true;
                     } else {
                         discountJustApplied = false;
-                        goToStep(3);
+                        $('#note').focus();
                     }
                 }
                 return;
@@ -1285,17 +1375,9 @@
                 return;
             }
 
-            // Final Step (Step 3)
-            if ($currentTab.attr('id') === 'grnStep3') {
-                if (id === 'store_location') {
-                    $('#note').focus();
-                    return;
-                }
-
-                if (id === 'note') {
-                    $('#grnForm').submit();
-                    return;
-                }
+            if (id === 'note') {
+                $('#grnForm').submit();
+                return;
             }
 
             // Default: Move to next field
@@ -1359,7 +1441,6 @@
                     grn.grn_date,
                     `${grn.supplier?.name ?? 'N/A'} - ${grn.supplier_invoice_number}`,
                     grn.grn_type,
-                    grn.store_location,
                     grn.total_before_discount,
                     grn.total_foc,
                     grn.discount_amount,
@@ -1441,6 +1522,120 @@
             $(this).val('');
         });
     });
+
+
+    function printGrnDetails() {
+        const modalBody = document.querySelector('#grnDetailModal .modal-body');
+        const clonedContent = modalBody.cloneNode(true);
+
+        // Remove modal summary block
+        const summaryRow = clonedContent.querySelector('.row.mb-4');
+        if (summaryRow) {
+            summaryRow.remove();
+        }
+
+        // Clear scroll limits for printing
+        const tableWrapper = clonedContent.querySelector('.table-responsive');
+        if (tableWrapper) {
+            tableWrapper.style.maxHeight = 'unset';
+            tableWrapper.style.overflow = 'unset';
+        }
+
+        // Fetch summary values
+        const grnNumber = document.getElementById('modalGrnNumberDisplay').innerText.trim();
+        const grnDate = document.getElementById('modalGrnDate').innerText.trim();
+        const supplier = document.getElementById('modalSupplierAndInvoice').innerText.trim();
+        const discountType = document.getElementById('modalDiscountType').innerText.trim();
+        const note = document.getElementById('modalNote').innerText.trim();
+
+        // Plain, neatly spaced GRN detail view
+        const detailSection = `
+        <div class="grn-summary">
+            <div class="grn-line">GRN Number: ${grnNumber}</div>
+            <div class="grn-line">Date: ${grnDate}</div>
+            <div class="grn-line">Supplier & Invoice: ${supplier}</div>
+            <div class="grn-line">Discount Type: ${discountType}</div>
+            <div class="grn-line">Note: ${note}</div>
+        </div>
+    `;
+
+        // Print styling
+        const styles = `
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap');
+            body {
+                font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+                padding: 24px;
+                font-size: 14px;
+                color: #333;
+            }
+            h4 {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+            .grn-summary {
+                margin-bottom: 24px;
+                line-height: 1.7;
+                font-size: 15px;
+            }
+            .grn-line {
+                margin-bottom: 6px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 16px;
+                font-size: 12px;
+            }
+            th, td {
+                border: 1px solid #ccc;
+                padding: 6px 5px;
+                text-align: center;
+                vertical-align: middle;
+            }
+            th {
+                background-color: #f8f9fa;
+            }
+            .text-end { text-align: right; }
+            .text-primary { color: #0d6efd; }
+            .text-danger { color: #dc3545; }
+            .text-dark { color: #000 !important; }
+
+            td:nth-child(1) { text-align: left; } /* Item Name */
+            td:nth-child(4), /* Purchase Price */
+            td:nth-child(7), /* Final Retail Price */
+            td:nth-child(8)  /* Sub Total */ {
+                text-align: right;
+            }
+        </style>
+    `;
+
+        const grnTitle = document.getElementById('modalGrnNumber').innerText.trim();
+
+        const printWindow = window.open('', '', 'width=1200,height=1000');
+        printWindow.document.write(`
+        <html>
+        <head>
+            <title>GRN Print - ${grnTitle}</title>
+            ${styles}
+        </head>
+        <body>
+            <h4>GRN Details - ${grnTitle}</h4>
+            ${detailSection}
+            ${clonedContent.innerHTML}
+        </body>
+        </html>
+    `);
+
+        printWindow.document.close();
+        printWindow.focus();
+
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 500);
+    }
+
 
 </script>
 

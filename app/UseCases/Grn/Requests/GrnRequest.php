@@ -28,9 +28,6 @@ class GrnRequest extends Data
     public string $grn_type;
 
     #[SpatieRule('nullable', 'string')]
-    public ?string $store_location;
-
-    #[SpatieRule('nullable', 'string')]
     public ?string $note;
 
     #[SpatieRule('nullable', 'numeric', 'min:0')]

@@ -91,7 +91,6 @@ class StoreGrnInteractor
                         'supplier_invoice_number' => $request->supplier_invoice_number,
                         'supplier_ledger_code' => $request->supplier_ledger_code,
                         'grn_type' => $request->grn_type,
-                        'store_location' => $request->store_location,
                         'note' => $request->note,
                         'discount_amount' => $request->discount_amount ?? 0,
                         'is_percentage' => $request->is_percentage,

@@ -8,6 +8,7 @@ use App\Models\JournalEntry;
 use App\Models\StockSheet;
 use App\UseCases\Grn\ListGrnInteractor;
 use App\UseCases\Grn\Requests\GrnRequest;
+use App\UseCases\Grn\Requests\GrnItemRequest;
 use App\UseCases\Grn\StoreGrnInteractor;
 use App\UseCases\Grn\LoadGrnDropdownInteractor;
 use App\UseCases\Grn\GetGrnDetailsInteractor;
@@ -22,6 +23,7 @@ use App\UseCases\StockSheet\StoreStockSheetInteractor;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GrnController extends Controller
 {
@@ -54,11 +56,12 @@ class GrnController extends Controller
         $grandTotal = $request->grand_total;
 
         $stockdebitEntryData = collect($request->items)->map(function ($item) use ($grnNumber) {
+            $totalQty = ($item->qty ?? 0) + ($item->foc ?? 0);
             return [
                 'item_code'     => $item->item_id ?? '',
                 'ledger_code'   => AccountsLedgerCodes::LEDGER_CODES['MainStore'],
                 'description'   => 'GRN - ' . ($item->item_name ?? ''),
-                'credit'         => $item->qty ?? 0,
+                'credit'         => $totalQty,
                 'reference_type' => StockSheet::STATUS['GRN'],
                 'reference_id'   => 'GRN - ' . $grnNumber,
             ];
@@ -116,27 +119,42 @@ class GrnController extends Controller
         }
     }
 
-    public function updateItem(Request $request, string $id): JsonResponse
+    public function updateItem(GrnItemRequest $request, string $id): JsonResponse
     {
-        $validated = $request->validate([
-            'item_name' => 'required|string|max:255',
-            'qty' => 'required|numeric|min:0',
-            'foc' => 'nullable|numeric|min:0',
-            'price' => 'required|numeric|min:0',
-            'margin' => 'nullable|numeric|min:0',
-            'discount' => 'nullable|numeric|min:0',
-            'final_price' => 'required|numeric|min:0',
-            'subtotal' => 'required|numeric|min:0',
-        ]);
-
         $interactor = new UpdateGrnItemInteractor();
-        $result = $interactor->execute($id, $validated);
+        $result = $interactor->execute($id, $request->toArray());
 
         if ($result['status'] === 200) {
             return response()->json(['message' => 'Item updated', 'item' => $result['item']]);
-        } else {
-            return response()->json(['message' => 'Failed to update item', 'error' => $result['error']], 500);
         }
+
+        return response()->json(['message' => 'Failed to update item', 'error' => $result['error']], 500);
+    }
+
+    public function getItemCostDetails(Request $request)
+    {
+        $itemId = $request->query('item_id');
+
+        if (!$itemId) {
+            return response()->json(['message' => 'Missing item_id'], 400);
+        }
+
+        // Get last cost (latest GRN entry)
+        $lastCost = DB::table('grn_items')
+            ->where('item_id', $itemId)
+            ->orderByDesc('created_at')
+            ->limit(1)
+            ->value('price');
+
+        // Get average cost (sum of all GRN prices / count)
+        $averageCost = DB::table('grn_items')
+            ->where('item_id', $itemId)
+            ->avg('price'); // Laravel handles nulls
+
+        return response()->json([
+            'last_cost' => $lastCost ?? 0.00,
+            'avg_cost' => $averageCost ?? 0.00,
+        ]);
     }
 
 }
