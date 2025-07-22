@@ -13,7 +13,6 @@ return new class extends Migration {
             $table->uuid('supplier_id');
             $table->string('supplier_invoice_number');
             $table->string('grn_type'); // Profit Margin / Discount Based
-            $table->string('store_location')->nullable();
             $table->text('note')->nullable();
             $table->decimal('total_before_discount', 12, 2)->default(0);
             $table->decimal('total_foc', 12, 2)->default(0);

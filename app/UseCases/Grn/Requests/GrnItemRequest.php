@@ -7,7 +7,7 @@ use Spatie\LaravelData\Data;
 
 class GrnItemRequest extends Data
 {
-    #[SpatieRule('required', 'string')]
+    #[SpatieRule('sometimes','required', 'string')]
     public string $item_id;
 
     #[SpatieRule('required', 'string')]
