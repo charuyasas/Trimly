@@ -20,10 +20,17 @@
                                         <input type="text" class="form-control" id="cbo_customer" name="customer" placeholder="Select customer..." tabindex="2">
                                         <input type="hidden" id="customer_id">
                                     </div>
+                                    <div class="col-md-1"></div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="cbo_tokenNo">Token No. <code>*</code></label>
-                                        <input type="text" class="form-control" id="cbo_tokenNo">
+                                        <select class="form-select" id="cbo_tokenNo" onchange="fetchInvoiceDetails(this.value)" tabindex="-1"></select>
                                         <input type="hidden" id="invoice_id">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <a href="javascript:location.reload()" class="btn btn-secondary" style="float: right">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </a>
+
                                     </div>
                                 </div>
                             </form>
@@ -163,6 +170,22 @@
                                                 <strong><input type="text" class="form-control text-end" id="txt_grandtotal" disabled  value="0.00"></strong>
                                             </td>
                                         </tr>
+                                        <tr>
+                                            <td class="left">
+                                                <strong>Received Cash</strong>
+                                            </td>
+                                            <td class="right">
+                                                <strong><input type="text" class="form-control text-end" id="txt_received_cash" style="font-weight: 900;" onkeyup="getBalance()"></strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left">
+                                                <strong>Balance</strong>
+                                            </td>
+                                            <td class="right">
+                                                <strong><input type="text" class="form-control text-end" id="txt_balance" disabled  value="0.00"></strong>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -186,6 +209,37 @@
     var itemSelectedFromAutocomplete = false;
     const apiUrl = '/api/new-invoice';
 
+    $(document).ready(function () {
+        $(document).on('keydown', function (e) {
+            if (e.key === '+' || (e.shiftKey && e.key === '=')) {
+                e.preventDefault();
+                $('#txt_received_cash').focus();
+            }
+        });
+        loadTotkenNo('');
+    });
+
+    function loadTotkenNo(tokenID){
+        $.ajax({
+            url: '/api/invoice-list-dropdown',
+            method: 'GET',
+            success: function (data) {
+                var select = $('#cbo_tokenNo');
+                select.empty();
+                select.append('<option value="">New Invoice</option>');
+
+                data.forEach(function (item) {
+                    select.append('<option value="' + item.value + '">' + item.label + '</option>');
+                });
+                $("#cbo_tokenNo").val(tokenID);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error loading dropdown:', error);
+            }
+        });
+
+    }
+
     $(function () {
 
         $("#cbo_employee").autocomplete({
@@ -195,7 +249,7 @@
                 $.ajax({
                     url: '/api/employees-list',
                     dataType: 'json',
-                    data: { q: request.term },
+                    data: { search_key : request.term },
                     success: function (data) {
                         response(data);
                         if (data.length === 1) {
@@ -206,6 +260,10 @@
                 });
             },
             minLength: 1,
+            focus: function (event, ui) {
+                $("#cbo_employee").val(ui.item.label);
+                return false;
+            },
             select: function (event, ui) {
                 $("#cbo_employee").val(ui.item.label);
                 $("#employee_id").val(ui.item.value);
@@ -221,7 +279,7 @@
                     url: '/api/customer-list',
                     dataType: 'json',
                     data: {
-                        q: request.term
+                        search_key: request.term
                     },
                     success: function (data) {
                         response(data);
@@ -234,64 +292,14 @@
                 });
             },
             minLength: 1,
+            focus: function (event, ui) {
+                $("#cbo_customer").val(ui.item.label);
+                return false;
+            },
             select: function (event, ui) {
                 $("#cbo_customer").val(ui.item.label);
                 $("#customer_id").val(ui.item.value);
                 return false;
-            }
-        });
-
-        let selectedTokenLabel = '';
-
-        $("#cbo_tokenNo").autocomplete({
-            source: function (request, response) {
-                if (request.term.length < 1) return;
-
-                $.ajax({
-                    url: '/api/invoice-list-dropdown',
-                    dataType: 'json',
-                    data: {
-                        q: request.term
-                    },
-                    success: function (data) {
-                        response(data);
-
-                        if (data.length === 1) {
-                            selectedTokenLabel = data[0].label;
-                            $("#cbo_tokenNo").val(data[0].label);
-                            $("#invoice_id").val(data[0].value);
-                            fetchInvoiceDetails(data[0].value);
-                        }
-                    }
-                });
-            },
-            minLength: 1,
-            select: function (event, ui) {
-                selectedTokenLabel = ui.item.label;
-                $("#cbo_tokenNo").val(ui.item.label);
-                $("#invoice_id").val(ui.item.value);
-                fetchInvoiceDetails(ui.item.value);
-                return false;
-            }
-        });
-
-        $("#cbo_tokenNo").on('input', function () {
-            const currentValue = $(this).val();
-            if (currentValue !== selectedTokenLabel) {
-                selectedTokenLabel = '';
-                $("#invoice_id").val('');
-                $("#employee_id").val('');
-                $("#cbo_employee").val('');
-
-                $("#customer_id").val('');
-                $("#cbo_customer").val('');
-
-                $("#txt_totdiscount").val('');
-                $("#txt_totdiscount_amount").val('');
-
-                invoice = null;
-                itemsList = [];
-                renderItemsTable([]);
             }
         });
 
@@ -303,7 +311,7 @@
                     url: '/api/item-list',
                     dataType: 'json',
                     data: {
-                        q: request.term
+                        search_key: request.term
                     },
                     success: function (data) {
                         response($.map(data, function (item) {
@@ -327,6 +335,10 @@
                 });
             },
             minLength: 1,
+            focus: function (event, ui) {
+                $("#cbo_item").val(ui.item.label);
+                return false;
+            },
             select: function (event, ui) {
                 $("#cbo_item").val(ui.item.label);
                 $("#item_id").val(ui.item.value);
@@ -348,6 +360,23 @@
         }
         itemSelectedFromAutocomplete = false;
     });
+
+    function clearData() {
+        $("#invoice_id").val('');
+        $("#employee_id").val('');
+        $("#cbo_employee").val('');
+
+        $("#customer_id").val('');
+        $("#cbo_customer").val('');
+
+        $("#txt_totdiscount").val('');
+        $("#txt_totdiscount_amount").val('');
+
+        invoice = null;
+        itemsList = [];
+        renderItemsTable([]);
+        itemRefresh();
+    }
 
     function calculateSubTotal(type) {
         let unitPrice = $("#txt_price").val();
@@ -390,7 +419,7 @@
         let itemID = $("#item_id").val();
 
         if(employee == ''){
-            alert("Please enter 'Employee'!");
+            alert("Please enter 'Salesman'!");
             return false;
         }
 
@@ -419,6 +448,11 @@
             return false;
         }
 
+        if (qty == 0 || qty == '') {
+            alert("Please enter quantity!.");
+            return false;
+        }
+
         itemsList.push({
             invoice_id: invoiceID,
             item_id: itemID,
@@ -432,7 +466,6 @@
 
         invoice = {
             id: invoiceID,
-            invoice_no: tokenNo,
             employee_no: employee,
             customer_no: customer,
             token_no: tokenNo,
@@ -450,6 +483,7 @@
                 renderItemsTable(itemsList);
 
                 $("#item_id").val('');
+                $("#cbo_item").focus();
                 $("#txt_price").val('');
                 $("#txt_qty").val('');
                 $("#txt_discount").val('');
@@ -460,15 +494,22 @@
                 $("#txt_discount").prop("disabled", false);
                 $("#txt_discount_amount").prop("disabled", false);
 
-                $("#cbo_tokenNo").val(invoiceData.invoice_no);
+                loadTotkenNo(invoiceData.id);
+
                 $("#invoice_id").val(invoiceData.id);
+
             },
             error: function(xhr) {
                 if (xhr.status === 422) {
                     const response = xhr.responseJSON;
                     alert(response.message);
                 } else {
-                    alert('Something went wrong.');
+                    Swal.fire({
+                        icon: "error",
+                        title: "Something went wrong.!",
+                        showConfirmButton: false,
+                        timer: 1000
+                    });
                 }
             }
         });
@@ -486,31 +527,35 @@
     }
 
     function fetchInvoiceDetails(invoiceId) {
-        $.ajax({
-            url: `/api/invoice-items/${invoiceId}`,
-            method: 'GET',
-            success: function (res) {
-                $("#employee_id").val(res.employee_no);
-                $("#cbo_employee").val(res.employee_name);
+        if(invoiceId == ''){
+            clearData();
+        }else{
+            $.ajax({
+                url: `/api/invoice-items/${invoiceId}`,
+                method: 'GET',
+                success: function (res) {
+                    $("#employee_id").val(res.employee_no);
+                    $("#cbo_employee").val(res.employee_name);
 
-                $("#customer_id").val(res.customer_no);
-                $("#cbo_customer").val(res.customer_name);
+                    $("#customer_id").val(res.customer_no);
+                    $("#cbo_customer").val(res.customer_name);
 
-                $("#cbo_tokenNo").val(res.token_no);
-                $("#invoice_id").val(res.invoice_id);
+                    // $("#cbo_tokenNo").val(res.token_no);
+                    $("#invoice_id").val(res.invoice_id);
 
-                $("#txt_totdiscount").val(res.discount_percentage);
-                $("#txt_totdiscount_amount").val(res.discount_amount);
+                    $("#txt_totdiscount").val(res.discount_percentage);
+                    $("#txt_totdiscount_amount").val(res.discount_amount);
 
-                invoice = res;
-                itemsList = res.items;
-                renderItemsTable(itemsList);
+                    invoice = res;
+                    itemsList = res.items;
+                    renderItemsTable(itemsList);
 
-            },
-            error: function () {
-                alert("Failed to load invoice details.");
-            }
-        });
+                },
+                error: function () {
+                    alert("Failed to load invoice details.");
+                }
+            });
+        }
     }
 
     function renderItemsTable(items) {
@@ -523,8 +568,8 @@
             <tr>
                 <td>${index + 1}</td>
                 <td>${item.item_description}</td>
-                <td>${item.quantity}</td>
                 <td class="text-end">${item.amount}</td>
+                <td>${item.quantity}</td>
                 <td>${item.discount_percentage || ''}</td>
                 <td class="text-end">${item.discount_amount || ''}</td>
                 <td class="text-end">${item.sub_total}</td>
@@ -547,8 +592,6 @@
 
         if(discount > 0){
             $("#txt_totdiscount_amount").prop("disabled", true);
-            // discountAmount = (grandTotal*discount)/100;
-            // $('#txt_totdiscount_amount').val(discountAmount);
             grandTotal = grandTotal-((grandTotal*discount)/100);
 
         }else if(discount_amount > 0){
@@ -566,16 +609,33 @@
     function finishInvoice() {
         var invoiceId = $("#invoice_id").val();
 
+        if($("#txt_received_cash").val() < $("#txt_grandtotal").val()){
+            Swal.fire({
+                icon: "error",
+                title: "Insufficient Cash Received!",
+                showConfirmButton: false,
+                timer: 1000
+            });
+            return false;
+        }
+
         invoice.discount_percentage = $("#txt_totdiscount").val();
         invoice.discount_amount = $("#txt_totdiscount_amount").val();
         invoice.grand_total = $("#txt_grandtotal").val();
+        invoice.received_cash = $("#txt_received_cash").val();
+        invoice.balance = $("#txt_balance").val();
 
         $.ajax({
             url: `/api/finish-invoice/${invoiceId}`,
             method: 'POST',
             data: invoice,
             success: function(response) {
-                alert('Successfully finalized invoice.');
+                Swal.fire({
+                    icon: "success",
+                    title: "Successfully finalized invoice.!",
+                    showConfirmButton: false,
+                    timer: 1000
+                });
                 location.reload();
             },
             error: function(xhr) {
@@ -583,7 +643,12 @@
                     const response = xhr.responseJSON;
                     alert(response.message);
                 } else {
-                    alert('Something went wrong.');
+                    Swal.fire({
+                        icon: "error",
+                        title: "Something went wrong.!",
+                        showConfirmButton: false,
+                        timer: 1000
+                    });
                 }
             }
         });
@@ -594,13 +659,26 @@
         if (e.key === 'Enter') {
             e.preventDefault();
 
+            if (this.id === 'txt_discount_amount') {
+                $('#btn_add').click();
+                return;
+            }
+
+            if (this.id === 'txt_totdiscount_amount') {
+                finishInvoice();
+                return;
+            }
+
             const focusables = $('input, select, textarea, button')
-            .filter(':visible:not([readonly]):not([disabled])');
+                .filter(':visible:not([readonly]):not([disabled])')
+                .filter(function () {
+                    return $(this).attr('tabindex') !== '-1';
+                });
 
             const index = focusables.index(this);
 
             if ($(this).is('button')) {
-                $(this).click(); // Optional: trigger button click
+                $(this).click();
             }
 
             if (index > -1 && index + 1 < focusables.length) {
@@ -609,6 +687,19 @@
         }
     });
 
+
+
+    function getBalance(){
+        let grand_total = $('#txt_grandtotal').val();
+        let recieved_cash = $('#txt_received_cash').val();
+
+        let balance = parseFloat(recieved_cash) - parseFloat(grand_total);
+        if(balance > 0){
+            $('#txt_balance').val(balance.toFixed(2));
+        }else{
+            $('#txt_balance').val('0.00');
+        }
+    }
 
 
 </script>

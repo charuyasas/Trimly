@@ -13,6 +13,9 @@ class InvoiceRequest extends Data
     public ?string $id;
 
     #[SpatieRule('nullable')]
+    public ?string $token_no;
+
+    #[SpatieRule('nullable')]
     public ?string $invoice_no;
 
     #[SpatieRule('required', 'uuid')]
@@ -29,6 +32,12 @@ class InvoiceRequest extends Data
 
     #[SpatieRule('nullable', 'numeric', 'min:0')]
     public float $discount_amount = 0.00;
+
+    #[SpatieRule('nullable', 'numeric', 'min:0')]
+    public ?float $received_cash;
+
+    #[SpatieRule('nullable', 'numeric', 'min:0')]
+    public ?float $balance;
 
     #[SpatieRule('boolean')]
     public bool $status = true;

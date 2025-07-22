@@ -45,12 +45,12 @@ class InvoiceController extends Controller
 
     public function loadItemDropdown(LoadItemDropdownInteractor $loadItemDropdownInteractor)
     {
-        return response()->json($loadItemDropdownInteractor->execute(request('q')));
+        return response()->json($loadItemDropdownInteractor->execute(request('search_key')));
     }
 
     public function loadInvoiceDropdown(LoadInvoiceDropdownInteractor $loadInvoiceDropdownInteractor)
     {
-        return response()->json($loadInvoiceDropdownInteractor->execute(request('q')));
+        return response()->json($loadInvoiceDropdownInteractor->execute());
     }
 
     public function getInvoiceItems($id, GetInvoiceItemsInteractor $getInvoiceItemsInteractor)
