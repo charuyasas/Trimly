@@ -260,15 +260,18 @@
                                         <div id="discountSection" class="border rounded p-2 flex-fill" style="max-width: 50%; min-height: 100px;">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <strong>Add Discount For Bill Value</strong>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleDiscountSection()">−</button>
+                                                <button id="discountToggleBtn" type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleDiscountSection()">−</button>
                                             </div>
-                                            <div class="form-check form-switch d-flex align-items-center gap-2 mb-2">
-                                                <input class="form-check-input" type="checkbox" id="is_percentage">
-                                                <label class="form-check-label fw-semibold" for="is_percentage">Is Percentage Based</label>
-                                            </div>
-                                            <div class="d-flex align-items-center gap-2 mb-1">
-                                                <input type="number" class="form-control" id="bill_discount_amount" value="0.00" placeholder="Discount Amount" style="height: 30px; font-size: 0.9rem;">
-                                                <span id="discountUnitLabel" style="font-size: 0.9rem;">LKR</span>
+
+                                            <div id="discountSectionContent">
+                                                <div class="form-check form-switch d-flex align-items-center gap-2 mb-2">
+                                                    <input class="form-check-input" type="checkbox" id="is_percentage">
+                                                    <label class="form-check-label fw-semibold" for="is_percentage">Is Percentage Based</label>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2 mb-1">
+                                                    <input type="number" class="form-control" id="bill_discount_amount" value="0.00" placeholder="Discount Amount" style="height: 30px; font-size: 0.9rem;">
+                                                    <span id="discountUnitLabel" style="font-size: 0.9rem;">LKR</span>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -1166,8 +1169,21 @@
         }
     }
 
+    let isDiscountVisible = true;
+
     function toggleDiscountSection() {
-        $('#discountSection').toggleClass('d-none');
+        const content = document.getElementById("discountSectionContent");
+        const toggleBtn = document.getElementById("discountToggleBtn");
+
+        if (isDiscountVisible) {
+            content.style.display = "none";
+            toggleBtn.textContent = "+";
+        } else {
+            content.style.display = "block";
+            toggleBtn.textContent = "−";
+        }
+
+        isDiscountVisible = !isDiscountVisible;
     }
 
     // Whenever discount % changes, compute and show discount amount
