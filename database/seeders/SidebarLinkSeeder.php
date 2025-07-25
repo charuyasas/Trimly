@@ -66,6 +66,13 @@ class SidebarLinkSeeder extends Seeder
                 'parent_id' => null,
             ],
             [
+                'permission_name' => 'grn',
+                'display_name' => 'GRN',
+                'url' => '/grn',
+                'icon_path' => 'assets/img/menu-icon/14.svg',
+                'parent_id' => null,
+            ],
+            [
                 'permission_name' => 'item-master',
                 'display_name' => 'Item Master',
                 'url' => '#',

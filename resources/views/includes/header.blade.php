@@ -10,6 +10,7 @@
     <title>Management Admin</title>
 
     <link rel="icon" href="img/mini_logo.png" type="image/png">
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap1.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendors/niceselect/css/nice-select.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendors/themefy_icon/themify-icons.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendors/owl_carousel/css/owl.carousel.css') }}" />
@@ -39,7 +40,7 @@
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap1.min.css') }}" />
+
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
