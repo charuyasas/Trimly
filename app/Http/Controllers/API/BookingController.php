@@ -11,6 +11,8 @@ use App\UseCases\Booking\StoreBookingInteractor;
 use App\UseCases\Booking\ShowBookingInteractor;
 use App\UseCases\Booking\UpdateBookingInteractor;
 use App\UseCases\Booking\DeleteBookingInteractor;
+use App\UseCases\Booking\CalendarBookingInteractor;
+use App\UseCases\Booking\CalendarEmployeeInteractor;
 
 
 class BookingController extends Controller
@@ -46,11 +48,21 @@ class BookingController extends Controller
         return response()->json(['message' => 'Booking updated', 'data' => $updated]);
     }
 
-
     public function destroy(Booking $booking, DeleteBookingInteractor $delete)
     {
         $delete->execute($booking);
         return response()->json(['message' => 'Booking deleted']);
     }
 
+    public function calendarBookings(CalendarBookingInteractor $calendarBooking)
+    {
+        $result = $calendarBooking->execute();
+        return response()->json($result);
+    }
+
+    public function calendarEmployees(CalendarEmployeeInteractor $calendarEmployee)
+    {
+        $result = $calendarEmployee->execute();
+        return response()->json($result);
+    }
 }

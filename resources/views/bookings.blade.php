@@ -445,6 +445,10 @@ $("#cbo_employee").autocomplete({
     },
     minLength: 1,
     appendTo: "#bookingModal",
+    focus: function (event, ui) {
+        $("#cbo_employee").val(ui.item.label);
+        return false;
+    },
     select: function (event, ui) {
         $("#cbo_employee").val(ui.item.label);
         $("#employee_id").val(ui.item.value);
@@ -470,6 +474,10 @@ $("#cbo_customer").autocomplete({
     },
     minLength: 1,
     appendTo: "#bookingModal",
+    focus: function (event, ui) {
+        $("#cbo_customer").val(ui.item.label);
+        return false;
+    },
     select: function (event, ui) {
         $("#cbo_customer").val(ui.item.label);
         $("#customer_id").val(ui.item.value);
@@ -495,6 +503,10 @@ $("#cbo_service").autocomplete({
     },
     minLength: 1,
     appendTo: "#bookingModal",
+    focus: function (event, ui) {
+        $("#cbo_service").val(ui.item.label);
+        return false;
+    },
     select: function (event, ui) {
         $("#cbo_service").val(ui.item.label);
         $("#service_id").val(ui.item.value);
@@ -631,7 +643,6 @@ function saveCustomer() {
             }
         }
     });
-
 
 </script>
 
