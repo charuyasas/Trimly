@@ -25,7 +25,7 @@
                                                 <div class="search_inner">
                                                     <form Active="#">
                                                         <div class="search_field">
-                                                            <input type="text" placeholder="Search content here..." class="searchBox" data-target="postingAccTable">
+                                                            <input type="text" placeholder="Search content here..." class="searchBox" data-target="accountTable">
                                                         </div>
                                                         <button type="submit"> <i class="ti-search"></i> </button>
                                                     </form>
@@ -64,6 +64,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
             @include('includes.footer')
 
@@ -105,6 +108,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
                                 </form>
                             </div>
                             <div class="modal-footer">
