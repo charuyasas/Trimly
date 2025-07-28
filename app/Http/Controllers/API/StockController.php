@@ -38,26 +38,46 @@ class StockController extends Controller
         return response()->json(['available_stock' => $availableStock]);
     }
 
-    public function store(StockSheetRequest $stockSheetRequest, StoreStockSheetInteractor $storeStockSheetInteractor): JsonResponse
+    public function store(StockSheetRequest $stockSheetRequest, StoreStockSheetInteractor $storeStockSheetInteractor, GetAvailableStockInteractor $getAvailableStockInteractor): JsonResponse
     {
         $employee_ledger_code = $stockSheetRequest->employee_ledger_code;
         $store_ledger_code = $stockSheetRequest->store_ledger_code;
+        $items = $stockSheetRequest->items;
 
-        if($store_ledger_code != '') {
+        if ($store_ledger_code != '') {
+            // Normal issue
             $nextReferenceId = $this->createReferenceID(StockSheet::STATUS['Employee Issue']);
-            $debitEntries = $this->createDebitEntryCollection($stockSheetRequest->items, $store_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Issue']);
-            $creditEntries = $this->createCreditEntryCollection($stockSheetRequest->items, $employee_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Issue']);
+            $debitEntries = $this->createDebitEntryCollection($items, $store_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Issue']);
+            $creditEntries = $this->createCreditEntryCollection($items, $employee_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Issue']);
             $this->employeeIssueItemsToStockTable($storeStockSheetInteractor, $debitEntries->merge($creditEntries));
-        }else{
+        } else {
+            // Employee Consumption
             $nextReferenceId = $this->createReferenceID(StockSheet::STATUS['Employee Consumption']);
-            $debitEntries = $this->createDebitEntryCollection($stockSheetRequest->items, $employee_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Consumption'], StockSheet::STATUS['Employee Consumption']);
+            $debitEntries = $this->createDebitEntryCollection($items, $employee_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Consumption']);
             $this->employeeIssueItemsToStockTable($storeStockSheetInteractor, $debitEntries);
+
+            $allAvailable = true;
+
+            foreach ($items as $item) {
+                $itemId = $item->item_id;
+                $availableQty = $getAvailableStockInteractor->execute($itemId, AccountsLedgerCodes::LEDGER_CODES['MainStore']);
+
+                if ($availableQty <= $item->quantity) {
+                    $allAvailable = false;
+                    break;
+                }
+            }
+
+            return response()->json([
+                'message' => 'Stock entries finalized successfully.',
+                'reference_id' => $nextReferenceId,
+                'stock_status' => $allAvailable ? 'Stock available' : 'Stock not available'
+            ]);
         }
 
-
         return response()->json([
-            'message'       => 'Stock entries finalized successfully.',
-            'reference_id'  => $nextReferenceId,
+            'message' => 'Stock entries finalized successfully.',
+            'reference_id' => $nextReferenceId,
         ]);
     }
 

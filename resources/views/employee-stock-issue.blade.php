@@ -22,18 +22,15 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-12">
+                    <div class="col-lg-12 issueStockSection" style="display: none;" id="issueStockSection">
                         <div class="white_card card_height_100 mb_30">
                             <div class="white_card_body">
                                 <div class="QA_section">
                                     <div class="white_box_tittle list_header">
                                         <div class="box_left d-flex lms_block">
                                             <div class="add_button ms-2">
-                                                <button type="button" class="btn btn-primary issueStockSection" onclick="displayTable('availableStockSection')" style="display: none">
+                                                <button type="button" class="btn btn-primary issueStockSection" onclick="displayTable('availableStockSection')">
                                                     Stock Details
-                                                </button>
-                                                <button type="button" class="btn btn-primary availableStockSection" onclick="displayTable('issueStockSection')">
-                                                    Issue Details
                                                 </button>
                                             </div>
                                         </div>
@@ -59,7 +56,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="QA_table mb_30 issueStockSection" style="display: none;" id="issueStockSection">
+                                    <div class="QA_table mb_30 issueStockSection">
                                         <table class="table lms_table_active">
                                             <thead>
                                             <tr>
@@ -75,8 +72,46 @@
                                             </tbody>
                                         </table>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                                    <div class="QA_table mb_30 availableStockSection" id="availableStockSection">
+                    <div class="col-lg-12 availableStockSection"  id="availableStockSection">
+                        <div class="white_card card_height_100 mb_30">
+                            <div class="white_card_body">
+                                <div class="QA_section">
+                                    <div class="white_box_tittle list_header">
+                                        <div class="box_left d-flex lms_block">
+                                            <div class="add_button ms-2">
+                                                <button type="button" class="btn btn-primary availableStockSection" onclick="displayTable('issueStockSection')">
+                                                    Issue Details
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="box_right d-flex lms_block">
+                                            <div class="serach_field_2">
+                                                <div class="search_inner">
+                                                    <form Active="#">
+                                                        <div class="search_field">
+                                                            <input type="text" placeholder="Search content here..." class="searchBox" data-target="availableStockTable">
+                                                        </div>
+                                                        <button type="submit"> <i class="ti-search"></i> </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            <div class="add_button ms-2">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" onclick="showModal()" data-bs-target="#stockIssueModal">
+                                                    Issue Stock
+                                                </button>
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" onclick="showConsumptionModal()" data-bs-target="#consumptionModal">
+                                                    Consumption
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="QA_table mb_30 availableStockSection">
                                         <table class="table lms_table_active">
                                             <thead>
                                             <tr>
@@ -96,6 +131,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -148,7 +184,7 @@
                                                             <span class="text-muted small available_stock_display"></span>
                                                         </div>
                                                         <div class="col-md-2 d-flex align-items-start pt-4">
-                                                            <button type="button" class="btn btn-secondary btn_add" id="btn_add"> <i class="fas fa-plus"></i></button>&nbsp;&nbsp;
+                                                            <button type="button" class="btn btn-secondary btn_add" onclick="itemAddtoGrid()"> <i class="fas fa-plus"></i></button>&nbsp;&nbsp;
                                                             <button type="button" class="btn btn-secondary" onclick="itemRefresh()"> <i class="fas fa-sync-alt"></i></button>
                                                         </div>
                                                     </div>
@@ -243,7 +279,7 @@
                                                 <span class="text-muted small available_stock_display"></span>
                                             </div>
                                             <div class="col-md-2 d-flex align-items-start pt-4">
-                                                <button type="button" class="btn btn-secondary btn_add" id="btn_add"> <i class="fas fa-plus"></i></button>&nbsp;&nbsp;
+                                                <button type="button" class="btn btn-secondary btn_add" onclick="itemAddtoGrid()"> <i class="fas fa-plus"></i></button>&nbsp;&nbsp;
                                                 <button type="button" class="btn btn-secondary" onclick="itemRefresh()"> <i class="fas fa-sync-alt"></i></button>
                                             </div>
                                         </div>
@@ -387,7 +423,7 @@
                 let itemsList = [];
                 let issueNote = [];
 
-                $(".btn_add").click(function () {
+                function itemAddtoGrid(){
 
                     let employee_ledger_code = '';
                     let store_ledger_code = '';
@@ -470,7 +506,7 @@
                     $(".available_stock_display").hide();
                     $(".available_stock_display").text(0);
 
-                });
+                }
 
                 function renderItemsTable(tableID) {
                     let tbody = $(tableID + " tbody");
@@ -803,10 +839,10 @@
                         method: 'POST',
                         data: issueNote,
                         success: function(response) {
-                            itemRefresh();
-                            itemsList = [];
-                            renderItemsTable('#'+tableID);
                             if(modalID === 'stockIssueModal') {
+                                itemRefresh();
+                                itemsList = [];
+                                renderItemsTable('#'+tableID);
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Issued Successfully!',
@@ -814,12 +850,71 @@
                                     timer: 1500
                                 });
                             }else{
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Consume Successfully!',
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                });
+                                if(response.stock_status === 'Stock available'){
+                                    Swal.fire({
+                                        title: 'Reissue Items?',
+                                        text: 'Stock is still available. Do you want to issue these items to the employee?',
+                                        icon: 'question',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Yes, Reissue',
+                                        cancelButtonText: 'No',
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            const reissueNote = {
+                                                employee_ledger_code: issueNote.employee_ledger_code,
+                                                store_ledger_code: '1-2-6-1000',
+                                                items: [...issueNote.items]
+                                            };
+
+                                            $.ajax({
+                                                url: `/api/employee-stock-issue`,
+                                                method: 'POST',
+                                                data: reissueNote,
+                                                success: function(response) {
+                                                    itemRefresh();
+                                                    itemsList = [];
+                                                    renderItemsTable('#' + tableID);
+                                                    Swal.fire({
+                                                        icon: 'success',
+                                                        title: 'Reissued Successfully!',
+                                                        showConfirmButton: false,
+                                                        timer: 1500
+                                                    });
+                                                    loadStockIssueDetails();
+                                                },
+                                                error: function(xhr) {
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Reissue Failed',
+                                                        text: xhr.responseJSON?.message || 'Something went wrong',
+                                                    });
+                                                }
+                                            });
+                                        }
+                                        else {
+                                            itemRefresh();
+                                            itemsList = [];
+                                            renderItemsTable('#'+tableID);
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Consume Successfully!',
+                                                showConfirmButton: false,
+                                                timer: 1500
+                                            });
+                                        }
+                                    });
+                                }else{
+                                    itemRefresh();
+                                    itemsList = [];
+                                    renderItemsTable('#'+tableID);
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Consume Successfully!',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    });
+                                }
+
                             }
                             closeModal(modalID);
                             loadStockIssueDetails();
@@ -909,6 +1004,29 @@
                         }
                     }
                 });
+
+                $('#txt_qty').on('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        itemAddtoGrid();
+
+                        setTimeout(() => {
+                            $('#cbo_item').focus();
+                        }, 100);
+                    }
+                });
+
+                $('#txt_consume_qty').on('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        itemAddtoGrid();
+
+                        setTimeout(() => {
+                            $('#cbo_item_consume').focus();
+                        }, 100);
+                    }
+                });
+
 
                 function displayTable(tableID){
                     if(tableID === 'issueStockSection'){
