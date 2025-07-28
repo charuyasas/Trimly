@@ -1,13 +1,13 @@
 <?php
 
 use App\Models\Employee;
-use App\UseCases\Employee\LoadEmployeemDropdownInteractor;
+use App\UseCases\Employee\LoadEmployeeDropdownInteractor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->interactor = new LoadEmployeemDropdownInteractor();
+    $this->interactor = new LoadEmployeeDropdownInteractor();
 });
 
 test('returns all employees for dropdown', function () {
@@ -225,4 +225,4 @@ test('returns employees with mixed search criteria', function () {
     expect($result->pluck('label')->toArray())->toContain('EMP001 - John Doe');
     expect($result->pluck('label')->toArray())->toContain('EMP002 - Jane Smith');
     expect($result->pluck('label')->toArray())->toContain('EMP003 - Bob Johnson');
-}); 
+});

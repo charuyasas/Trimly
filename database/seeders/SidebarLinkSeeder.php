@@ -52,13 +52,6 @@ class SidebarLinkSeeder extends Seeder
                 'parent_id' => null,
             ],
             [
-                'permission_name' => 'bookings',
-                'display_name' => 'Bookings',
-                'url' => '/bookings',
-                'icon_path' => 'assets/img/menu-icon/15.svg',
-                'parent_id' => null,
-            ],
-            [
                 'permission_name' => 'supplier',
                 'display_name' => 'Suppliers',
                 'url' => '/supplier',
@@ -66,10 +59,10 @@ class SidebarLinkSeeder extends Seeder
                 'parent_id' => null,
             ],
             [
-                'permission_name' => 'grn',
-                'display_name' => 'GRN',
-                'url' => '/grn',
-                'icon_path' => 'assets/img/menu-icon/14.svg',
+                'permission_name' => 'bookings',
+                'display_name' => 'Bookings',
+                'url' => '/bookings',
+                'icon_path' => 'assets/img/menu-icon/15.svg',
                 'parent_id' => null,
             ],
             [
@@ -94,6 +87,20 @@ class SidebarLinkSeeder extends Seeder
                         'url' => '/items',
                     ],
                 ],
+            ],
+            [
+                'permission_name' => 'grn',
+                'display_name' => 'GRN',
+                'url' => '/grn',
+                'icon_path' => 'assets/img/menu-icon/14.svg',
+                'parent_id' => null,
+            ],
+            [
+                'permission_name' => 'stockIssue',
+                'display_name' => 'Stock Issuing',
+                'url' => '/stockIssue',
+                'icon_path' => 'assets/img/menu-icon/13.svg',
+                'parent_id' => null,
             ],
             [
                 'permission_name' => 'sales-invoice',

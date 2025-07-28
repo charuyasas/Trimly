@@ -63,6 +63,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
             @include('includes.footer')
 
@@ -96,6 +99,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
                                 </form>
                             </div>
                             <div class="modal-footer">
@@ -288,17 +292,6 @@
                             saveService();
                         }
                     });
-
-
-
-                    $('#price').on('keydown', function (e) {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            saveService();
-                        }
-                    });
-
-
 
                 </script>
 
