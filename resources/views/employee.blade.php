@@ -62,6 +62,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
             @include('includes.footer')
 
@@ -100,6 +103,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
                                 </form>
                             </div>
                             <div class="modal-footer">
@@ -294,15 +298,5 @@
                             saveEmployee();
                         }
                     });
-
-
-
-                    $('#employee_contactno').on('keydown', function (e) {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            saveEmployee();
-                        }
-                    });
-
 
                 </script>

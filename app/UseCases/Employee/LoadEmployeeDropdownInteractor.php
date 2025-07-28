@@ -4,7 +4,7 @@ namespace App\UseCases\Employee;
 
 use App\Models\Employee;
 
-class LoadEmployeemDropdownInteractor
+class LoadEmployeeDropdownInteractor
 {
     public function execute($search)
     {

@@ -19,7 +19,7 @@ class EmployeeRequest extends Data
     public string $address;
     #[SpatieRule('required', 'digits:10')]
     public string $contact_no;
-    #[SpatieRule('required')]
+    #[SpatieRule('sometimes','required')]
     public string $ledger_code;
 
     public static function rules(): array
