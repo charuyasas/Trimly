@@ -69,7 +69,7 @@
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="txt_sub_total">Sub Total <code>*</code></label>
-                                        <input type="text" class="form-control text-end" id="txt_sub_total" disabled>
+                                        <input type="text" class="form-control text-end" id="txt_sub_total" disabled tabindex="-1">
                                     </div>
                                     <div class="col-md-1 d-flex align-items-end">
                                         <button type="button" class="btn btn-secondary" id="btn_add"> <i class="fas fa-plus"></i></button>&nbsp;&nbsp;
@@ -148,7 +148,7 @@
                                             <td class="left">
                                                 <strong>Total Amount</strong>
                                             </td>
-                                            <td class="right"><input type="text" class="form-control text-end" id="txt_total" disabled  value="0.00"></td>
+                                            <td class="right"><input type="text" class="form-control text-end" id="txt_total" disabled tabindex="-1" value="0.00"></td>
                                         </tr>
                                         <tr>
                                             <td class="left">
@@ -167,7 +167,7 @@
                                                 <strong>Grand Total</strong>
                                             </td>
                                             <td class="right">
-                                                <strong><input type="text" class="form-control text-end" id="txt_grandtotal" disabled  value="0.00"></strong>
+                                                <strong><input type="text" class="form-control text-end" id="txt_grandtotal" disabled tabindex="-1"  value="0.00"></strong>
                                             </td>
                                         </tr>
                                         <tr>
@@ -183,7 +183,7 @@
                                                 <strong>Balance</strong>
                                             </td>
                                             <td class="right">
-                                                <strong><input type="text" class="form-control text-end" id="txt_balance" disabled  value="0.00"></strong>
+                                                <strong><input type="text" class="form-control text-end" id="txt_balance" disabled tabindex="-1"  value="0.00"></strong>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -609,13 +609,14 @@
     function finishInvoice() {
         var invoiceId = $("#invoice_id").val();
 
-        if($("#txt_received_cash").val() < $("#txt_grandtotal").val()){
+        if(parseFloat($("#txt_received_cash").val()) < parseFloat($("#txt_grandtotal").val())){
             Swal.fire({
                 icon: "error",
                 title: "Insufficient Cash Received!",
                 showConfirmButton: false,
                 timer: 1000
             });
+            $("#txt_received_cash").focus();
             return false;
         }
 
@@ -664,7 +665,7 @@
                 return;
             }
 
-            if (this.id === 'txt_totdiscount_amount') {
+            if (this.id === 'txt_received_cash') {
                 finishInvoice();
                 return;
             }

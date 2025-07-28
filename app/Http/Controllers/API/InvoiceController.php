@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
+use Illuminate\Http\JsonResponse;
 use App\UseCases\Invoice\{
     StoreInvoiceInteractor,
     FinishInvoiceInteractor,
@@ -22,7 +23,7 @@ class InvoiceController extends Controller
         return $listInvoiceInteractor->execute();
     }
 
-    public function store(StoreInvoiceInteractor $storeInvoiceInteractor)
+    public function store(StoreInvoiceInteractor $storeInvoiceInteractor): JsonResponse
     {
         $invoice = $storeInvoiceInteractor->execute(InvoiceRequest::validateAndCreate(request()));
         return response()->json($invoice['response'], $invoice['status']);
@@ -35,7 +36,7 @@ class InvoiceController extends Controller
 
     }
 
-    public function finishInvoice($id, FinishInvoiceInteractor $finishInvoiceInteractor)
+    public function finishInvoice($id, FinishInvoiceInteractor $finishInvoiceInteractor): JsonResponse
     {
         request()->merge(['id' => $id]);
         $result = $finishInvoiceInteractor->execute($id, InvoiceRequest::validateAndCreate(request()));
@@ -43,17 +44,17 @@ class InvoiceController extends Controller
         return response()->json($result);
     }
 
-    public function loadItemDropdown(LoadItemDropdownInteractor $loadItemDropdownInteractor)
+    public function loadItemDropdown(LoadItemDropdownInteractor $loadItemDropdownInteractor): JsonResponse
     {
         return response()->json($loadItemDropdownInteractor->execute(request('search_key')));
     }
 
-    public function loadInvoiceDropdown(LoadInvoiceDropdownInteractor $loadInvoiceDropdownInteractor)
+    public function loadInvoiceDropdown(LoadInvoiceDropdownInteractor $loadInvoiceDropdownInteractor): JsonResponse
     {
         return response()->json($loadInvoiceDropdownInteractor->execute());
     }
 
-    public function getInvoiceItems($id, GetInvoiceItemsInteractor $getInvoiceItemsInteractor)
+    public function getInvoiceItems($id, GetInvoiceItemsInteractor $getInvoiceItemsInteractor): JsonResponse
     {
         return response()->json($getInvoiceItemsInteractor->execute($id));
 

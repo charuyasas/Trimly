@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -17,7 +19,7 @@ class Invoice extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
@@ -30,18 +32,21 @@ class Invoice extends Model
 
     const STATUS = [
         'PENDING' => 0,
-        'FINISH' => 1,
+        'FINISHED' => 1,
     ];
 
-    public function items(){
+    public function items(): HasMany
+    {
         return $this->hasMany(InvoiceItem::class, 'invoice_id');
     }
 
-    public function employee() {
+    public function employee(): BelongsTo
+    {
         return $this->belongsTo(Employee::class, 'employee_no', 'id');
     }
 
-    public function customer() {
+    public function customer(): BelongsTo
+    {
         return $this->belongsTo(Customer::class, 'customer_no', 'id');
     }
 
