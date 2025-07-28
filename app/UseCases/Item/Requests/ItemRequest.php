@@ -16,7 +16,7 @@ class ItemRequest extends Data
     #[SpatieRule('required', 'max:255')]
     public string $description;
 
-    #[SpatieRule('required', 'max:255')]
+    #[SpatieRule('nullable', 'max:255')]
     public ?string $rack_location;
 
     #[SpatieRule('required', 'uuid', 'exists:suppliers,id')]
@@ -28,8 +28,8 @@ class ItemRequest extends Data
     #[SpatieRule('required', 'uuid', 'exists:sub_categories,id')]
     public ?string $sub_category_id;
 
-    #[SpatieRule('required', 'in:kg,g,unit,l,ml')]
-    public string $measure_unit;
+    #[SpatieRule('nullable', 'in:kg,g,unit,l,ml')]
+    public ?string $measure_unit;
 
     #[SpatieRule('required', 'boolean')]
     public bool $is_active;
