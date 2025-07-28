@@ -31,6 +31,6 @@ class BookingRequest extends Data
     #[SpatieRule('sometimes', 'required', 'in:pending,confirmed,completed,cancelled')]
     public ?string $status='pending';
 
-    #[SpatieRule('sometimes','nullable', 'string')]
-    public ?string $notes;
+    #[SpatieRule('sometimes', 'nullable', 'string')]
+    public ?string $notes = null;
 }

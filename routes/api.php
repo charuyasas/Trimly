@@ -8,8 +8,6 @@ use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\EmployeeController;
 use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\BookingController;
-use App\Models\Booking;
-use App\Models\Employee;
 use App\Http\Controllers\API\HeadingAccountController;
 use App\Http\Controllers\API\InvoiceController;
 use App\Http\Controllers\API\MainAccountController;
@@ -46,24 +44,8 @@ Route::get('/suppliers-list', [SupplierController::class, 'loadSupplierDropdown'
 
 Route::apiResource('bookings', BookingController::class);
 Route::get('/bookings/{id}', [BookingController::class, 'show']);
-Route::get('/calendar/bookings', function () {
-    return Booking::with(['customer', 'employee'])
-        ->where('status', '!=', 'cancelled') // Exclude cancelled
-        ->get()
-        ->map(function ($b) {
-            return [
-                'id' => $b->id,
-                'resourceId' => $b->employee_id,
-                'title' => $b->customer->name ?? 'Customer',
-                'start' => $b->booking_date . 'T' . $b->start_time,
-                'end' => $b->booking_date . 'T' . $b->end_time,
-                'status' => $b->status
-            ];
-        });
-});
-Route::get('/calendar/employees', function () {
-    return Employee::select('id', 'name as title')->get();
-});
+Route::get('/calendar/bookings', [BookingController::class, 'calendarBookings']);
+Route::get('/calendar/employees', [BookingController::class, 'calendarEmployees']);
 
 Route::apiResource('customers', CustomerController::class);
 Route::get('/customer-list', [CustomerController::class, 'loadCustomerDropdown']);
