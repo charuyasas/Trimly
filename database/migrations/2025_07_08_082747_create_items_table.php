@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->uuid('supplier_id');
             $table->uuid('category_id');
             $table->uuid('sub_category_id')->nullable();
-            $table->enum('measure_unit', ['Kg', 'g', 'unit', 'l', 'ml']);
+            $table->enum('measure_unit', ['Kg', 'g', 'unit', 'l', 'ml'])->nullable();
             $table->boolean('is_active')->default(true);
             $table->decimal('list_price', 10, 2)->nullable();
             $table->decimal('retail_price', 10, 2)->nullable();
