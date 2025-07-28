@@ -135,10 +135,31 @@
 
     function saveSubCategory() {
         const id = $('#sub_category_id').val();
+        const categoryId = $('#category_id').val();
+        const name = $('#sub_category_name').val().trim();
+
+        // Client-side validation for null/empty
+        if (!categoryId) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Please select a category.',
+                showConfirmButton: true
+            });
+            return;
+        }
+        if (!name) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sub-category name cannot be empty.',
+                showConfirmButton: true
+            });
+            return;
+        }
+
         const data = {
             id: id,
-            category_id: $('#category_id').val(),
-            name: $('#sub_category_name').val()
+            category_id: categoryId,
+            name: name
         };
 
         const method = id ? 'PUT' : 'POST';
@@ -159,11 +180,16 @@
                 closeSubCategoryModal();
             },
             error: function (xhr) {
+                let message = "Error occurred!";
+                if (xhr.status === 409) {
+                    message = "Sub-category already exists. Please choose a different name.";
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
                 Swal.fire({
                     icon: "error",
-                    title: xhr.responseJSON?.message || "Error occurred!",
-                    showConfirmButton: false,
-                    timer: 1500
+                    title: message,
+                    showConfirmButton: true
                 });
             }
         });
@@ -187,6 +213,10 @@
         },
         minLength: 1,
         appendTo: "#subCategoryModal",
+        focus: function (event, ui) {
+            $("#cbo_category").val(ui.item.label);
+            return false;
+        },
         select: function (event, ui) {
             $("#cbo_category").val(ui.item.label);
             $("#category_id").val(ui.item.value);

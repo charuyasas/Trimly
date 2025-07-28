@@ -160,7 +160,7 @@
                         <div class="col-md-4 d-flex align-items-center mt-4">
                             <label class="me-3">Is Active</label>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="is_active" style="transform: scale(1.6);">
+                                <input class="form-check-input" type="checkbox" id="is_active" style="transform: scale(1.6);" checked>
                             </div>
                         </div>
                     </div>
@@ -255,6 +255,10 @@
         },
         minLength: 1,
         appendTo: "#itemModal",
+        focus: function (event, ui) {
+            $("#supplier_name").val(ui.item.label);
+            return false;
+        },
         select: function (event, ui) {
             $("#supplier_name").val(ui.item.label);
             $("#supplier_id").val(ui.item.value);
@@ -281,6 +285,10 @@
         },
         minLength: 1,
         appendTo: "#itemModal",
+        focus: function (event, ui) {
+            $("#category_name").val(ui.item.label);
+            return false;
+        },
         select: function (event, ui) {
             $("#category_name").val(ui.item.label);
             $("#category_id").val(ui.item.value);
@@ -307,6 +315,10 @@
         },
         minLength: 1,
         appendTo: "#itemModal",
+        focus: function (event, ui) {
+            $("#sub_category_name").val(ui.item.label);
+            return false;
+        },
         select: function (event, ui) {
             $("#sub_category_name").val(ui.item.label);
             $("#sub_category_id").val(ui.item.value);
