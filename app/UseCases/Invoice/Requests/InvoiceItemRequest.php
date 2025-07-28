@@ -21,6 +21,10 @@ class InvoiceItemRequest extends Data
     #[Max(1000)]
     public string $item_description;
 
+    #[SpatieRule('required')]
+    #[Max(1000)]
+    public string $item_type;
+
     #[SpatieRule('required', 'integer', 'min:1')]
     public int $quantity;
 

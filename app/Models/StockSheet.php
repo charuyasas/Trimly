@@ -30,6 +30,7 @@ class StockSheet extends Model
         'Employee Issue' => 'Employee Issue',
         'Employee Consumption' => 'Employee Consumption',
         'GRN' => 'GRN',
+        'Sale' => 'Sale',
     ];
 
     // Auto-generate UUID

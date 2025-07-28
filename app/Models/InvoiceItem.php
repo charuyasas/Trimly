@@ -35,4 +35,9 @@ class InvoiceItem extends Model
     {
         return $this->belongsTo(Service::class, 'item_id', 'id');
     }
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
 }

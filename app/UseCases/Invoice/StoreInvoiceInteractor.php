@@ -55,9 +55,11 @@ class StoreInvoiceInteractor
             }
 
             foreach ($invoiceRequest->items as $item) {
+                $subTotal = $item->quantity * $item->amount;
                 $invoice->items()->create([
                     'item_id' => $item->item_id,
                     'item_description' => $item->item_description,
+                    'item_type' => $item->item_type,
                     'quantity' => $item->quantity,
                     'amount' => $item->amount,
                     'discount_percentage' => $item->discount_percentage ?? 0,

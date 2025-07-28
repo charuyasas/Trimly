@@ -50,6 +50,7 @@
                                         <label class="form-label" for="cbo_item">Item <code>*</code></label>
                                         <input type="text" class="form-control" id="cbo_item" name="item" placeholder="Select item..." tabindex="3" >
                                         <input type="hidden" id="item_id">
+                                        <input type="hidden" id="txt_item_type">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="txt_price">Price <code>*</code></label>
@@ -58,6 +59,7 @@
                                     <div class="col-md-1">
                                         <label class="form-label" for="txt_qty">Qty <code>*</code></label>
                                         <input type="number" class="form-control" id="txt_qty" name="qty" tabindex="4" min=1 onchange="calculateSubTotal('qty');">
+                                        <span class="text-muted small available_stock_display"></span>
                                     </div>
                                     <div class="col-md-1">
                                         <label class="form-label" for="txt_discount">Discount</label>
@@ -307,6 +309,7 @@
             source: function (request, response) {
                 if (request.term.length < 1) return;
 
+                $(".available_stock_display").hide();
                 $.ajax({
                     url: '/api/item-list',
                     dataType: 'json',
@@ -319,7 +322,8 @@
                                 label: item.label,
                                 value: item.value,
                                 id: item.value,
-                                price: item.price
+                                price: item.price,
+                                item_type: item.item_type
                             };
                         }));
 
@@ -327,9 +331,13 @@
                             $("#cbo_item").val(data[0].label);
                             $("#item_id").val(data[0].value);
                             $("#txt_price").val(data[0].price);
+                            $("#txt_item_type").val(data[0].item_type);
                             $("#txt_qty").val(1);
                             $("#txt_sub_total").val((data[0].price*1).toFixed(2));
                             itemSelectedFromAutocomplete = true;
+                            if(data[0].item_type == 'item') {
+                                loadAvailableStock();
+                            }
                         }
                     }
                 });
@@ -343,9 +351,13 @@
                 $("#cbo_item").val(ui.item.label);
                 $("#item_id").val(ui.item.value);
                 $("#txt_price").val(ui.item.price);
+                $("#txt_item_type").val(ui.item.item_type);
                 $("#txt_qty").val(1);
                 $("#txt_sub_total").val((ui.item.price*1).toFixed(2));
                 itemSelectedFromAutocomplete = true;
+                if(ui.item.item_type == 'item') {
+                    loadAvailableStock();
+                }
                 return false;
             }
         });
@@ -355,8 +367,10 @@
     $("#cbo_item").on("input", function () {
         if (!itemSelectedFromAutocomplete) {
             $("#txt_price").val('');
+            $("#txt_item_type").val('');
             $("#txt_qty").val('');
             $("#txt_sub_total").val('');
+            $(".available_stock_display").hide();
         }
         itemSelectedFromAutocomplete = false;
     });
@@ -438,6 +452,7 @@
         let discount = $("#txt_discount").val();
         let discount_amount = $("#txt_discount_amount").val();
         let sub_total = $("#txt_sub_total").val();
+        let itemType = $("#txt_item_type").val();
 
         let description = ($("#cbo_item").val()).split(" - ");
         let itemDescription = description[1];
@@ -457,6 +472,7 @@
             invoice_id: invoiceID,
             item_id: itemID,
             item_description: itemDescription,
+            item_type: itemType,
             quantity: qty,
             amount: unitPrice,
             discount_percentage: discount,
@@ -490,6 +506,7 @@
                 $("#txt_discount_amount").val('');
                 $("#txt_sub_total").val('');
                 $("#cbo_item").val('');
+                $(".available_stock_display").hide();
 
                 $("#txt_discount").prop("disabled", false);
                 $("#txt_discount_amount").prop("disabled", false);
@@ -524,6 +541,7 @@
         $("#txt_discount_amount").val('');
         $("#txt_sub_total").val('');
         $("#cbo_item").val('');
+        $(".available_stock_display").hide();
     }
 
     function fetchInvoiceDetails(invoiceId) {
@@ -540,7 +558,7 @@
                     $("#customer_id").val(res.customer_no);
                     $("#cbo_customer").val(res.customer_name);
 
-                    // $("#cbo_tokenNo").val(res.token_no);
+                    $("#cbo_tokenNo").val(res.invoice_id);
                     $("#invoice_id").val(res.invoice_id);
 
                     $("#txt_totdiscount").val(res.discount_percentage);
@@ -604,12 +622,22 @@
         }
 
         $("#txt_grandtotal").val(parseFloat(grandTotal).toFixed(2));
+        const hasItem = itemsList.some(i => i.item_type === 'item');
+        const hasService = itemsList.some(i => i.item_type === 'service');
+
+        if (hasItem && hasService) {
+            $('#txt_totdiscount').prop('disabled', true);
+            $('#txt_totdiscount_amount').prop('disabled', true);
+        } else {
+            $('#txt_totdiscount').prop('disabled', false);
+            $('#txt_totdiscount_amount').prop('disabled', false);
+        }
     }
 
     function finishInvoice() {
         var invoiceId = $("#invoice_id").val();
 
-        if(parseFloat($("#txt_received_cash").val()) < parseFloat($("#txt_grandtotal").val())){
+        if($("#txt_received_cash").val() === '' || parseFloat($("#txt_received_cash").val()) < parseFloat($("#txt_grandtotal").val())){
             Swal.fire({
                 icon: "error",
                 title: "Insufficient Cash Received!",
@@ -631,13 +659,26 @@
             method: 'POST',
             data: invoice,
             success: function(response) {
-                Swal.fire({
-                    icon: "success",
-                    title: "Successfully finalized invoice.!",
-                    showConfirmButton: false,
-                    timer: 1000
-                });
-                location.reload();
+                if(response.message === 'Invoice finalized successfully.'){
+                    Swal.fire({
+                        icon: "success",
+                        title: "Successfully finalized invoice.!",
+                        showConfirmButton: false,
+                        timer: 1000
+                    });
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                }else{
+                    Swal.fire({
+                        icon: "error",
+                        title: "Finalization Failed",
+                        text: response.error ?? 'Something went wrong while finalizing the invoice.',
+                        showConfirmButton: true,
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false
+                    });
+                }
             },
             error: function(xhr) {
                 if (xhr.status === 422) {
@@ -701,6 +742,43 @@
             $('#txt_balance').val('0.00');
         }
     }
+
+    function loadAvailableStock(){
+
+            $.get(`/api/available-stock`, {item_id: $("#item_id").val(), store: '1-2-6-1000'}, function (data) {
+                const available = data.available_stock ?? 0;
+
+                    if (available < 1) {
+                        $("#txt_qty").val(0);
+                        $(".btn_add").prop("disabled", true);
+                        $(".available_stock_display").addClass("red_color");
+                        $(".available_stock_display").removeClass("text-muted");
+
+                    } else {
+                        $(".btn_add").prop("disabled", false);
+                        $(".available_stock_display").addClass("text-muted");
+                        $(".available_stock_display").removeClass("red_color");
+                    }
+                    $("#txt_qty").attr("max", available);
+                    $(".available_stock_display").show();
+                    $(".available_stock_display").text(`Available stock: ${available}`);
+
+                    if ($("#txt_qty").val() > available) {
+                        $("#txt_qty").val(available);
+                    }
+
+            });
+    }
+
+    $("#txt_qty").on("keyup", function () {
+        const max = parseFloat($(this).attr("max")) || Infinity;
+        const value = parseFloat($(this).val()) || 0;
+
+        if (value > max) {
+            $(this).val(max);
+            alert(`Maximum allowed quantity is ${max}`);
+        }
+    });
 
 
 </script>

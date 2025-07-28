@@ -20,6 +20,7 @@ class HeadingAccountSeeder extends Seeder
         HeadingAccount::create(['heading_code' => 12,'heading_account' => 'Long Term Liability', 'main_code' => 6]);
         HeadingAccount::create(['heading_code' => 13,'heading_account' => 'Intercompany Exchange', 'main_code' => 3]);
         HeadingAccount::create(['heading_code' => 15,'heading_account' => 'Opening Equity', 'main_code' => 3]);
+        HeadingAccount::create(['heading_code' => 16,'heading_account' => 'Sales Revenue', 'main_code' => 5]);
         HeadingAccount::create(['heading_code' => 1000,'heading_account' => 'Long Term Asset', 'main_code' => 1]);
     }
 }

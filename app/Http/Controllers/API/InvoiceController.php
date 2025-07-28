@@ -4,6 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
+use App\UseCases\JournalEntry\StoreJournalEntryInteractor;
+use App\UseCases\StockSheet\GetAvailableStockInteractor;
+use App\UseCases\StockSheet\StoreStockSheetInteractor;
 use Illuminate\Http\JsonResponse;
 use App\UseCases\Invoice\{
     StoreInvoiceInteractor,
@@ -36,10 +39,10 @@ class InvoiceController extends Controller
 
     }
 
-    public function finishInvoice($id, FinishInvoiceInteractor $finishInvoiceInteractor): JsonResponse
+    public function finishInvoice($id, FinishInvoiceInteractor $finishInvoiceInteractor, StoreJournalEntryInteractor $storeJournalEntryInteractor, StoreStockSheetInteractor $storeStockSheetInteractor, GetAvailableStockInteractor $getAvailableStockInteractor): JsonResponse
     {
         request()->merge(['id' => $id]);
-        $result = $finishInvoiceInteractor->execute($id, InvoiceRequest::validateAndCreate(request()));
+        $result = $finishInvoiceInteractor->execute($id, InvoiceRequest::validateAndCreate(request()), $storeJournalEntryInteractor, $storeStockSheetInteractor, $getAvailableStockInteractor);
 
         return response()->json($result);
     }
