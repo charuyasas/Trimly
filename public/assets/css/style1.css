@@ -360,6 +360,11 @@ table.dataTable tbody th, table.dataTable tbody td {
   vertical-align: middle;
 }
 
+ .dataTables_filter {
+     display: none !important;
+ }
+
+
 /* line 212, G:/admin_project/8 admin/management_html/scss/_reset.scss */
 .mt_40 {
   margin-top: 40px;
