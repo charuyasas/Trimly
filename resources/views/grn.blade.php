@@ -408,6 +408,111 @@
     </div>
 </div>
 
+<!-- Add Item Modal -->
+<div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="itemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content" style="max-height: 95vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="itemModalLabel">Add Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="itemForm">
+                    <input type="hidden" id="item_id">
+
+                    <!--  Item Details -->
+                    <h5 class="mb-3">🧾 Item Details</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Code</label>
+                            <input type="text" class="form-control common_input" id="item_code" required>
+                            <div class="invalid-feedback">Code is required</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Description</label>
+                            <input type="text" class="form-control common_input" id="description" required>
+                            <div class="invalid-feedback">Description is required</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Rack Location</label>
+                            <input type="text" class="form-control common_input" id="rack_location" required>
+                            <div class="invalid-feedback">Rack Location is required</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Supplier</label>
+                            <input type="text" id="item_supplier_name" class="form-control common_input" placeholder="Search supplier..." autocomplete="off" required>
+                            <input type="hidden" id="item_supplier_id">
+                            <div class="invalid-feedback">Supplier is required</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Category</label>
+                            <input type="text" id="category_name" class="form-control common_input" placeholder="Search category..." autocomplete="off" required>
+                            <input type="hidden" id="category_id">
+                            <div class="invalid-feedback">Category is required</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Sub Category</label>
+                            <input type="text" id="sub_category_name" class="form-control common_input" placeholder="Search sub category..." autocomplete="off" required>
+                            <input type="hidden" id="sub_category_id">
+                            <div class="invalid-feedback">Sub Category is required</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Measure Unit</label>
+                            <select class="form-select common_input" id="measure_unit" required>
+                                <option value="">Select</option>
+                                <option value="kg">Kg</option>
+                                <option value="g">g</option>
+                                <option value="unit">Unit</option>
+                                <option value="l">L</option>
+                                <option value="ml">ml</option>
+                            </select>
+                            <div class="invalid-feedback">Measured Unit is required</div>
+                        </div>
+
+                        <div class="col-md-4 d-flex align-items-center mt-4">
+                            <label class="me-3">Is Active</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="is_active" style="transform: scale(1.6);" checked>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--  Bundle Section -->
+                    <h5 class="mt-5 mb-3">📦 Bundle</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">List Price</label>
+                            <input type="number" class="form-control common_input" id="list_price" step="0.01"
+                                   placeholder="Standard price before discounts" required>
+                            <div class="invalid-feedback">List Price is required</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Retail Price</label>
+                            <input type="number" class="form-control common_input" id="retail_price" step="0.01"
+                                   placeholder="Selling price for regular customers" required>
+                            <div class="invalid-feedback">Retail Price is required</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Wholesale Price</label>
+                            <input type="number" class="form-control common_input" id="wholesale_price" step="0.01"
+                                   placeholder="Selling price for bulk buyers" required>
+                        </div>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="modal-footer mt-4">
+                        <button type="button" class="btn btn-primary" id="saveItemBtn" onclick="saveItem()">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 
@@ -1652,6 +1757,195 @@
         }, 500);
     }
 
+    //Add item modal functions
+
+    document.addEventListener('keydown', function(event) {
+        // Check if the '+' key is pressed (Shift + '=' or Numpad '+')
+        if ((event.key === '+' || event.code === 'NumpadAdd') && !event.target.matches('input, textarea')) {
+            event.preventDefault(); // Prevent any default browser behavior
+            // Clear all fields in the form inside the modal
+            $('#itemModal').on('shown.bs.modal', function () {
+                $(this).find('form')[0].reset(); // Reset the form
+                $(this).find('select').val('').trigger('change'); // If you're using select2 or want to reset selects
+                $(this).find('input[type=checkbox]').prop('checked'); // Reset checkboxes
+            });
+            const itemModal = new bootstrap.Modal(document.getElementById('itemModal'));
+            itemModal.show();
+        }
+    });
+
+    // Category Autocomplete
+    $("#category_name").autocomplete({
+        source: function (request, response) {
+            if (request.term.length < 1) return;
+            $.ajax({
+                url: '/api/categories-list',
+                dataType: 'json',
+                data: { search_key: request.term },
+                success: function (data) {
+                    response(data);
+                    if (data.length === 1) {
+                        $("#category_name").val(data[0].label);
+                        $("#category_id").val(data[0].value);
+                    }
+                }
+            });
+        },
+        minLength: 1,
+        appendTo: "#itemModal",
+        focus: function (event, ui) {
+            $("#category_name").val(ui.item.label);
+            return false;
+        },
+        select: function (event, ui) {
+            $("#category_name").val(ui.item.label);
+            $("#category_id").val(ui.item.value);
+            return false;
+        }
+    });
+
+    // Sub-Category Autocomplete
+    $("#sub_category_name").autocomplete({
+        source: function (request, response) {
+            if (request.term.length < 1) return;
+            $.ajax({
+                url: '/api/sub-categories-list',
+                dataType: 'json',
+                data: { search_key: request.term },
+                success: function (data) {
+                    response(data);
+                    if (data.length === 1) {
+                        $("#sub_category_name").val(data[0].label);
+                        $("#sub_category_id").val(data[0].value);
+                    }
+                }
+            });
+        },
+        minLength: 1,
+        appendTo: "#itemModal",
+        focus: function (event, ui) {
+            $("#sub_category_name").val(ui.item.label);
+            return false;
+        },
+        select: function (event, ui) {
+            $("#sub_category_name").val(ui.item.label);
+            $("#sub_category_id").val(ui.item.value);
+            return false;
+        }
+    });
+
+    // Item Modal - Supplier Autocomplete
+    $("#item_supplier_name").autocomplete({
+        source: function (request, response) {
+            if (request.term.length < 1) return;
+
+            $.ajax({
+                url: '/api/suppliers-list',
+                dataType: 'json',
+                data: { search_key: request.term },
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.label,
+                            value: item.label,
+                            id: item.value
+                        };
+                    }));
+
+                    if (data.length === 1) {
+                        $("#item_supplier_name").val(data[0].label);
+                        $("#item_supplier_id").val(data[0].value);
+                    }
+                }
+            });
+        },
+        minLength: 1,
+        appendTo: "#itemModal",
+        select: function (event, ui) {
+            $("#item_supplier_name").val(ui.item.label);
+            $("#item_supplier_id").val(ui.item.id);
+            return false;
+        }
+    });
+
+    let isSaving = false;
+
+    function saveItem() {
+        if (isSaving) return; // prevent duplicate submission
+        isSaving = true;
+
+        const itemData = {
+            code: $('#item_code').val(),
+            description: $('#description').val(),
+            rack_location: $('#rack_location').val(),
+            supplier_id: $('#item_supplier_id').val(),
+            category_id: $('#category_id').val(),
+            sub_category_id: $('#sub_category_id').val(),
+            measure_unit: $('#measure_unit').val(),
+            is_active: $('#is_active').is(':checked') ? 1 : 0,
+            list_price: $('#list_price').val(),
+            retail_price: $('#retail_price').val(),
+            wholesale_price: $('#wholesale_price').val()
+        };
+
+        $.ajax({
+            url: '/api/items',
+            method: 'POST',
+            data: itemData,
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Item Saved',
+                    text: response.message || 'Item saved successfully!',
+                });
+                $('#itemModal').modal('hide');
+                isSaving = false;
+            },
+            error: function (xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    html: Object.values(xhr.responseJSON.errors).map(e => `<div>${e}</div>`).join(''),
+                });
+                isSaving = false;
+            }
+        });
+    }
+
+    //tab navigation for Enter key-item modal
+    $(document).on('keydown', 'input, select, textarea', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const form = $(this).closest('form');
+            const focusables = form.find('input, select, textarea, button')
+                .filter(':visible:not([readonly]):not([disabled])');
+
+            const index = focusables.index(this);
+            const next = focusables.eq(index + 1);
+
+            if (index > -1 && index + 1 < focusables.length) {
+                if (next.is('button') && next.attr('id') === 'saveItemBtn') {
+                    next.click();
+                } else {
+                    next.focus();
+                }
+            }
+        }
+    });
+
+    $('#type_discount').on('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            goToStep(2);
+        }
+    });
+
+    $('#wholesale_price').on('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            saveItem();
+        }
+    });
 
 </script>
 
