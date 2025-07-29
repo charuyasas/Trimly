@@ -4,8 +4,10 @@ namespace App\UseCases\Grn;
 
 use App\Models\Grn;
 use App\Models\GrnItem;
+use App\Models\Item;
 use App\UseCases\Grn\Requests\GrnRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class StoreGrnInteractor
 {
@@ -65,18 +67,26 @@ class StoreGrnInteractor
             }
 
             foreach ($request->items as $item) {
-                $grn->items()->create([
+                $grnItem = $grn->items()->create([
                     'item_id' => $item->item_id,
                     'item_name' => $item->item_name,
                     'qty' => $item->qty,
-                    'foc' => $item->foc,
+                    'foc' => $item->foc ?? 0,
                     'price' => $item->price,
-                    'margin' => $item->margin,
-                    'discount' => $item->discount,
+                    'margin' => $item->margin ?? null,
+                    'discount' => $item->discount ?? null,
                     'final_price' => $item->final_price,
                     'subtotal' => $item->subtotal,
                 ]);
+
+                // Update average cost
+                $averageCost = GrnItem::where('item_id', $item->item_id)->avg('price');
+
+                Item::where('id', $item->item_id)->update([
+                    'average_cost' => $averageCost,
+                ]);
             }
+
 
             DB::commit();
 

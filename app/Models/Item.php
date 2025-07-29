@@ -14,7 +14,8 @@ class Item extends Model
         'code', 'description', 'rack_location',
         'supplier_id', 'category_id', 'sub_category_id',
         'measure_unit', 'is_active',
-        'list_price', 'retail_price', 'wholesale_price'
+        'list_price', 'retail_price', 'wholesale_price',
+        'average_cost'
     ];
 
     public $incrementing = false;

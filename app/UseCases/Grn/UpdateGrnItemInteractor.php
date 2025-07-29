@@ -24,6 +24,12 @@ class UpdateGrnItemInteractor
                 'subtotal'     => $data['subtotal'],
             ]);
 
+            // Recalculate and update average cost in item table
+            $averageCost = GrnItem::where('item_id', $item->item_id)->avg('price');
+            \App\Models\Item::where('id', $item->item_id)->update([
+                'average_cost' => $averageCost,
+            ]);
+
             // Recalculate GRN totals
             $this->recalculateGrnTotals($item->grn_id);
 
