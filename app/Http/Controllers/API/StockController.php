@@ -47,14 +47,14 @@ class StockController extends Controller
         if ($store_ledger_code != '') {
             // Normal issue
             $nextReferenceId = $this->createReferenceID(StockSheet::STATUS['Employee Issue']);
-            $debitEntries = $this->createDebitEntryCollection($items, $store_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Issue']);
-            $creditEntries = $this->createCreditEntryCollection($items, $employee_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Issue']);
+            $debitEntries = $this->createDebitEntryCollection($items, $employee_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Issue']);
+            $creditEntries = $this->createCreditEntryCollection($items, $store_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Issue']);
             $this->employeeIssueItemsToStockTable($storeStockSheetInteractor, $debitEntries->merge($creditEntries));
         } else {
             // Employee Consumption
             $nextReferenceId = $this->createReferenceID(StockSheet::STATUS['Employee Consumption']);
-            $debitEntries = $this->createDebitEntryCollection($items, $employee_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Consumption']);
-            $this->employeeIssueItemsToStockTable($storeStockSheetInteractor, $debitEntries);
+            $creditEntries = $this->createCreditEntryCollection($items, $employee_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Consumption']);
+            $this->employeeIssueItemsToStockTable($storeStockSheetInteractor, $creditEntries);
 
             $allAvailable = true;
 
