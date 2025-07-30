@@ -72,6 +72,10 @@ Route::get('/expenses', function () {
 
 
 
+Route::get('/item-list-report', function () {
+    return view('reports/item-list-report');
+});
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
