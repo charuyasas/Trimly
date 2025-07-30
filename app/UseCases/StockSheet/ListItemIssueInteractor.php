@@ -58,7 +58,7 @@ class ListItemIssueInteractor
                     ->map(function ($entries) use ($employee) {
                         $credit = $entries->sum('credit');
                         $debit = $entries->sum('debit');
-                        $currentStock = $credit - $debit;
+                        $currentStock = $debit-$credit ;
 
                         $item = $entries->first()?->items;
 

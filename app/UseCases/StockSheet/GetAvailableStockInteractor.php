@@ -10,7 +10,7 @@ class GetAvailableStockInteractor
     {
         return StockSheet::where('item_code', $itemId)
             ->where('ledger_code', $storeId)
-            ->selectRaw('SUM(credit) - SUM(debit) as available_stock')
+            ->selectRaw('SUM(debit) - SUM(credit) as available_stock')
             ->value('available_stock') ?? 0;
     }
 }

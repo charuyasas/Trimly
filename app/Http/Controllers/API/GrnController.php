@@ -18,7 +18,6 @@ use App\UseCases\Grn\UpdateGrnItemInteractor;
 use App\UseCases\JournalEntry\Requests\JournalEntryRequest;
 use App\UseCases\JournalEntry\StoreJournalEntryInteractor;
 use App\UseCases\StockSheet\Requests\StockSheetEntryDataRequest;
-use App\UseCases\StockSheet\Requests\StockSheetRequest;
 use App\UseCases\StockSheet\StoreStockSheetInteractor;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
@@ -55,18 +54,18 @@ class GrnController extends Controller
         $grnNumber = $request->grn_number;
         $grandTotal = $request->grand_total;
 
-        $stockdebitEntryData = collect($request->items)->map(function ($item) use ($grnNumber) {
+        $stockDebitEntryData = collect($request->items)->map(function ($item) use ($grnNumber) {
             $totalQty = ($item->qty ?? 0) + ($item->foc ?? 0);
             return [
                 'item_code'     => $item->item_id ?? '',
                 'ledger_code'   => AccountsLedgerCodes::LEDGER_CODES['MainStore'],
                 'description'   => 'GRN - ' . ($item->item_name ?? ''),
-                'credit'         => $totalQty,
+                'debit'         => $totalQty,
                 'reference_type' => StockSheet::STATUS['GRN'],
                 'reference_id'   => 'GRN - ' . $grnNumber,
             ];
         })->toArray();
-        $this->grnItemsToStockTable($storeStockSheetInteractor, $stockdebitEntryData);
+        $this->grnItemsToStockTable($storeStockSheetInteractor, $stockDebitEntryData);
 
         $journalEntries = [
             [

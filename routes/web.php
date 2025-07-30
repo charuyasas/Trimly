@@ -76,6 +76,10 @@ Route::get('/item-list-report', function () {
     return view('reports/item-list-report');
 });
 
+Route::get('/stock-value-report', function () {
+    return view('reports.stock-value-report');
+});
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
