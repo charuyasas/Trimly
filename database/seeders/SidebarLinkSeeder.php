@@ -158,6 +158,20 @@ class SidebarLinkSeeder extends Seeder
                     ],
                 ],
             ],
+            [
+                'permission_name' => 'reports',
+                'display_name' => 'Reports',
+                'url' => '#',
+                'icon_path' => 'assets/img/menu-icon/11.svg',
+                'children' => [
+                    [
+                        'permission_name' => 'item-list-report',
+                        'display_name' => 'Item List Report',
+                        'url' => '/item-list-report',
+                    ],
+                ],
+            ],
+
         ];
 
         $this->createSidebarLinks($sidebarLinks);
