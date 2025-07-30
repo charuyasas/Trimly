@@ -11,6 +11,7 @@ use App\UseCases\Item\UpdateItemInteractor;
 use App\UseCases\Item\DeleteItemInteractor;
 use App\UseCases\Item\ShowItemInteractor;
 use App\UseCases\Item\ListItemInteractor;
+use App\UseCases\Reports\StockValueReportInteractor;
 use Illuminate\Http\JsonResponse;
 
 class ItemController extends Controller
@@ -61,6 +62,10 @@ class ItemController extends Controller
         });
 
         return response()->json($results);
+    }
+    public function stockValueReport(StockValueReportInteractor $interactor)
+    {
+        return response()->json($interactor->execute());
     }
 
 }

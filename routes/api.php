@@ -99,6 +99,8 @@ Route::post('/update-password', [UserController::class, 'updateUserPassword']);
 Route::apiResource('sidebar-links', SidebarLinkController::class)->middleware('auth:sanctum');
 Route::middleware('auth:sanctum')->get('/sidebar-links', [SidebarLinkController::class, 'index']);
 
+Route::get('/stock-value-report', [ItemController::class, 'stockValueReport']);
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
