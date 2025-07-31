@@ -70,6 +70,68 @@
     </a>
 </div>
 
+<div class="modal fade" id="shiftInCashInHandModal" tabindex="-1" aria-labelledby="ShiftInCashInHandLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="ShiftInCashInHandLabel">{{ auth()->user()->name }}, Start Your Shift – Enter Opening Cash</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <form id="shiftInCashInHandForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+{{--                        <label for="shiftInCashBalance" class="form-label">Enter Cash in Hand</label>--}}
+                        <input type="number" id="shiftInCashBalance" name="shiftInCashBalance" class="form-control form-control-lg" placeholder="0.00" required>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="submit" id="saveShiftInCashBalanceBtn" class="btn btn-primary w-100" onclick="startShift()">
+                        Save & Start Shift
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="dayEndCashInHandModal" tabindex="-1" aria-labelledby="dayEndCashInHandLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="dayEndCashInHandLabel">{{ auth()->user()->name }}, End of Shift – Confirm Cash in Hand</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <form id="dayEndCashInHandFrom" onsubmit="ShiftEnd(event)">
+                <div class="modal-body">
+                    <div class="mb-3">
+{{--                        <label for="dayEndCashBalance" class="form-label">Enter Cash in Hand</label>--}}
+                        <input type="number" id="dayEndCashBalance" name="dayEndCashBalance" class="form-control form-control-lg" placeholder="0.00" required>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="submit" id="saveShiftEndCashBalanceBtn" class="btn btn-primary w-100">
+                        Save & End Shift
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
 <script src="{{ asset('assets/js/popper1.min.js') }}"></script>
 <script src="{{ asset('assets/js/bootstrap1.min.js') }}"></script>
 <script src="{{ asset('assets/js/metisMenu.js') }}"></script>
@@ -119,7 +181,15 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+{{--<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />--}}
+
+
 <script>
+
+    const token = $('meta[name="api-token"]').attr('content');
+    const role = $('meta[name="user-role"]').attr('content');
+    const userID = $('meta[name="user-id"]').attr('content');
+
 function updateDateTime() {
     const now = new Date();
 
@@ -131,6 +201,322 @@ function updateDateTime() {
 
 setInterval(updateDateTime, 1000);
 updateDateTime();
+
+$(document).ready(function () {
+    if (role === 'cashier') {
+        $.ajax({
+            url: '/api/userShift',
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            success: function (response) {
+                if (response.user_id == null) {
+                    $('#shiftInBtn').show();
+                    $('#shiftOutBtn').hide();
+                    if (!sessionStorage.getItem('cashier_popup_shown')) {
+                        $('#shiftInCashInHandModal').modal('show');
+                        sessionStorage.setItem('cashier_popup_shown', 'true');
+                    }
+                } else if(response.user_id == userID){
+                    $('#shiftOutBtn').show();
+                    $('#shiftInBtn').hide();
+
+                } else {
+                    $('#shiftOutBtn').hide();
+                    $('#shiftInBtn')
+                        .show()
+                        .prop('disabled', true);
+                }
+            },
+            error: function (xhr) {
+                const response = xhr.responseJSON;
+                Swal.fire({
+                    icon: "error",
+                    title: response?.message || "Something went wrong",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        });
+    }
+});
+
+$('#shiftInCashInHandForm').on('submit', function (e) {
+    e.preventDefault();
+});
+
+function startShift(){
+    const token = $('meta[name="api-token"]').attr('content');
+    const userID = $('meta[name="user-id"]').attr('content');
+    const data = {
+        opening_cash_in_hand: $('#shiftInCashBalance').val(),
+        user_id: userID
+    };
+
+    $.ajax({
+        url: '/api/userShift',
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        },
+        data: data,
+        success: function (response) {
+            sessionStorage.setItem('cashier_popup_shown', 'true');
+            $('#shiftInCashInHandModal').modal('hide');
+
+            if(response.data == null){
+                Swal.fire({
+                    icon: "error",
+                    title: response.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }else{
+                Swal.fire({
+                    icon: "success",
+                    title: "Login Successfully",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                $('#shiftOutBtn').show();
+                $('#shiftInBtn').hide();
+            }
+
+
+        },
+        error: function (xhr) {
+            const response = xhr.responseJSON;
+            Swal.fire({
+                icon: "error",
+                title: response?.message || "Something went wrong",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    });
+}
+
+function ShiftEnd(event) {
+        event.preventDefault();
+    const data = {
+        day_end_cash_in_hand: $('#dayEndCashBalance').val(),
+        user_id: userID
+    };
+
+    $.ajax({
+        url: '/api/userShift/${userID}',
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        },
+        data: data,
+        success: function (response) {
+            printShiftFullSummary(response.data);
+
+            setTimeout(() => {
+                Swal.fire({
+                    icon: "success",
+                    title: "Logging out...",
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+
+                setTimeout(() => {
+                    sessionStorage.removeItem('cashier_popup_shown');
+                    document.getElementById('logout-form').submit();
+                }, 1000);
+
+            }, 500);
+        },
+        error: function (xhr) {
+            const response = xhr.responseJSON;
+            Swal.fire({
+                icon: "error",
+                title: response?.message || "Something went wrong",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    });
+}
+
+    function printShiftFullSummary(data) {
+        const formatAmount = (val) => parseFloat(val || 0).toFixed(2);
+        const formatDateTime = (datetime) => {
+            const date = new Date(datetime);
+            return date.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        };
+        const formatDate = (datetime) => {
+            const date = new Date(datetime);
+            return date.toLocaleDateString('en-GB');
+        };
+
+        const openingCash = parseFloat(data.opening_cash_in_hand || 0);
+        const salesTotal = parseFloat(data.total_daily_sales || 0);
+        const expenseTotal = parseFloat(data.total_daily_expenses || 0);
+        const cashInHand = parseFloat(data.day_end_cash_in_hand || 0);
+        const cashShortage = parseFloat(data.cash_shortage || 0);
+        const shiftOffTime = data.shift_off_time;
+        const shiftInTime = data.shift_in_time;
+        const shiftID = data.shift_id;
+        const userName = data.user_name;
+        const cashHandover = cashInHand - cashShortage;
+
+        const hasVariation = cashShortage !== 0;
+        const variationText = cashShortage > 0 ? "Total Cash Excess" : "Total Cash Lost";
+        const variationSign = cashShortage > 0 ? "+" : "(-)";
+
+        const salesHtml = data.sales_entries.map(entry => `
+        <tr>
+            <td>+ ${entry.reference_id || 'N/A'}</td>
+            <td class="text-right">${formatAmount(entry.debit)}</td>
+        </tr>
+    `).join('');
+
+        const expenseHtml = data.expense_entries.map(entry => `
+        <tr>
+            <td>- ${entry.reference_id || 'N/A'}</td>
+            <td class="text-right">${formatAmount(entry.debit)}</td>
+        </tr>
+    `).join('');
+
+        const html = `
+<html>
+<head>
+    <title>Shift Summary</title>
+    <style>
+        body { font-family: 'Times New Roman', serif; font-size: 14px; padding: 20px; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .bold { font-weight: bold; }
+        hr { border: none; border-top: 2px solid #000; margin: 10px 0; }
+        table { width: 100%; margin-bottom: 10px; border-collapse: collapse; }
+        td { padding: 4px 0; vertical-align: top; }
+    </style>
+</head>
+<body>
+
+    <div class="text-center">
+        <h5 class="bold">TRIMLY</h5>
+        <h6 class="bold">DAILY INCOME & EXPENDITURE REPORT</h6>
+<!--        <p>Kurunegala, Sri Lanka<br>Tel: 0372232079, Fax: 0372232377</p>-->
+        <div>${formatDate(shiftOffTime)}</div>
+    </div>
+
+    <hr>
+
+    <table>
+        <tr><td colspan="2" class="bold">1.0 Cashier Activity Details</td></tr>
+        <tr><td>* Shift ID</td><td>: ${shiftID}</td></tr>
+        <tr><td>* User</td><td>: ${userName}</td></tr>
+        <tr><td>* On Time</td><td>: ${formatDateTime(shiftInTime)}</td></tr>
+        <tr><td>* Opening Cash</td><td>: ${formatAmount(openingCash)}</td></tr>
+    </table>
+
+    <hr>
+
+    <table>
+        <tr><td colspan="2" class="bold">2.0 Sales Collection</td></tr>
+        ${salesHtml}
+        <tr><td class="bold">Total Sales</td><td class="text-right bold">${formatAmount(salesTotal)}</td></tr>
+    </table>
+
+    <hr>
+
+    <table>
+        <tr><td colspan="2" class="bold">3.0 Expenses</td></tr>
+        ${expenseHtml}
+        <tr><td class="bold">Total Expenses</td><td class="text-right bold">${formatAmount(expenseTotal)}</td></tr>
+    </table>
+
+    <hr>
+
+    <table>
+        <tr><td colspan="2" class="bold">4.0 Sign-Off Summary</td></tr>
+        <tr><td>Off Time</td><td class="text-right">${formatDateTime(shiftOffTime)}</td></tr>
+        <tr><td>Printed Time</td><td class="text-right">${formatDateTime(new Date())}</td></tr>
+        <tr><td><b>Cash in Hand</b></td><td class="text-right bold">${formatAmount(cashInHand)}</td></tr>
+        <tr><td><b>Cash Handover</b></td><td class="text-right bold">${formatAmount(cashHandover)}</td></tr>
+        ${hasVariation ? `
+        <tr><td><b>${variationText}</b></td>
+        <td class="text-right bold">${variationSign} ${formatAmount(Math.abs(cashShortage))}</td></tr>` : ''}
+    </table>
+
+    <hr>
+    <div class="text-center">--- END OF REPORT ---</div>
+
+</body>
+</html>
+`;
+
+        const printWindow = window.open('', '_blank');
+        printWindow.document.open();
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+    }
+
+
+function formatDateTime(dt) {
+    const date = new Date(dt);
+    return date.toLocaleString();
+}
+
+
+function dayEnd(){
+    const token = $('meta[name="api-token"]').attr('content');
+    const userID = $('meta[name="user-id"]').attr('content');
+    const data = {
+        opening_cash_in_hand: $('#shiftInCashBalance').val(),
+        user_id: userID
+    };
+
+    $.ajax({
+        url: '/api/userShift',
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        },
+        data: data,
+        success: function () {
+            sessionStorage.setItem('cashier_popup_shown', 'true');
+            $('#shiftOutCashInHandModal').modal('hide');
+
+            Swal.fire({
+                icon: "success",
+                title: "Login Successfully",
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            $('#shiftOutBtn').show();
+            $('#shiftInBtn').hide();
+        },
+        error: function (xhr) {
+            const response = xhr.responseJSON;
+            Swal.fire({
+                icon: "error",
+                title: response?.message || "Something went wrong",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    });
+}
+
+function showModal(){
+    $('#dayEndBalance').val('');
+}
+
+
 </script>
 </body>
 </html>

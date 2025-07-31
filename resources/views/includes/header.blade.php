@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     @if(Auth::check())
         <meta name="api-token" content="{{ Auth::user()->api_token }}">
+        <meta name="user-id" content="{{ Auth::user()->id }}">
+        <meta name="user-role" content="{{ Auth::user()->getRoleNames()->first() }}">
     @endif
     <title>Management Admin</title>
 
@@ -37,18 +39,6 @@
     <!-- jQuery UI for Autocomplete -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    <!-- Select2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-
-    <!-- Select2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-
-
-
-
-
 </head>
 
 <body class="crm_body_bg">
