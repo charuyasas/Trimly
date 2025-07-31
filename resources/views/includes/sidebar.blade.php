@@ -30,6 +30,12 @@
                     </div>
 
                     <div class="header_right d-flex justify-content-between align-items-center">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#shiftInCashInHandModal" id="shiftInBtn" style="display: none">
+                            Shift In
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" onclick="showModal()" data-bs-target="#dayEndCashInHandModal" id="shiftOutBtn" style="display: none">
+                            Shift Out
+                        </button> &nbsp;&nbsp;&nbsp;&nbsp;
                         <div id="datetime" style="font-size: 20px; font-weight: bold;"></div>&nbsp;&nbsp;
                         <div class="profile_info">
                             <img src="{{ asset('assets/img/admin.jpg') }}" alt="#">
@@ -42,7 +48,7 @@
                                     <a href="{{ route('profile.show') }}">My Profile </a>
                                     <form method="POST" action="{{ route('logout') }}" id="logout-form">
                                         @csrf
-                                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();sessionStorage.removeItem('cashier_popup_shown');">
                                             Log Out
                                         </a>
                                     </form>

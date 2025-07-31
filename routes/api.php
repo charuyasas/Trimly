@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\ExpensesController;
+use App\Http\Controllers\API\ShiftController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\StockController;
 use Illuminate\Http\Request;
@@ -78,6 +79,14 @@ Route::apiResource('postingAccount', PostingAccountController::class);
 Route::middleware('auth:sanctum')->apiResource('expenses', ExpensesController::class);
 Route::get('/expenses-account-dropdown', [ExpensesController::class, 'loadExpensesAccountDropdown']);
 Route::get('/cash-balance', [ExpensesController::class, 'getCashBalance']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('userShift', [ShiftController::class, 'getOngoingShiftDetails']);
+    Route::post('userShift', [ShiftController::class, 'startUserShift']);
+    Route::get('userShift/{userShift}', [ShiftController::class, 'showUserShiftEndDetails']);
+    Route::put('userShift/{userShift}', [ShiftController::class, 'endUserShift']);
+});
+
 
 Route::apiResource('roles', RoleController::class);
 Route::get('/role-list-dropdown', [RoleController::class, 'loadRolesDropdown']);

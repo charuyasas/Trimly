@@ -21,6 +21,7 @@ class JournalEntry extends Model
         'Purchase' => 'Purchase',
         'Inventory' => 'Inventory',
         'GRN' => 'GRN',
+        'Expenses' => 'Expenses',
     ];
 
     protected static function boot(): void

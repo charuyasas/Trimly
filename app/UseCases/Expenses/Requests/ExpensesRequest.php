@@ -12,15 +12,12 @@ class ExpensesRequest extends Data
     #[SpatieRule('sometimes','required')]
     public string $debit_account;
 
-    #[SpatieRule('sometimes','required', 'date')]
-    public string $effective_date;
-
     #[SpatieRule('required', 'max:255')]
     public string $description;
 
     #[SpatieRule('required', 'numeric', 'min:0')]
     public float $amount;
 
-    #[SpatieRule('required', 'exists:users,id')]
+    #[SpatieRule('sometimes','required', 'exists:users,id')]
     public int $user_id;
 }

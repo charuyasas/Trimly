@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ListExpensesInteractor
 {
-    public function execute(int $userId)
+    public function execute(int $userId): array
     {
         $user = User::find($userId);
 

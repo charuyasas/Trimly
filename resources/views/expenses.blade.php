@@ -45,7 +45,6 @@
                                             <tr>
                                                 <th>#</th>
                                                 <th>Account</th>
-                                                <th>Date</th>
                                                 <th>Description</th>
                                                 <th>Amount</th>
                                                 <th id="userColumn">User</th>
@@ -91,10 +90,6 @@
                                     <input type="hidden" id="cbo_debitAccountCode">
                                 </div>
                                 <div class="common_input mb_15">
-                                    <label>Date</label>
-                                    <input type="date" class="form-control" name="effectiveDate" id="effectiveDate" value="{{ date('Y-m-d') }}">
-                                </div>
-                                <div class="common_input mb_15">
                                     <label>Description</label>
                                     <input type="text" id="description" placeholder="Description" required>
                                 </div>
@@ -108,7 +103,7 @@
                     </div>
                 </form>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="saveExpensesBtn" onclick="saveExpenses()">Save</button>
+                    <button type="button" class="btn btn-primary" id="saveExpensesBtn">Save</button>
                 </div>
             </div>
         </div>
@@ -117,7 +112,7 @@
 
 <script>
     const expensesApiUrl = '/api/expenses';
-    const token = $('meta[name="api-token"]').attr('content');
+    // const token = $('meta[name="api-token"]').attr('content');
     loadExpenses();
 
     function loadExpenses() {
@@ -138,31 +133,21 @@
                     let row = [
                         i++,
                         expense.posting_account_name,
-                        expense.effective_date,
                         expense.description,
-                        expense.amount
+                        expense.amount,
                     ];
 
-                    if (isAdmin) {
-                        row.push(expense.user_name);
-                    }
+                    row.push(isAdmin ? expense.user_name : '');
 
                     table.row.add(row);
                 });
 
                 table.draw();
 
-                if (!isAdmin) {
-                    $('#userColumn').hide();
-
-                    $('.lms_table_active tbody tr').each(function() {
-                        $(this).find('td:eq(5)').hide();
-                    });
+                if (isAdmin) {
+                    table.column(4).visible(true);
                 } else {
-                    $('#userColumn').show();
-                    $('.lms_table_active tbody tr').each(function() {
-                        $(this).find('td:eq(5)').show();
-                    });
+                    table.column(4).visible(false);
                 }
             },
             error: function(xhr) {
@@ -205,7 +190,6 @@
         const data = {
             id: expenses_id,
             debit_account: $('#cbo_debitAccountCode').val(),
-            effective_date: $('#effectiveDate').val(),
             description: $('#description').val(),
             amount: $('#amount').val(),
         };
@@ -240,7 +224,6 @@
         });
     }
 
-
     function closeExpensesModal() {
         const modalElement = document.getElementById('expensesModal');
         const modal = bootstrap.Modal.getInstance(modalElement);
@@ -249,13 +232,20 @@
         }
         $('#expensesForm')[0].reset();
         $('#expenses_id').val('');
-        $('.modal-title').text('Add Expenses');
+        $('#expensesForm')[0].reset();
+        $('#description').val('');
+        $('#cbo_debitAccount').val('');
+        $('#cbo_debitAccountCode').val('');
+        $('#amount').val('');
         $('#saveExpensesBtn').text('Save');
     }
 
     function openAddExpensesModal() {
         $('#expensesForm')[0].reset();
-        $('#expenses_id').val('');
+        $('#description').val('');
+        $('#cbo_debitAccount').val('');
+        $('#cbo_debitAccountCode').val('');
+        $('#amount').val('');
         loadDebitAccounts();
         loadCashBalance();
     }
@@ -273,22 +263,31 @@
         });
     }
 
-    // Tab on Enter Key
-    $(document).on('keydown', 'input, select, textarea', function(e) {
+    $(document).on('keydown', 'input, select, textarea, button', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
-            const form = $(this).closest('form');
-            const focusables = form.find('input, select, textarea, button').filter(':visible:not([readonly]):not([disabled])');
+
+            const focusables = $('input, select, textarea, button')
+                .filter(':visible:not([readonly]):not([disabled])');
+
             const index = focusables.index(this);
+
             if (index > -1 && index + 1 < focusables.length) {
-                focusables.eq(index + 1).focus();
+                const next = focusables.eq(index + 1);
+                next.focus();
+
+                if (next.is('button') && next.text().trim() === 'Save') {
+                    next.click();
+                }
             } else {
-                $('#saveExpensesBtn').click();
+                saveExpenses();
             }
         }
     });
 
-    $('#expensesForm').on('submit', function (e) {
-        e.preventDefault();
+    $(document).on('click', 'button', function () {
+        if ($(this).text().trim() === 'Save') {
+            saveExpenses();
+        }
     });
 </script>
