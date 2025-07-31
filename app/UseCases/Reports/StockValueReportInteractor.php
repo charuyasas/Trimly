@@ -15,6 +15,8 @@ class StockValueReportInteractor
                 'items.code',
                 'items.description',
                 'items.average_cost',
+                DB::raw('COALESCE(SUM(stock_sheets.debit), 0) as debit'),
+                DB::raw('COALESCE(SUM(stock_sheets.credit), 0) as credit'),
                 DB::raw('COALESCE(SUM(stock_sheets.debit), 0) - COALESCE(SUM(stock_sheets.credit), 0) as stock_balance'),
                 DB::raw('items.average_cost * (COALESCE(SUM(stock_sheets.debit), 0) - COALESCE(SUM(stock_sheets.credit), 0)) as total_stock_value')
             )

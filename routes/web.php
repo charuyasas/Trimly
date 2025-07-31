@@ -80,6 +80,10 @@ Route::get('/stock-value-report', function () {
     return view('reports.stock-value-report');
 });
 
+Route::get('/stock-summary-report', function () {
+    return view('reports.stock-summary-report');
+});
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
