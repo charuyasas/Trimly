@@ -66,6 +66,13 @@ class SidebarLinkSeeder extends Seeder
                 'parent_id' => null,
             ],
             [
+                'permission_name' => 'expenses',
+                'display_name' => 'Expenses',
+                'url' => '/expenses',
+                'icon_path' => 'assets/img/menu-icon/12.svg',
+                'parent_id' => null,
+            ],
+            [
                 'permission_name' => 'item-master',
                 'display_name' => 'Item Master',
                 'url' => '#',

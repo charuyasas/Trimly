@@ -66,6 +66,12 @@ Route::get('/stockIssue', function () {
     return view('employee-stock-issue');
 });
 
+Route::get('/expenses', function () {
+    return view('expenses');
+});
+
+
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

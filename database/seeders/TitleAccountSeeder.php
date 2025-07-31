@@ -25,5 +25,6 @@ class TitleAccountSeeder extends Seeder
         TitleAccount::create(['title_code' => 17, 'title_account' => 'Tax Payable', 'main_code' => 6, 'heading_code' => 9]);
         TitleAccount::create(['title_code' => 18, 'title_account' => 'Cost Of Sale', 'main_code' => 4, 'heading_code' => 8]);
         TitleAccount::create(['title_code' => 19, 'title_account' => 'Sales Revenue', 'main_code' => 5, 'heading_code' => 16]);
+        TitleAccount::create(['title_code' => 20, 'title_account' => 'Administrative Expenses', 'main_code' => 4, 'heading_code' => 8]);
     }
 }

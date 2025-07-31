@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\ExpensesController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\StockController;
 use Illuminate\Http\Request;
@@ -73,6 +74,10 @@ Route::get('/main_account_list', [MainAccountController::class, 'loadMainAccount
 Route::get('/heading_account_list/{mainAcc}', [HeadingAccountController::class, 'loadHeadingAccountDropdown']);
 Route::get('/title_account_list/{mainAcc}/{headingAcc}', [TitleAccountController::class, 'loadTitleAccountDropdown']);
 Route::apiResource('postingAccount', PostingAccountController::class);
+
+Route::middleware('auth:sanctum')->apiResource('expenses', ExpensesController::class);
+Route::get('/expenses-account-dropdown', [ExpensesController::class, 'loadExpensesAccountDropdown']);
+Route::get('/cash-balance', [ExpensesController::class, 'getCashBalance']);
 
 Route::apiResource('roles', RoleController::class);
 Route::get('/role-list-dropdown', [RoleController::class, 'loadRolesDropdown']);
