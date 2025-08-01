@@ -151,6 +151,35 @@ class SidebarLinkSeeder extends Seeder
                     ],
                 ],
             ],
+            [
+                'permission_name' => 'reports',
+                'display_name' => 'Reports',
+                'url' => '#',
+                'icon_path' => 'assets/img/menu-icon/11.svg',
+                'children' => [
+                    [
+                        'permission_name' => 'item-list-report',
+                        'display_name' => 'Item List Report',
+                        'url' => '/item-list-report',
+                    ],
+                    [
+                        'permission_name' => 'stock-value-report',
+                        'display_name' => 'Stock Value Report',
+                        'url' => '/stock-value-report',
+                    ],
+                    [
+                        'permission_name' => 'stock-summary-report',
+                        'display_name' => 'Stock Summary Report',
+                        'url' => '/stock-summary-report',
+                    ],
+                    [
+                        'permission_name' => 'stock-detail-report',
+                        'display_name' => 'Stock Detail Report',
+                        'url' => '/stock-detail-report',
+                    ],
+                ],
+            ],
+
         ];
 
         $this->createSidebarLinks($sidebarLinks);

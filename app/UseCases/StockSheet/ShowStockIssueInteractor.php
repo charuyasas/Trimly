@@ -12,14 +12,14 @@ class ShowStockIssueInteractor {
         $stockSheets = StockSheet::with('items')
             ->where('reference_type', 'Employee Issue')
             ->where('reference_id', $fullReferenceId)
-            ->where('credit', '<>', 0)
+            ->where('debit', '<>', 0)
             ->get();
 
         return $stockSheets->map(function ($stockSheet) {
             return [
                 'item_code'        => $stockSheet->items->code ?? '',
                 'item_description' => $stockSheet->items->description ?? '',
-                'quantity'         => $stockSheet->credit,
+                'quantity'         => $stockSheet->debit,
             ];
         });
     }

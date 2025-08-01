@@ -66,6 +66,22 @@ Route::get('/stockIssue', function () {
     return view('employee-stock-issue');
 });
 
+Route::get('/item-list-report', function () {
+    return view('reports/item-list-report');
+});
+
+Route::get('/stock-value-report', function () {
+    return view('reports.stock-value-report');
+});
+
+Route::get('/stock-summary-report', function () {
+    return view('reports.stock-summary-report');
+});
+
+Route::get('/stock-detail-report', function () {
+    return view('reports.stock-detail-report');
+});
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

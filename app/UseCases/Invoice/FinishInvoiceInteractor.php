@@ -64,7 +64,7 @@ class FinishInvoiceInteractor
 
             $invoiceNumber = $this->generateNextInvoiceNo();
 
-            $stockDebitEntryData = collect($invoice->items)->map(function ($item) use ($invoiceNumber) {
+            $stockCreditEntryData = collect($invoice->items)->map(function ($item) use ($invoiceNumber) {
                 $totalQty = ($item->quantity ?? 0);
 
                 if ($item->item_type === 'item') {
@@ -72,7 +72,7 @@ class FinishInvoiceInteractor
                         'item_code'      => $item->item_id ?? '',
                         'ledger_code'    => AccountsLedgerCodes::LEDGER_CODES['MainStore'],
                         'description'    => 'Invoice - ' . ($item->item_description ?? ''),
-                        'debit'         => $totalQty,
+                        'credit'         => $totalQty,
                         'reference_type' => StockSheet::STATUS['Sale'],
                         'reference_id'   => 'Invoice - ' . $invoiceNumber,
                     ];
@@ -81,8 +81,8 @@ class FinishInvoiceInteractor
                 return null;
             })->filter()->values()->toArray();
 
-            if (!empty($stockDebitEntryData)) {
-                $this->invoiceItemsToStockTable($storeStockSheetInteractor, $stockDebitEntryData);
+            if (!empty($stockCreditEntryData)) {
+                $this->invoiceItemsToStockTable($storeStockSheetInteractor, $stockCreditEntryData);
             }
 
             $serviceCount = 0;
