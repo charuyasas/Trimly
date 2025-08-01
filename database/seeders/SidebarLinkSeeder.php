@@ -172,6 +172,11 @@ class SidebarLinkSeeder extends Seeder
                         'display_name' => 'Stock Summary Report',
                         'url' => '/stock-summary-report',
                     ],
+                    [
+                        'permission_name' => 'stock-detail-report',
+                        'display_name' => 'Stock Detail Report',
+                        'url' => '/stock-detail-report',
+                    ],
                 ],
             ],
 
