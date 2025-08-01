@@ -22,6 +22,7 @@ use App\Http\Controllers\API\ItemController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\SidebarLinkController;
 use App\Http\Controllers\API\GrnController;
+use App\Http\Controllers\API\StockDetailReportController;
 
 Route::apiResource('items', ItemController::class);
 Route::get('/items-list', [ItemController::class, 'loadItemDropdown']);
@@ -100,6 +101,7 @@ Route::apiResource('sidebar-links', SidebarLinkController::class)->middleware('a
 Route::middleware('auth:sanctum')->get('/sidebar-links', [SidebarLinkController::class, 'index']);
 
 Route::get('/stock-value-report', [ItemController::class, 'stockValueReport']);
+Route::post('/stock-detail-report', [StockDetailReportController::class, 'execute']);
 
 Route::get('/user', function (Request $request) {
     return $request->user();
