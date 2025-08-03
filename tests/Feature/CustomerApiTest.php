@@ -1,6 +1,9 @@
 <?php
 
 use App\Models\Customer;
+use App\Models\MainAccount;
+use App\Models\HeadingAccount;
+use App\Models\TitleAccount;
 
 test('can get list of customers', function () {
     // Create some test customers
@@ -33,6 +36,20 @@ test('can get list of customers', function () {
 });
 
 test('can create a new customer', function () {
+    // Create required account data for customer creation
+    $mainAccount = MainAccount::create(['main_account' => 'Asset', 'main_code' => 1]);
+    $headingAccount = HeadingAccount::create([
+        'heading_account' => 'Current Assets',
+        'main_code' => $mainAccount->main_code,
+        'heading_code' => 2,
+    ]);
+    $titleAccount = TitleAccount::create([
+        'title_account' => 'Cash and Bank',
+        'main_code' => $mainAccount->main_code,
+        'heading_code' => $headingAccount->heading_code,
+        'title_code' => 5
+    ]);
+
     $customerData = [
         'name' => 'Bob Wilson',
         'email' => 'bob@example.com',
@@ -125,7 +142,7 @@ test('can delete a customer', function () {
     // But should exist in withTrashed query
     $this->assertDatabaseHas('customers', [
         'id' => $customer->id
-    ], 'mysql'); // Using the test database
+    ]); // Remove the connection parameter to use the default test connection
 });
 
 test('can search customers in dropdown', function () {
