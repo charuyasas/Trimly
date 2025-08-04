@@ -23,6 +23,7 @@
             width: 100%;
             overflow: visible !important;
             margin: 0;
+            padding: 0 !important;
         }
 
         .no-print {
@@ -31,11 +32,8 @@
 
         table {
             page-break-inside: auto;
-        }
-
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto;
+            border-collapse: collapse !important;
+            width: 100% !important;
         }
 
         thead {
@@ -46,22 +44,60 @@
             display: table-footer-group !important;
         }
 
-        @page {
-            size: A4 portrait;
-            margin: 10mm 15mm 15mm 15mm; /* add bottom margin for spacing */
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
         }
 
         html, body {
             height: auto !important;
             overflow: visible !important;
+            margin: 0;
+            padding: 0;
         }
 
         #printTitle {
             display: block !important;
             text-align: center;
-            font-size: 24px;
+            font-size: 20pt;
+            font-weight: bold;
+            margin-top: 0 !important;
+            padding-top: 0 !important;
         }
 
+        table, th, td, tr {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        .fixed-table td:nth-child(2),
+        .fixed-table th:nth-child(2),
+        .fixed-table tfoot td,
+        .fixed-table tfoot th {
+            text-align: center !important;
+        }
+
+        /* Align balance row center */
+        .fixed-table tfoot tr:last-child td {
+            text-align: center !important;
+        }
+
+        .t-entry-block {
+            page-break-inside: avoid;
+            break-inside: avoid;
+            margin-bottom: 16px;
+        }
+
+        /* Force a page break after every 4th table */
+        .t-entry-block:nth-of-type(4n) {
+            page-break-after: always;
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 5mm 15mm 10mm 25mm; /* top, right, bottom, left */
+        }
     }
 
     .fixed-table {
@@ -380,7 +416,10 @@
             const tfoot = `<tfoot>${totalRow}${balanceRow}</tfoot>`;
 
             table.innerHTML = thead + `<tbody>${tbodyRows}</tbody>` + tfoot;
-            container.appendChild(table);
+            const wrapper = document.createElement('div');
+            wrapper.className = 't-entry-block';
+            wrapper.appendChild(table);
+            container.appendChild(wrapper);
         });
     }
 
