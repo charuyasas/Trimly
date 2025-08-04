@@ -42,12 +42,42 @@
             font-size: 24px;
             margin-bottom: 20px;
         }
-        @media print {
-            #printTitle {
-                display: block;
-            }
-        }
     }
+
+    .tree-toggle {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    [data-level="1"] .tree-toggle::before,
+    [data-level="2"] .tree-toggle::before {
+        content: "▶";
+        display: inline-block;
+        margin-right: 8px;
+        transition: transform 0.2s;
+    }
+
+    [data-level="1"].open .tree-toggle::before,
+    [data-level="2"].open .tree-toggle::before {
+        transform: rotate(90deg);
+        content: "▼";
+    }
+
+    [data-level="1"] td {
+        font-weight: 700;
+        background-color: #e8f0fe;
+    }
+
+    [data-level="2"] td {
+        padding-left: 2rem;
+        background-color: #f1f8ff;
+        font-weight: 600;
+    }
+
+    [data-level="3"] td {
+        padding-left: 4rem;
+    }
+
 </style>
 
 <div class="main_content_iner overly_inner">
@@ -57,6 +87,11 @@
                 <div class="white_card card_height_100 mb_30 m-3 p-4">
                     <!-- Search + Buttons -->
                     <div class="d-flex justify-content-end align-items-center mb-3 no-print flex-wrap gap-2">
+
+                        <button id="toggleExpandBtn" class="btn btn-outline-secondary me-2" title="Expand/Collapse All">
+                            <i class="fa fa-expand" aria-hidden="true"></i>
+                        </button>
+
                         <div class="box_right d-flex lms_block me-2">
                             <div class="serach_field_2">
                                 <div class="search_inner">
@@ -74,34 +109,26 @@
                         <button class="btn btn-danger ms-2" id="exportPdfBtn">PDF</button>
                     </div>
 
-                    <!-- Printable Table -->
                     <div id="printableTable" class="table-responsive">
                         <h2 id="printTitle" class="text-center d-none d-print-block">Stock Value Report</h2>
-                        <table class="table table-bordered table-hover align-middle">
+                        <table class="table table-bordered table-hover align-middle tree-table">
                             <thead class="table-light">
                             <tr>
-                                <th>Item Code</th>
-                                <th>Description</th>
+                                <th>Name</th>
                                 <th class="text-end">Unit Cost</th>
                                 <th class="text-end">Stock Balance</th>
                                 <th class="text-end">Total Stock Value</th>
                             </tr>
                             </thead>
-                            <tbody id="itemTable"></tbody>
+                            <tbody id="treeBody"></tbody>
                             <tfoot>
                             <tr>
-                                <th colspan="4" class="text-end" style="color: #ed0303; font-size: 1.25rem;">Total:</th>
-                                <th class="text-end" id="totalValueCell" style="color: #ed0303; font-size: 1.25rem;">0.00</th>
+                                <th colspan="3" class="text-end" style="color: #e74c3c; font-size: 1.25rem;">Grand Total:</th>
+                                <th class="text-end" id="grandTotal" style="color: #e74c3c; font-size: 1.25rem;">0.00</th>
                             </tr>
                             </tfoot>
                         </table>
                     </div>
-
-                    <!-- Pagination Controls -->
-                    <nav aria-label="Page navigation" class="mt-3 no-print">
-                        <ul class="pagination justify-content-end" id="pagination"></ul>
-                    </nav>
-
                 </div>
             </div>
         </div>
@@ -114,8 +141,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
 <script>
-    const rowsPerPage = 14;
-    let currentPage = 1;
+
     let itemsData = [];
     let filteredData = [];
 
@@ -126,112 +152,35 @@
             .then(data => {
                 itemsData = data;
                 filteredData = [...itemsData];
-                displayPage(currentPage);
+                renderTreeGroupedReport(filteredData);
+                //renderTreeGroupedReport(filteredData, true); // always auto-expand
             })
             .catch(error => console.error('Error loading report:', error));
-    }
-
-    // Display table rows for the current page
-    function displayPage(page) {
-        const tbody = document.getElementById('itemTable');
-        tbody.innerHTML = '';
-
-        const start = (page - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-        const paginatedItems = filteredData.slice(start, end);
-
-        let totalValue = 0;
-
-        paginatedItems.forEach(item => {
-            const averageCost = Number(item.average_cost) || 0;
-            const stockBalance = Number(item.stock_balance) || 0;
-            const totalStockValue = Number(item.total_stock_value) || 0;
-
-            totalValue += totalStockValue;
-
-            const tr = `
-            <tr>
-                <td>${item.code}</td>
-                <td>${item.description}</td>
-                <td class="text-end">${averageCost.toFixed(2)}</td>
-                <td class="text-end">${stockBalance.toFixed(2)}</td>
-                <td class="text-end">${totalStockValue.toFixed(2)}</td>
-            </tr>
-        `;
-            tbody.insertAdjacentHTML('beforeend', tr);
-        });
-
-        // Update total in tfoot
-        document.getElementById('totalValueCell').textContent = totalValue.toFixed(2);
-
-        renderPagination();
-    }
-
-    // Render pagination buttons
-    function renderPagination() {
-        const pagination = document.getElementById('pagination');
-        pagination.innerHTML = '';
-
-        const pageCount = Math.ceil(filteredData.length / rowsPerPage);
-        if (pageCount <= 1) return;
-
-        for (let i = 1; i <= pageCount; i++) {
-            const li = document.createElement('li');
-            li.className = `page-item ${i === currentPage ? 'active' : ''}`;
-            li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-            li.addEventListener('click', e => {
-                e.preventDefault();
-                currentPage = i;
-                displayPage(currentPage);
-            });
-            pagination.appendChild(li);
-        }
     }
 
     // Filter items by search query
     function applySearchFilter(query) {
         const lowerQuery = query.toLowerCase();
 
+        // Step 1: Filter matching items
         filteredData = itemsData.filter(item =>
             item.code?.toLowerCase().includes(lowerQuery) ||
             item.description?.toLowerCase().includes(lowerQuery)
         );
 
-        currentPage = 1;
-        displayPage(currentPage);
+        // Step 2: Re-render the table with only matching items + their hierarchy
+        renderTreeGroupedReport(filteredData, true); // Pass true to auto-expand
     }
+
 
     // Print all filtered items (ignoring pagination)
     function printAllItems() {
-        const tbody = document.getElementById('itemTable');
-        tbody.innerHTML = '';
-
-        let totalValue = 0;
-
-        filteredData.forEach(item => {
-            const averageCost = Number(item.average_cost) || 0;
-            const stockBalance = Number(item.stock_balance) || 0;
-            const totalStockValue = Number(item.total_stock_value) || 0;
-
-            totalValue += totalStockValue;
-
-            const tr = `
-            <tr>
-                <td>${item.code}</td>
-                <td>${item.description}</td>
-                <td class="text-end">${averageCost.toFixed(2)}</td>
-                <td class="text-end">${stockBalance.toFixed(2)}</td>
-                <td class="text-end">${totalStockValue.toFixed(2)}</td>
-            </tr>
-        `;
-            tbody.insertAdjacentHTML('beforeend', tr);
-        });
-
-        document.getElementById('totalValueCell').textContent = totalValue.toFixed(2);
+        // Expand all rows before print
+        document.querySelectorAll('.tree-parent').forEach(row => row.classList.add('open'));
+        document.querySelectorAll('[data-level="2"], [data-level="3"]').forEach(row => row.classList.remove('d-none'));
 
         setTimeout(() => {
             window.print();
-            displayPage(currentPage);
         }, 200);
     }
 
@@ -239,45 +188,80 @@
     document.getElementById('exportPdfBtn').addEventListener('click', () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'pt', 'a4');
-
         doc.setFontSize(18);
         doc.text('Stock Value Report', 40, 40);
 
-        const headers = [['Item Code', 'Description', 'Average Cost', 'Stock Balance', 'Total Stock Value']];
-        const rows = filteredData.map(item => [
-            item.code,
-            item.description,
-            parseFloat(item.average_cost).toFixed(2),
-            parseFloat(item.stock_balance).toFixed(2),
-            parseFloat(item.total_stock_value).toFixed(2)
-        ]);
+        const body = [];
 
-        // Calculate Total Stock Value
-        const totalValue = filteredData.reduce((sum, item) => sum + parseFloat(item.total_stock_value), 0);
+        const grouped = {}; // rebuild grouping
+        filteredData.forEach(item => {
+            if (!grouped[item.category_id]) {
+                grouped[item.category_id] = {
+                    name: item.category_name,
+                    subcategories: {},
+                    total: 0
+                };
+            }
 
-        // Add Total row
-        rows.push([
-            '', '', '', 'Total:',
-            { content: totalValue.toFixed(2), styles: { fontStyle: 'bold', textColor: '#e74c3c' } }
+            if (!grouped[item.category_id].subcategories[item.sub_category_id]) {
+                grouped[item.category_id].subcategories[item.sub_category_id] = {
+                    name: item.sub_category_name,
+                    items: [],
+                    total: 0
+                };
+            }
+
+            grouped[item.category_id].subcategories[item.sub_category_id].items.push(item);
+            grouped[item.category_id].subcategories[item.sub_category_id].total += parseFloat(item.total_stock_value);
+            grouped[item.category_id].total += parseFloat(item.total_stock_value);
+        });
+
+        let grandTotal = 0;
+
+        for (const catId in grouped) {
+            const category = grouped[catId];
+            body.push([
+                { content: category.name, colSpan: 4, styles: { fontStyle: 'bold', fillColor: [232, 240, 254] } },
+                { content: category.total.toFixed(2), styles: { halign: 'right', fontStyle: 'bold', textColor: [231, 76, 60] } }
+            ]);
+
+            for (const subCatId in category.subcategories) {
+                const subCat = category.subcategories[subCatId];
+                body.push([
+                    { content: '  ' + subCat.name, colSpan: 4, styles: { fontStyle: 'bold', fillColor: [241, 248, 255] } },
+                    { content: subCat.total.toFixed(2), styles: { halign: 'right', textColor: [231, 76, 60] } }
+                ]);
+
+                subCat.items.forEach(item => {
+                    body.push([
+                        { content: '    ' + item.code + ' - ' + item.description },
+                        { content: parseFloat(item.average_cost).toFixed(2), styles: { halign: 'right' } },
+                        { content: parseFloat(item.stock_balance).toFixed(2), styles: { halign: 'right' } },
+                        { content: '', styles: { halign: 'right' } },
+                        { content: parseFloat(item.total_stock_value).toFixed(2), styles: { halign: 'right' } }
+                    ]);
+                    grandTotal += parseFloat(item.total_stock_value);
+                });
+            }
+        }
+
+        // Grand Total row
+        body.push([
+            { content: 'Grand Total', colSpan: 4, styles: { fontStyle: 'bold', textColor: [231, 76, 60] } },
+            { content: grandTotal.toFixed(2), styles: { halign: 'right', fontStyle: 'bold', textColor: [231, 76, 60] } }
         ]);
 
         doc.autoTable({
-            head: headers,
-            body: rows,
             startY: 60,
+            head: [['Name', 'Unit Cost', 'Stock Balance', '', 'Total Stock Value']],
+            body: body,
             theme: 'grid',
-            headStyles: { fillColor: '#0984e3', textColor: '#ffffff', fontStyle: 'bold' },
+            styles: { fontSize: 9 },
+            headStyles: { fillColor: [9, 132, 227], textColor: 255 },
             columnStyles: {
+                1: { halign: 'right' },
                 2: { halign: 'right' },
-                3: { halign: 'right' },
-                4: { halign: 'right' },
-            },
-            margin: { left: 40, right: 40 },
-            didDrawPage: (data) => {
-                const pageCount = doc.internal.getNumberOfPages();
-                doc.setFontSize(10);
-                doc.setTextColor('#636e72');
-                doc.text(`Page ${data.pageNumber} of ${pageCount}`, data.settings.margin.left, doc.internal.pageSize.height - 10);
+                4: { halign: 'right' }
             }
         });
 
@@ -292,4 +276,137 @@
             applySearchFilter(this.value);
         });
     });
+
+    function renderTreeGroupedReport(data, autoExpand = false) {
+        const tbody = document.getElementById('treeBody');
+        tbody.innerHTML = '';
+        let grandTotal = 0;
+
+        const grouped = {};
+
+        data.forEach(item => {
+            if (!grouped[item.category_id]) {
+                grouped[item.category_id] = {
+                    name: item.category_name,
+                    subcategories: {},
+                    total: 0
+                };
+            }
+
+            if (!grouped[item.category_id].subcategories[item.sub_category_id]) {
+                grouped[item.category_id].subcategories[item.sub_category_id] = {
+                    name: item.sub_category_name,
+                    items: [],
+                    total: 0
+                };
+            }
+
+            grouped[item.category_id].subcategories[item.sub_category_id].items.push(item);
+            grouped[item.category_id].subcategories[item.sub_category_id].total += parseFloat(item.total_stock_value);
+            grouped[item.category_id].total += parseFloat(item.total_stock_value);
+            grandTotal += parseFloat(item.total_stock_value);
+        });
+
+        for (const catId in grouped) {
+            const category = grouped[catId];
+            const catRowId = `cat-${catId}`;
+            const catTr = document.createElement('tr');
+            catTr.setAttribute('data-level', '1');
+            catTr.setAttribute('data-id', catRowId);
+            catTr.classList.add('tree-parent');
+            if (autoExpand) catTr.classList.add('open');
+
+            catTr.innerHTML = `
+            <td class="tree-toggle">${category.name}</td>
+            <td></td><td></td>
+            <td class="text-end text-danger fw-bold">${category.total.toFixed(2)}</td>
+        `;
+            tbody.appendChild(catTr);
+
+            for (const subCatId in category.subcategories) {
+                const subCat = category.subcategories[subCatId];
+                const subCatRowId = `sub-${subCatId}`;
+                const subTr = document.createElement('tr');
+                subTr.setAttribute('data-level', '2');
+                subTr.setAttribute('data-id', subCatRowId);
+                subTr.setAttribute('data-parent', catRowId);
+                subTr.classList.add('tree-parent');
+                if (!autoExpand) subTr.classList.add('d-none');
+                else subTr.classList.add('open');
+
+                subTr.innerHTML = `
+                <td class="tree-toggle">${subCat.name}</td>
+                <td></td><td></td>
+                <td class="text-end text-danger">${subCat.total.toFixed(2)}</td>
+            `;
+                tbody.appendChild(subTr);
+
+                subCat.items.forEach(item => {
+                    const itemTr = document.createElement('tr');
+                    itemTr.setAttribute('data-level', '3');
+                    itemTr.setAttribute('data-parent', subCatRowId);
+                    if (!autoExpand) itemTr.classList.add('d-none');
+
+                    itemTr.innerHTML = `
+                    <td>${item.code} - ${item.description}</td>
+                    <td class="text-end">${parseFloat(item.average_cost).toFixed(2)}</td>
+                    <td class="text-end">${parseFloat(item.stock_balance).toFixed(2)}</td>
+                    <td class="text-end">${parseFloat(item.total_stock_value).toFixed(2)}</td>
+                `;
+                    tbody.appendChild(itemTr);
+                });
+            }
+        }
+
+        document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
+
+        tbody.querySelectorAll('.tree-parent .tree-toggle').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const parentRow = toggle.closest('tr');
+                const id = parentRow.getAttribute('data-id');
+                const nextLevel = parseInt(parentRow.getAttribute('data-level')) + 1;
+
+                const isOpen = parentRow.classList.toggle('open');
+
+                tbody.querySelectorAll(`[data-parent="${id}"]`).forEach(row => {
+                    row.classList.toggle('d-none', !isOpen);
+
+                    if (!isOpen) {
+                        row.classList.remove('open');
+                        const childId = row.getAttribute('data-id');
+                        if (childId) {
+                            tbody.querySelectorAll(`[data-parent="${childId}"]`).forEach(sub => {
+                                sub.classList.add('d-none');
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    }
+
+    const toggleExpandBtn = document.getElementById('toggleExpandBtn');
+    let isExpanded = false;
+
+    toggleExpandBtn.addEventListener('click', () => {
+        const tbody = document.getElementById('treeBody');
+        if (!isExpanded) {
+            // Expand all
+            tbody.querySelectorAll('.tree-parent').forEach(row => row.classList.add('open'));
+            tbody.querySelectorAll('[data-level="2"], [data-level="3"]').forEach(row => row.classList.remove('d-none'));
+            // Change icon to "compress"
+            toggleExpandBtn.querySelector('i').classList.remove('fa-expand');
+            toggleExpandBtn.querySelector('i').classList.add('fa-compress');
+            isExpanded = true;
+        } else {
+            // Collapse all to only level 1 visible
+            tbody.querySelectorAll('.tree-parent').forEach(row => row.classList.remove('open'));
+            tbody.querySelectorAll('[data-level="2"], [data-level="3"]').forEach(row => row.classList.add('d-none'));
+            // Change icon to "expand"
+            toggleExpandBtn.querySelector('i').classList.remove('fa-compress');
+            toggleExpandBtn.querySelector('i').classList.add('fa-expand');
+            isExpanded = false;
+        }
+    });
+
 </script>
