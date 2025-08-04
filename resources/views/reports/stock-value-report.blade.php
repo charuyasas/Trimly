@@ -2,45 +2,98 @@
 @include('includes.sidebar', ['pageTitle' => 'Stock Value Report'])
 
 <style>
+
     @media print {
+
         body * {
-            visibility: hidden;
+            visibility: hidden !important;
         }
+
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
         #printableTable, #printableTable * {
-            visibility: visible;
+            visibility: visible !important;
         }
+
         #printableTable {
-            background: white;
-            position: static;
-            width: 100%;
-            padding: 0;
-            margin: 0;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 10mm !important;
+            background: white !important;
+            box-sizing: border-box !important;
         }
+
+        #printTitle {
+            display: block !important;
+            text-align: center;
+            font-size: 20pt;
+            font-weight: bold;
+            margin: 0 0 10pt 0 !important;
+            padding: 0 !important;
+        }
+
+        table, thead, tbody, tr, th, td {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        table {
+            border-collapse: collapse !important;
+            width: 100% !important;
+            font-size: 11pt;
+            color: #000;
+        }
+
+        th, td {
+            padding: 4pt 6pt !important;
+        }
+
+        table thead tr th:nth-child(n+2),
+        table tbody tr td:nth-child(n+2) {
+            text-align: right !important;
+        }
+
+        #treeBody tr[data-level="1"] td:first-child {
+            font-weight: 700;
+            padding-left: 0 !important;
+            background-color: #e8f0fe;
+        }
+
+        #treeBody tr[data-level="2"] td:first-child {
+            font-weight: 600;
+            padding-left: 20pt !important;
+            background-color: #f1f8ff;
+        }
+
+        #treeBody tr[data-level="3"] td:first-child {
+            padding-left: 40pt !important;
+            font-weight: normal;
+            background-color: transparent;
+        }
+
+        thead {
+            display: table-header-group !important;
+        }
+
+        tr, td, th {
+            page-break-inside: avoid !important;
+            page-break-after: auto;
+        }
+
         .no-print {
             display: none !important;
         }
-        table {
-            page-break-inside: auto;
-        }
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto;
-        }
-        thead {
-            display: table-header-group;
-        }
-        tfoot {
-            display: table-footer-group;
-        }
+
         @page {
             size: A4 portrait;
-            margin: 5mm 10mm 10mm 10mm;
-        }
-        #printTitle {
-            display: none;
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 20px;
+            margin: 5mm 10mm 10mm 20mm; /* top, right, bottom, left */
         }
     }
 

@@ -3,46 +3,86 @@
 
 <style>
     @media print {
+
         body * {
-            visibility: hidden;
+            visibility: hidden !important;
         }
+
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
         #printableTable, #printableTable * {
-            visibility: visible;
+            visibility: visible !important;
         }
+
         #printableTable {
-            background: white;
-            position: static;
-            width: 100%;
-            padding: 0;
-            margin: 0;
+            position: absolute !important;
+            top: 0 !important;
+            left: 15px !important;
+            width: 100% !important;
+            background: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
+
+        /* Title styling */
+        #printTitle {
+            display: block !important;
+            text-align: center;
+            font-size: 20pt;
+            font-weight: bold;
+            margin: 0 0 10pt 0 !important; /* No top margin */
+            padding: 0 !important;
+        }
+
+        /* Borderless table */
+        table, thead, tbody, tr, th, td {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            font-size: 11pt;
+            color: #000;
+        }
+
+        th, td {
+            padding: 4pt 6pt !important;
+            text-align: left !important;
+        }
+
+        thead {
+            display: table-header-group !important;
+        }
+
+        tr, td, th {
+            page-break-inside: avoid !important;
+            page-break-after: auto;
+        }
+
         .no-print {
             display: none !important;
         }
-        table {
-            page-break-inside: auto;
+
+        /* Center-align price columns only in print */
+        #printableTable table tr th:nth-child(3),
+        #printableTable table tr th:nth-child(4),
+        #printableTable table tr th:nth-child(5),
+        #printableTable table tr td:nth-child(3),
+        #printableTable table tr td:nth-child(4),
+        #printableTable table tr td:nth-child(5) {
+            text-align: center !important;
         }
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto;
-        }
-        thead {
-            display: table-header-group;
-        }
+
+        /* Reduce top margin on printed page */
         @page {
             size: A4 portrait;
-            margin: 5mm 10mm 10mm 10mm;
-        }
-        #printTitle {
-            display: none;
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        @media print {
-            #printTitle {
-                display: block;
-            }
+            margin: 2mm 15mm 10mm 15mm;
         }
     }
 </style>
