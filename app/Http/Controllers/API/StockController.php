@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Constance\AccountsLedgerCodes;
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Models\StockSheet;
 use App\UseCases\StockSheet\GetAvailableStockInteractor;
@@ -17,9 +17,14 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
-class StockController extends Controller
+#[AllowDynamicProperties] class StockController extends Controller
 {
-    public function index(ListItemIssueInteractor $listItemIssueInteractor)
+    public function __construct(GetAvailableStockInteractor $getAvailableStockInteractor)
+    {
+        $this->getAvailableStockInteractor = $getAvailableStockInteractor;
+    }
+
+    public function index(ListItemIssueInteractor $listItemIssueInteractor): array
     {
         return $listItemIssueInteractor->execute();
     }
@@ -30,15 +35,21 @@ class StockController extends Controller
         return response()->json($data);
     }
 
-    public function getAvailableStock(Request $request, GetAvailableStockInteractor $getAvailableStockInteractor): JsonResponse
+    public function getAvailableStock(Request $request): JsonResponse
     {
         $itemId = $request->query('item_id');
         $storeLedger = $request->query('store');
-        $availableStock = $getAvailableStockInteractor->execute($itemId,$storeLedger);
+
+        $availableStock = $this->availableStockDetailsInStore($itemId, $storeLedger);
         return response()->json(['available_stock' => $availableStock]);
     }
 
-    public function store(StockSheetRequest $stockSheetRequest, StoreStockSheetInteractor $storeStockSheetInteractor, GetAvailableStockInteractor $getAvailableStockInteractor): JsonResponse
+    public function availableStockDetailsInStore(string $ItemId, string $storeLedgerCode): float
+    {
+        return $this->getAvailableStockInteractor->execute($ItemId, $storeLedgerCode);
+    }
+
+    public function store(StockSheetRequest $stockSheetRequest, StoreStockSheetInteractor $storeStockSheetInteractor): JsonResponse
     {
         $employee_ledger_code = $stockSheetRequest->employee_ledger_code;
         $store_ledger_code = $stockSheetRequest->store_ledger_code;
@@ -47,31 +58,35 @@ class StockController extends Controller
         if ($store_ledger_code != '') {
             // Normal issue
             $nextReferenceId = $this->createReferenceID(StockSheet::STATUS['Employee Issue']);
-            $debitEntries = $this->createDebitEntryCollection($items, $employee_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Issue']);
+
             $creditEntries = $this->createCreditEntryCollection($items, $store_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Issue']);
+
+            if ($creditEntries === false) {
+                return response()->json([
+                    'message' => 'Stock not available',
+                ], 400); // 400 = Bad Request
+            }
+
+            $debitEntries = $this->createDebitEntryCollection($items, $employee_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Issue']);
             $this->employeeIssueItemsToStockTable($storeStockSheetInteractor, $debitEntries->merge($creditEntries));
         } else {
             // Employee Consumption
             $nextReferenceId = $this->createReferenceID(StockSheet::STATUS['Employee Consumption']);
+
             $creditEntries = $this->createCreditEntryCollection($items, $employee_ledger_code, $nextReferenceId, StockSheet::STATUS['Employee Consumption']);
-            $this->employeeIssueItemsToStockTable($storeStockSheetInteractor, $creditEntries);
 
-            $allAvailable = true;
-
-            foreach ($items as $item) {
-                $itemId = $item->item_id;
-                $availableQty = $getAvailableStockInteractor->execute($itemId, AccountsLedgerCodes::LEDGER_CODES['MainStore']);
-
-                if ($availableQty <= $item->quantity) {
-                    $allAvailable = false;
-                    break;
-                }
+            if ($creditEntries === false) {
+                return response()->json([
+                    'message' => 'Stock not available',
+                ], 400);
             }
+
+            $this->employeeIssueItemsToStockTable($storeStockSheetInteractor, $creditEntries);
 
             return response()->json([
                 'message' => 'Stock entries finalized successfully.',
                 'reference_id' => $nextReferenceId,
-                'stock_status' => $allAvailable ? 'Stock available' : 'Stock not available'
+                'stock_status' => 'Stock available'
             ]);
         }
 
@@ -81,8 +96,25 @@ class StockController extends Controller
         ]);
     }
 
-    private function createCreditEntryCollection(array $items, string $ledgerCode, string $referenceId, string $referenceType): Collection
+
+    private function createCreditEntryCollection(array $items, string $ledgerCode, string $referenceId, string $referenceType): false|Collection
     {
+        $insufficient = collect($items)->first(function ($item) use ($ledgerCode) {
+            $itemId = $item->item_id ?? null;
+            $quantity = $item->quantity ?? 0;
+
+            if (!$itemId || $quantity <= 0) {
+                return true;
+            }
+
+            $availableStock = $this->availableStockDetailsInStore($itemId, $ledgerCode);
+            return $availableStock < $quantity;
+        });
+
+        if ($insufficient) {
+            return false;
+        }
+
         return collect($items)->map(function ($item) use ($referenceType, $ledgerCode, $referenceId) {
             return [
                 'item_code'      => $item->item_id ?? '',
@@ -95,6 +127,7 @@ class StockController extends Controller
             ];
         });
     }
+
 
     private function createDebitEntryCollection(array $items, string $ledgerCode, string $referenceId, string $referenceType): Collection
     {

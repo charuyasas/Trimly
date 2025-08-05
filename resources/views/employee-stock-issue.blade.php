@@ -510,7 +510,6 @@
 
                 function renderItemsTable(tableID) {
                     let tbody = $(tableID + " tbody");
-                    console.log(tableID);
                     tbody.empty();
                     let itemTotal = 0;
 
@@ -833,24 +832,20 @@
                     }
                 }
 
-                function saveEmployeeStockIssue(tableID,modalID) {
+                function saveEmployeeStockIssue(tableID, modalID) {
                     $.ajax({
                         url: `/api/employee-stock-issue`,
                         method: 'POST',
                         data: issueNote,
-                        success: function(response) {
-                            if(modalID === 'stockIssueModal') {
-                                itemRefresh();
-                                itemsList = [];
-                                renderItemsTable('#'+tableID);
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Issued Successfully!',
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                });
-                            }else{
-                                if(response.stock_status === 'Stock available'){
+                        success: function (response) {
+                            const isNormalIssue = modalID === 'stockIssueModal';
+
+                            if (isNormalIssue) {
+                                handleSuccess('Issued Successfully!',tableID);
+                            } else {
+                                const stockAvailable = response.stock_status === 'Stock available';
+
+                                if (stockAvailable) {
                                     Swal.fire({
                                         title: 'Reissue Items?',
                                         text: 'Stock is still available. Do you want to issue these items to the employee?',
@@ -870,19 +865,11 @@
                                                 url: `/api/employee-stock-issue`,
                                                 method: 'POST',
                                                 data: reissueNote,
-                                                success: function(response) {
-                                                    itemRefresh();
-                                                    itemsList = [];
-                                                    renderItemsTable('#' + tableID);
-                                                    Swal.fire({
-                                                        icon: 'success',
-                                                        title: 'Reissued Successfully!',
-                                                        showConfirmButton: false,
-                                                        timer: 1500
-                                                    });
+                                                success: function (response) {
+                                                    handleSuccess('Reissued Successfully!',tableID);
                                                     loadStockIssueDetails();
                                                 },
-                                                error: function(xhr) {
+                                                error: function (xhr) {
                                                     Swal.fire({
                                                         icon: 'error',
                                                         title: 'Reissue Failed',
@@ -890,45 +877,56 @@
                                                     });
                                                 }
                                             });
-                                        }
-                                        else {
-                                            itemRefresh();
-                                            itemsList = [];
-                                            renderItemsTable('#'+tableID);
-                                            Swal.fire({
-                                                icon: 'success',
-                                                title: 'Consume Successfully!',
-                                                showConfirmButton: false,
-                                                timer: 1500
-                                            });
+                                        } else {
+                                            handleSuccess('Consume Successfully!',tableID);
                                         }
                                     });
-                                }else{
-                                    itemRefresh();
-                                    itemsList = [];
-                                    renderItemsTable('#'+tableID);
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Consume Successfully!',
-                                        showConfirmButton: false,
-                                        timer: 1500
-                                    });
+                                } else {
+                                    handleSuccess('Consume Successfully!',tableID);
                                 }
-
                             }
+
                             closeModal(modalID);
                             loadStockIssueDetails();
                         },
-                        error: function(xhr) {
-                            if (xhr.status === 422) {
-                                const response = xhr.responseJSON;
-                                alert(response.message);
+                        error: function (xhr) {
+                            const message = xhr.responseJSON?.message || 'Something went wrong';
+
+                            if (xhr.status === 400) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Stock Not Available',
+                                    text: message
+                                });
+                            } else if (xhr.status === 422) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Validation Error',
+                                    text: message
+                                });
                             } else {
-                                alert('Something went wrong.');
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Request Failed',
+                                    text: message
+                                });
                             }
                         }
                     });
                 }
+
+                function handleSuccess(titleText,tableID) {
+                    itemRefresh();
+                    itemsList = [];
+                    renderItemsTable('#' + tableID);
+                    Swal.fire({
+                        icon: 'success',
+                        title: titleText,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+
 
                 function showModal(){
                     itemRefresh();

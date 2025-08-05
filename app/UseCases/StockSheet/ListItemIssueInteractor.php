@@ -14,7 +14,6 @@ class ListItemIssueInteractor
         $employeeIssues = StockSheet::with('employee') // relation for credit side (receiver)
         ->where('reference_type', StockSheet::STATUS['Employee Issue'])
             ->latest()
-            ->limit(100)
             ->get()
             ->groupBy('reference_id')
             ->map(function ($group, $referenceId) {
@@ -23,28 +22,28 @@ class ListItemIssueInteractor
                 $referenceNumber = Str::after($referenceId, 'Employee Issue - ');
 
                 // Credit side: who received stock
-                $creditEntry = $group->firstWhere(fn($item) => $item->credit > 0);
-                $creditEmployee = $creditEntry?->employee;
+                $debitEntry = $group->firstWhere(fn($item) => $item->debit > 0);
+                $debitLedger = $debitEntry?->employee;
 
                 // Debit side: who issued stock
-                $debitEntry = $group->firstWhere(fn($item) => $item->debit > 0);
-                $debitLedger = $debitEntry?->ledger_code;
+                $creditEntry = $group->firstWhere(fn($item) => $item->credit > 0);
+                $creditLedger = $creditEntry?->ledger_code;
 
-                if ($debitLedger === '1-2-6-1000') {
+                if ($creditLedger === '1-2-6-1000') {
                     $issuedFrom = 'Main Store';
-                    $issuedFromCode = $debitLedger;
+                    $issuedFromCode = $creditLedger;
                 } else {
-                    $storeEmployee = Employee::where('ledger_code', $debitLedger)->first();
+                    $storeEmployee = Employee::where('ledger_code', $creditLedger)->first();
                     $issuedFrom = $storeEmployee?->name ?? 'Unknown';
-                    $issuedFromCode = $storeEmployee?->employee_id ?? $debitLedger;
+                    $issuedFromCode = $storeEmployee?->employee_id ?? $creditLedger;
                 }
 
                 return [
                     'reference_id'     => $referenceNumber,
                     'issued_store_code' => $issuedFromCode,
                     'issued_store'      => $issuedFrom,
-                    'employee_code'    => $creditEmployee?->employee_id ?? 'N/A',
-                    'employee_name'    => $creditEmployee?->name ?? 'N/A',
+                    'employee_code'    => $debitLedger?->employee_id ?? 'N/A',
+                    'employee_name'    => $debitLedger?->name ?? 'N/A',
                     'created_at'       => $firstItem->created_at->toDateString(),
                 ];
             })->values();
