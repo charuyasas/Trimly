@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             SubCategorySeeder::class,
             SupplierSeeder::class,
+            ItemSeeder::class,
+            StockSheetSeeder::class,
         ]);
     }
 }
