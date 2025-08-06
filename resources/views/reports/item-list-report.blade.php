@@ -8,40 +8,46 @@
             visibility: hidden !important;
         }
 
-        html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
         #printableTable, #printableTable * {
             visibility: visible !important;
         }
 
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
+
         #printableTable {
-            position: absolute !important;
+            position: static !important;
             top: 0 !important;
             left: 18px !important;
             width: 100% !important;
             background: white !important;
-            padding: 0 !important;
             margin: 0 !important;
+            padding: 0 !important;
+            page-break-before: auto !important;
+            page-break-after: auto !important;
+            page-break-inside: avoid !important;
         }
 
-        /* Title styling */
         #printTitle {
             display: block !important;
             text-align: center;
             font-size: 20pt;
             font-weight: bold;
-            margin: 0 0 10pt 0 !important; /* No top margin */
+            margin: 0 0 10pt 0 !important;
             padding: 0 !important;
+            page-break-after: avoid !important;
+            page-break-before: avoid !important;
         }
 
-        /* Borderless table */
         table, thead, tbody, tr, th, td {
             border: none !important;
             outline: none !important;
             box-shadow: none !important;
+            page-break-inside: avoid !important;
         }
 
         table {
@@ -60,16 +66,14 @@
             display: table-header-group !important;
         }
 
-        tr, td, th {
+        tr {
             page-break-inside: avoid !important;
-            page-break-after: auto;
         }
 
         .no-print {
             display: none !important;
         }
 
-        /* Center-align price columns only in print */
         #printableTable table tr th:nth-child(3),
         #printableTable table tr th:nth-child(4),
         #printableTable table tr th:nth-child(5),
@@ -79,14 +83,22 @@
             text-align: center !important;
         }
 
-        /* Reduce top margin on printed page */
         @page {
             size: A4 portrait;
-            margin: 2mm 15mm 10mm 15mm;
+            margin: 10mm 15mm 10mm 15mm;
+        }
+
+        .main_content_iner,
+        .container-fluid,
+        .row,
+        .col-12,
+        .white_card {
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
         }
     }
 </style>
-
 
 <div class="main_content_iner overly_inner">
     <div class="container-fluid p-0">

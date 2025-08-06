@@ -2,9 +2,7 @@
 @include('includes.sidebar', ['pageTitle' => 'Stock Value Report'])
 
 <style>
-
     @media print {
-
         body * {
             visibility: hidden !important;
         }
@@ -12,6 +10,8 @@
         html, body {
             margin: 0 !important;
             padding: 0 !important;
+            height: auto !important;
+            overflow: visible !important;
         }
 
         #printableTable, #printableTable * {
@@ -19,14 +19,17 @@
         }
 
         #printableTable {
-            position: absolute !important;
+            position: static !important;
             top: 0 !important;
             left: 0 !important;
             width: 100% !important;
             margin: 0 !important;
-            padding: 0 10mm !important;
+            padding: 0 5mm !important;
             background: white !important;
             box-sizing: border-box !important;
+            page-break-before: auto !important;
+            page-break-after: auto !important;
+            page-break-inside: avoid !important;
         }
 
         #printTitle {
@@ -36,6 +39,8 @@
             font-weight: bold;
             margin: 0 0 10pt 0 !important;
             padding: 0 !important;
+            page-break-after: avoid !important;
+            page-break-before: avoid !important;
         }
 
         table, thead, tbody, tr, th, td {
@@ -49,54 +54,70 @@
             width: 100% !important;
             font-size: 11pt;
             color: #000;
+            table-layout: fixed;
+            page-break-inside: auto;
+            page-break-after: auto;
         }
 
         th, td {
             padding: 4pt 6pt !important;
-        }
-
-        table thead tr th:nth-child(n+2),
-        table tbody tr td:nth-child(n+2) {
-            text-align: right !important;
-        }
-
-        #treeBody tr[data-level="1"] td:first-child {
-            font-weight: 700;
-            padding-left: 0 !important;
-            background-color: #e8f0fe;
-        }
-
-        #treeBody tr[data-level="2"] td:first-child {
-            font-weight: 600;
-            padding-left: 20pt !important;
-            background-color: #f1f8ff;
-        }
-
-        #treeBody tr[data-level="3"] td:first-child {
-            padding-left: 40pt !important;
-            font-weight: normal;
-            background-color: transparent;
+            vertical-align: top !important;
+            word-wrap: break-word !important;
         }
 
         thead {
             display: table-header-group !important;
         }
 
-        tr, td, th {
-            page-break-inside: avoid !important;
-            page-break-after: auto;
+        th:nth-child(2),
+        th:nth-child(3),
+        th:nth-child(4),
+        td:nth-child(2),
+        td:nth-child(3),
+        td:nth-child(4) {
+            width: 20mm !important;
+            text-align: right !important;
         }
 
+        /* Hierarchical levels styling */
+        #treeBody tr[data-level="1"] td:first-child {
+            font-weight: 700;
+            padding-left: 0 !important;
+            background-color: #e8f0fe !important;
+        }
+        #treeBody tr[data-level="2"] td:first-child {
+            font-weight: 600;
+            padding-left: 15mm !important;
+            background-color: #f1f8ff !important;
+        }
+        #treeBody tr[data-level="3"] td:first-child {
+            font-weight: normal;
+            padding-left: 30mm !important;
+            background-color: transparent !important;
+        }
+
+        /* Prevent breaking totals */
+        tfoot tr, tfoot td, tfoot th {
+            page-break-inside: avoid !important;
+        }
+
+        /* Show only one grand total */
+        tr.grand-total:not(:last-of-type) {
+            display: none !important;
+        }
+
+        /* Hide UI-only elements */
         .no-print {
             display: none !important;
         }
 
         @page {
             size: A4 portrait;
-            margin: 5mm 10mm 10mm 20mm; /* top, right, bottom, left */
+            margin: 5mm 10mm 10mm 10mm;
         }
     }
 
+    /* Screen styles for hierarchy toggle */
     .tree-toggle {
         cursor: pointer;
         user-select: none;
@@ -122,15 +143,14 @@
     }
 
     [data-level="2"] td {
-        padding-left: 2rem;
+        padding-left: 15mm;
         background-color: #f1f8ff;
         font-weight: 600;
     }
 
     [data-level="3"] td {
-        padding-left: 4rem;
+        padding-left: 30mm;
     }
-
 </style>
 
 <div class="main_content_iner overly_inner">
