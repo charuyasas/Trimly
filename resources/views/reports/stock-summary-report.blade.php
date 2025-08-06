@@ -3,45 +3,50 @@
 
 <style>
     @media print {
-
         body * {
             visibility: hidden !important;
-        }
-
-        html, body {
-            margin: 0 !important;
-            padding: 0 !important;
         }
 
         #printableTable, #printableTable * {
             visibility: visible !important;
         }
 
-        #printableTable {
-            position: absolute !important;
-            top: 0 !important;
-            left: 15px !important;
-            width: 100% !important;
-            background: white !important;
-            padding: 0 !important;
+        html, body {
             margin: 0 !important;
+            padding: 0 !important;
+            height: auto !important;
+            overflow: visible !important;
         }
 
-        /* Title styling */
+        #printableTable {
+            position: static !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            background: white !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            page-break-before: auto !important;
+            page-break-after: auto !important;
+            page-break-inside: avoid !important;
+        }
+
         #printTitle {
             display: block !important;
             text-align: center;
             font-size: 20pt;
             font-weight: bold;
-            margin: 0 0 10pt 0 !important; /* No top margin */
+            margin: 0 0 10pt 0 !important;
             padding: 0 !important;
+            page-break-after: avoid !important;
+            page-break-before: avoid !important;
         }
 
-        /* Borderless table */
         table, thead, tbody, tr, th, td {
             border: none !important;
             outline: none !important;
             box-shadow: none !important;
+            page-break-inside: avoid !important;
         }
 
         table {
@@ -60,31 +65,26 @@
             display: table-header-group !important;
         }
 
-        tr, td, th {
-            page-break-inside: avoid !important;
-            page-break-after: auto;
-        }
-
         .no-print {
             display: none !important;
         }
 
-        /* Center-align price columns only in print */
-        #printableTable table tr th:nth-child(3),
-        #printableTable table tr th:nth-child(4),
-        #printableTable table tr th:nth-child(5),
-        #printableTable table tr td:nth-child(3),
-        #printableTable table tr td:nth-child(4),
-        #printableTable table tr td:nth-child(5) {
-            text-align: center !important;
+        .main_content_iner,
+        .container-fluid,
+        .row,
+        .col-12,
+        .white_card {
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
         }
 
-        /* Reduce top margin on printed page */
         @page {
             size: A4 portrait;
-            margin: 2mm 15mm 10mm 15mm;
+            margin: 10mm 15mm 10mm 15mm;
         }
     }
+
 </style>
 
 <div class="main_content_iner overly_inner">
@@ -175,14 +175,14 @@
             const stockBalance = Number(item.stock_balance) || 0;
 
             const tr = `
-                <tr>
-                    <td>${item.code}</td>
-                    <td>${item.description}</td>
-                    <td class="text-end">${debit.toFixed(2)}</td>
-                    <td class="text-end">${credit.toFixed(2)}</td>
-                    <td class="text-end">${stockBalance.toFixed(2)}</td>
-                </tr>
-            `;
+            <tr>
+                <td>${item.code}</td>
+                <td>${item.description}</td>
+                <td class="text-end">${debit.toFixed(2)}</td>
+                <td class="text-end">${credit.toFixed(2)}</td>
+                <td class="text-end">${stockBalance.toFixed(2)}</td>
+            </tr>
+        `;
             tbody.insertAdjacentHTML('beforeend', tr);
         });
 
