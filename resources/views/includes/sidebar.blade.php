@@ -33,7 +33,7 @@
                         <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#shiftInCashInHandModal" id="shiftInBtn" style="display: none">
                             Shift In
                         </button>
-                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" onclick="showModal()" data-bs-target="#dayEndCashInHandModal" id="shiftOutBtn" style="display: none">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" onclick="showShiftEndModal()" data-bs-target="#dayEndCashInHandModal" id="shiftOutBtn" style="display: none">
                             Shift Out
                         </button> &nbsp;&nbsp;&nbsp;&nbsp;
                         <div id="datetime" style="font-size: 20px; font-weight: bold;"></div>&nbsp;&nbsp;

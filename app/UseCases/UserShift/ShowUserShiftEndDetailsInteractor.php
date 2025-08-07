@@ -13,7 +13,7 @@ class ShowUserShiftEndDetailsInteractor
      {
          $shiftDetails = ShiftDetails::with('user')
              ->where('user_id', $userId)
-             ->where('status', 1)
+             ->where('status', 0)
              ->first();
 
          $shiftInTime       = $shiftDetails->shift_in_time;

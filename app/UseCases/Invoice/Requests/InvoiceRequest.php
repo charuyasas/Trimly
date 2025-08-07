@@ -28,10 +28,10 @@ class InvoiceRequest extends Data
     public ?float $grand_total = null;
 
     #[SpatieRule('nullable', 'integer', 'min:0', 'max:100')]
-    public int $discount_percentage = 0;
+    public ?int $discount_percentage;
 
     #[SpatieRule('nullable', 'numeric', 'min:0')]
-    public float $discount_amount = 0.00;
+    public ?float $discount_amount;
 
     #[SpatieRule('nullable', 'numeric', 'min:0')]
     public ?float $received_cash;

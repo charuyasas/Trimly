@@ -16,6 +16,8 @@ class DefaultUserSeeder extends Seeder
             [
                 'name' => 'Admin User',
                 'email' => 'admin@example.com',
+                'username' => 'admin',
+                'employee_id' => null,
                 'password' => Hash::make('password123'),
                 'email_verified_at' => now(),
             ]

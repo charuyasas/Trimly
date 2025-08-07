@@ -89,11 +89,17 @@
                                         <div class="col-lg-12">
                                             <div class="common_input mb_15">
                                                 <input type="text" id="user_name" placeholder="Name">
+                                                <input type="hidden" id="employee_id">
                                             </div>
                                         </div>
                                         <div class="col-lg-12">
                                             <div class="common_input mb_15">
                                                 <input type="email" id="email" placeholder="Email">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <div class="common_input mb_15">
+                                                <input type="text" id="username" placeholder="Username">
                                             </div>
                                         </div>
                                         <div class="col-lg-12">
@@ -175,6 +181,40 @@
                     });
                 }
 
+                $(function () {
+
+                    $("#user_name").autocomplete({
+                        source: function (request, response) {
+                            if (request.term.length < 1) return;
+
+                            $.ajax({
+                                url: '/api/employees-list',
+                                dataType: 'json',
+                                data: {search_key: request.term},
+                                success: function (data) {
+                                    response(data);
+                                    if (data.length === 1) {
+                                        $("#user_name").val(data[0].label);
+                                        $("#employee_id").val(data[0].value);
+                                    }
+                                }
+                            });
+                        },
+                        minLength: 1,
+                        appendTo: "#userModal",
+                        focus: function (event, ui) {
+                            $("#user_name").val(ui.item.label);
+                            return false;
+                        },
+                        select: function (event, ui) {
+                            $("#user_name").val(ui.item.label);
+                            $("#employee_id").val(ui.item.value);
+                            return false;
+                        }
+                    });
+
+                });
+
                 function loadRoles(id){
                     $.ajax({
                         url: '/api/role-list-dropdown',
@@ -204,6 +244,8 @@
                         id: $('#user_id').val(),
                         role: $('#cbo_roles').val(),
                         name: $('#user_name').val(),
+                        employee_id: $('#employee_id').val(),
+                        username: $('#username').val(),
                         email: $('#email').val(),
                         password: $('#password').val()
                     };
@@ -248,7 +290,6 @@
                     }
 
                 function changePassword() {
-                    const user_id = $('#passwordChangeUser_id').val();
                     const data = {
                         id: $('#passwordChangeUser_id').val(),
                         oldPassword: $('#oldPassword').val(),
@@ -322,8 +363,9 @@
                         $('#user_id').val(user.id);
                         loadRoles(user.roles[0]?.name);
                         $('#user_name').val(user.name);
+                        $('#username').val(user.username);
+                        $('#employee_id').val(user.employee_id);
                         $('#email').val(user.email);
-                        // $('#password').val(user.password);
 
                         $('#userModalLongTitle').text('Edit User');
                         $('#saveBtn').text('Update');
