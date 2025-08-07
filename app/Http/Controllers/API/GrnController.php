@@ -137,22 +137,26 @@ class GrnController extends Controller
         if (!$itemId) {
             return response()->json(['message' => 'Missing item_id'], 400);
         }
-
-        // Get last cost (latest GRN entry)
+        // Get last cost for finalized GRNs only
         $lastCost = DB::table('grn_items')
-            ->where('item_id', $itemId)
-            ->orderByDesc('created_at')
+            ->join('grns', 'grn_items.grn_id', '=', 'grns.id')
+            ->where('grn_items.item_id', $itemId)
+            ->where('grns.status', 1)
+            ->orderByDesc('grn_items.created_at')
             ->limit(1)
-            ->value('price');
+            ->value('grn_items.price');
 
-        // Get average cost (sum of all GRN prices / count)
-        $averageCost = DB::table('grn_items')
-            ->where('item_id', $itemId)
-            ->avg('price'); // Laravel handles nulls
+        // Weighted average cost = sum(qty * price) / sum(qty) for finalized GRNs only
+        $weightedAverageCost = DB::table('grn_items')
+            ->join('grns', 'grn_items.grn_id', '=', 'grns.id')
+            ->where('grn_items.item_id', $itemId)
+            ->where('grns.status', 1)
+            ->selectRaw('SUM(grn_items.qty * grn_items.price) / NULLIF(SUM(grn_items.qty), 0) as avg_price')
+            ->value('avg_price');
 
         return response()->json([
-            'last_cost' => $lastCost ?? 0.00,
-            'avg_cost' => $averageCost ?? 0.00,
+            'last_cost' => round($lastCost ?? 0, 2),
+            'avg_cost' => round($weightedAverageCost ?? 0, 2),
         ]);
     }
 

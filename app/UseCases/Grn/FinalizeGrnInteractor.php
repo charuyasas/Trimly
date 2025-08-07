@@ -3,6 +3,8 @@
 namespace App\UseCases\Grn;
 
 use App\Models\Grn;
+use App\Models\GrnItem;
+use App\Models\Item;
 use App\UseCases\Grn\Requests\GrnRequest;
 use Illuminate\Support\Facades\DB;
 
@@ -34,6 +36,18 @@ class FinalizeGrnInteractor
             $grn->note = $request->note;
             $grn->status = true;
             $grn->save();
+
+            // Update average cost and last GRN price
+            foreach ($grn->items as $grnItem) {
+                $weightedAverageCost = GrnItem::where('item_id', $grnItem->item_id)
+                    ->selectRaw('SUM(qty * price) / NULLIF(SUM(qty), 0) as weighted_avg')
+                    ->value('weighted_avg');
+
+                Item::where('id', $grnItem->item_id)->update([
+                    'average_cost' => $weightedAverageCost ?? 0,
+                    'last_grn_price' => $grnItem->price,
+                ]);
+            }
 
             DB::commit();
 
