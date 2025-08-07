@@ -471,7 +471,7 @@
                         return false;
                     }
 
-                    if (qty === '' || qty === 0) {
+                    if (qty == '' || qty == 0) {
                         alert("Please enter 'Quantity'!");
                         return false;
                     }
@@ -782,12 +782,14 @@
                             if ($('#stockIssueModal').hasClass('show')) {
                                 if (available < 1) {
                                     $("#txt_qty").val(0);
+                                    $("#txt_qty").prop("disabled", true);
                                     $(".btn_add").prop("disabled", true);
                                     $(".available_stock_display").addClass("red_color");
                                     $(".available_stock_display").removeClass("text-muted");
 
                                 } else {
                                     $(".btn_add").prop("disabled", false);
+                                    $("#txt_qty").prop("disabled", false);
                                     $(".available_stock_display").addClass("text-muted");
                                     $(".available_stock_display").removeClass("red_color");
                                 }

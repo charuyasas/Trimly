@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id');
             $table->unsignedBigInteger('user_id');
             $table->id('shift_id')->primary();
-            $table->boolean('status')->default(true);
+            $table->boolean('status')->default(false);
             $table->dateTime('shift_in_time');
             $table->decimal('opening_cash_in_hand', 10, 2)->default(0.00);
             $table->dateTime('shift_off_time')->nullable();

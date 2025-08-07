@@ -40,7 +40,7 @@ class FortifyServiceProvider extends ServiceProvider
         // Generate and save API token after successful login
         Fortify::authenticateUsing(function (Request $request) {
             if (Auth::attempt([
-                'email' => $request->email,
+                'username' => $request->username,
                 'password' => $request->password,
             ])) {
                 $user = Auth::user();

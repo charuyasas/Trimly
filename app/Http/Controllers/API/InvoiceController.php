@@ -8,15 +8,14 @@ use App\UseCases\JournalEntry\StoreJournalEntryInteractor;
 use App\UseCases\StockSheet\GetAvailableStockInteractor;
 use App\UseCases\StockSheet\StoreStockSheetInteractor;
 use Illuminate\Http\JsonResponse;
-use App\UseCases\Invoice\{
+use App\UseCases\Invoice\{DeleteInvoiceItemInteractor,
     StoreInvoiceInteractor,
     FinishInvoiceInteractor,
     LoadItemDropdownInteractor,
     LoadInvoiceDropdownInteractor,
     GetInvoiceItemsInteractor,
     ListInvoiceInteractor,
-    ShowInvoiceInteractor
-};
+    ShowInvoiceInteractor};
 use App\UseCases\Invoice\Requests\InvoiceRequest;
 
 class InvoiceController extends Controller
@@ -60,7 +59,12 @@ class InvoiceController extends Controller
     public function getInvoiceItems($id, GetInvoiceItemsInteractor $getInvoiceItemsInteractor): JsonResponse
     {
         return response()->json($getInvoiceItemsInteractor->execute($id));
+    }
 
+    public function deleteItem($tokenNo, $itemID, DeleteInvoiceItemInteractor $deleteInvoiceItemInteractor): JsonResponse
+    {
+        $result = $deleteInvoiceItemInteractor->execute($tokenNo, $itemID);
 
+        return response()->json($result['response'], $result['status']);
     }
 }

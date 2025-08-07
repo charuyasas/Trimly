@@ -3,6 +3,7 @@
 namespace App\UseCases\Invoice;
 
 use App\Models\Invoice;
+use App\Models\SystemConfiguration;
 use App\UseCases\Invoice\Requests\InvoiceRequest;
 use Illuminate\Support\Facades\DB;
 
@@ -10,6 +11,9 @@ class StoreInvoiceInteractor
 {
     public function execute(InvoiceRequest $invoiceRequest): array
     {
+        $config = SystemConfiguration::where('configuration_name', 'Discount Percentages')->first();
+        $maxDiscount = $config?->configuration_data['Maximum Discount Percentage'] ?? null;
+
         DB::beginTransaction();
 
         try {
@@ -25,12 +29,34 @@ class StoreInvoiceInteractor
                 ];
             }
 
+            // 🔹 Validate invoice-level discount
+            if ($maxDiscount !== null && $invoiceRequest->discount_percentage > $maxDiscount) {
+                return [
+                    'response' => [
+                        'message' => "Invoice discount percentage ({$invoiceRequest->discount_percentage}%) exceeds allowed maximum of {$maxDiscount}%.",
+                    ],
+                    'status' => 422,
+                ];
+            }
+
+            // 🔹 Validate each item discount
+            foreach ($invoiceRequest->items as $item) {
+                if ($maxDiscount !== null && $item->discount_percentage > $maxDiscount) {
+                    return [
+                        'response' => [
+                            'message' => "Item '{$item->item_description}' discount percentage ({$item->discount_percentage}%) exceeds allowed maximum of {$maxDiscount}%.",
+                        ],
+                        'status' => 422,
+                    ];
+                }
+            }
+
             // Recalculate subtotal instead of trusting request
             $grandTotal = collect($invoiceRequest->items)->sum(function ($item) {
                 return ($item->quantity * $item->amount) - ($item->discount_amount ?? 0);
             });
 
-            $invoice = Invoice::where('token_no', $invoiceRequest->token_no)->first();
+            $invoice = Invoice::where('id', $invoiceRequest->token_no)->first();
 
             if ($invoice) {
                 $invoice->update([
@@ -98,13 +124,11 @@ class StoreInvoiceInteractor
 
     private function generateNextTokenNo(): string
     {
-
         $last = Invoice::orderBy('token_no', 'desc')->first();
         $next = $last && is_numeric($last->token_no)
             ? intval($last->token_no) + 1
             : 1;
 
         return str_pad($next, 4, '0', STR_PAD_LEFT);
-
     }
 }

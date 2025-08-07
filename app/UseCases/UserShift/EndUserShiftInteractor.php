@@ -16,7 +16,7 @@ class EndUserShiftInteractor
         return DB::transaction(function () use ($shiftDetailsRequest) {
             $shift = ShiftDetails::with('user')
                 ->where('user_id', $shiftDetailsRequest->user_id)
-                ->where('status', true)
+                ->where('status', false)
                 ->firstOrFail();
 
             $shiftInTime = $shift->shift_in_time;
@@ -40,7 +40,7 @@ class EndUserShiftInteractor
             $cashShortage = $dayEndCash - ($openingCash + $totalSales - $totalExpenses);
 
             $shift->update([
-                'status' => false,
+                'status' => true,
                 'shift_off_time' => Carbon::now(),
                 'day_end_cash_in_hand' => $dayEndCash,
                 'total_daily_sales' => $totalSales,
