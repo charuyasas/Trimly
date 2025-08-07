@@ -3,8 +3,6 @@
 namespace App\UseCases\Grn;
 
 use App\Models\Grn;
-use App\Models\GrnItem;
-use App\Models\Item;
 use App\UseCases\Grn\Requests\GrnRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -79,12 +77,6 @@ class StoreGrnInteractor
                     'subtotal' => $item->subtotal,
                 ]);
 
-                // Update average cost
-                $averageCost = GrnItem::where('item_id', $item->item_id)->avg('price');
-
-                Item::where('id', $item->item_id)->update([
-                    'average_cost' => $averageCost,
-                ]);
             }
 
 

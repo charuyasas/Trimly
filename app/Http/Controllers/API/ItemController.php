@@ -12,6 +12,7 @@ use App\UseCases\Item\DeleteItemInteractor;
 use App\UseCases\Item\ShowItemInteractor;
 use App\UseCases\Item\ListItemInteractor;
 use App\UseCases\Reports\StockValueReportInteractor;
+use App\UseCases\Item\LoadItemDropdownInteractor;
 use Illuminate\Http\JsonResponse;
 
 class ItemController extends Controller
@@ -44,25 +45,13 @@ class ItemController extends Controller
         return response()->json(null, 204);
     }
 
-    public function loadItemDropdown(Request $request)
+    public function loadItemDropdown(LoadItemDropdownInteractor $interactor): JsonResponse
     {
-        $searchKey = $request->input('search_key');
-
-        $items = Item::where('description', 'like', "%{$searchKey}%")
-            ->orWhere('code', 'like', "%{$searchKey}%")
-            ->limit(10)
-            ->get();
-
-        $results = $items->map(function ($item) {
-            return [
-                'label' => "{$item->code} - {$item->description}",
-                'value' => $item->id,
-                'retail_price' => $item->retail_price
-            ];
-        });
-
+        $searchKey = request('search_key');
+        $results = $interactor->execute($searchKey);
         return response()->json($results);
     }
+
     public function stockValueReport(StockValueReportInteractor $interactor)
     {
         return response()->json($interactor->execute());

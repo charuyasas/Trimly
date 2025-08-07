@@ -201,31 +201,54 @@
                                     <!-- Item Entry Form -->
                                     <div class="border p-3 rounded mb-3">
                                         <div class="row g-2 align-items-start">
+                                            <!-- Item Name -->
                                             <div class="col-md-2">
+                                                <label for="item_name" class="form-label">Item</label>
                                                 <input type="text" class="form-control" id="item_name" placeholder="Search Item..." autocomplete="off">
                                                 <input type="hidden" id="item_id">
                                                 <input type="hidden" id="grn_item_id">
                                             </div>
-                                            <div class="col-md-1"><input type="number" id="qty" class="form-control" placeholder="Qty" min="1" step="1"></div>
-                                            <div class="col-md-1"><input type="number" id="foc" class="form-control" placeholder="FOC"></div>
-                                            <div class="col-md-2"><input type="number" id="price" class="form-control" placeholder="Purchase Price"></div>
-                                            <!-- MARGIN input group -->
+                                            <!-- Quantity -->
+                                            <div class="col-md-2">
+                                                <label for="qty" class="form-label">Qty</label>
+                                                <input type="number" id="qty" class="form-control" min="1" step="1">
+                                            </div>
+                                            <!-- FOC -->
+                                            <div class="col-md-2">
+                                                <label for="foc" class="form-label">FOC</label>
+                                                <input type="number" id="foc" class="form-control">
+                                            </div>
+                                            <!-- Purchase Price -->
+                                            <div class="col-md-2">
+                                                <label for="price" class="form-label">Purchase Price</label>
+                                                <input type="number" id="price" class="form-control">
+                                            </div>
+                                            <!-- Margin -->
                                             <div class="col-md-2" id="margin_group">
-                                                <input type="number" id="margin" class="form-control" placeholder="Margin">
+                                                <label for="margin" class="form-label">Margin (%)</label>
+                                                <input type="number" id="margin" class="form-control">
                                             </div>
-                                            <!-- DISCOUNT input group -->
-                                            <div class="col-md-2 d-none" id="discount_group">
-                                                <input type="number" id="discount" class="form-control" placeholder="Discount">
+                                            <!-- Discount -->
+                                            <div class="col-md-1 d-none" id="discount_group">
+                                                <label for="discount" class="form-label">Disc.(%)</label>
+                                                <input type="number" id="discount" class="form-control">
                                             </div>
-                                            <!-- DISCOUNT AMOUNT field -->
+                                            <!-- Discount Amount -->
                                             <div class="col-md-2 d-none" id="discount_amount_group">
-                                                <input type="text" id="discount_amount" class="form-control" placeholder="Dis. Amount" disabled>
+                                                <label for="discount_amount" class="form-label">Discount Amount</label>
+                                                <input type="text" id="discount_amount" class="form-control" disabled>
                                             </div>
-                                            <div class="col-md-2 text-center" id="item-action-buttons">
+                                            <!-- Action Buttons -->
+                                            <div class="col-md-1 text-center" id="item-action-buttons">
+                                                <label class="form-label d-block invisible">Action</label>
                                                 <button type="button" class="btn btn-outline-secondary" id="btn_add_item" onclick="addItem()">+</button>
-                                                <div class="d-none" id="edit_action_group">
-                                                    <button type="button" class="btn btn-outline-primary me-2" onclick="updateItem()">Update</button>
-                                                    <button type="button" class="btn btn-outline-danger" onclick="cancelEdit()">Cancel</button>
+                                                <div class="d-none d-flex gap-2" id="edit_action_group">
+                                                    <button type="button" class="btn btn-outline-primary flex-fill" onclick="updateItem()">
+                                                        <i class="fa fa-check"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-danger flex-fill" onclick="cancelEdit()">
+                                                        <i class="fa fa-times"></i>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -332,7 +355,7 @@
 </div>
 
 <div class="modal fade" id="grnDetailModal" tabindex="-1" role="dialog" aria-labelledby="grnDetailModalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered" role="document" style="max-width: 95%; height: 90vh;">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document" style="max-width: 90%; height: 90vh;">
         <div class="modal-content" style="height: 100%; overflow-y: auto;">
             <div class="modal-header">
                 <h5 class="modal-title">GRN Details - <span id="modalGrnNumber">0000</span></h5>
@@ -629,8 +652,8 @@
                             <td>${qty}</td>
                             <td>${foc}</td>
                             <td class="text-end">${price.toFixed(2)}</td>
-                            <td>${margin.toFixed(2)}</td>
-                            <td>${discount.toFixed(2)}</td>
+                            <td>${margin}</td>
+                            <td>${discount}</td>
                             <td class="text-end">${finalPrice.toFixed(2)}</td>
                             <td class="text-end">${subtotal.toFixed(2)}</td>
                         </tr>
@@ -687,6 +710,16 @@
         switchTab(1);
     }
 
+    $('#grnModal').on('shown.bs.modal', function () {
+        $('#grn_number').focus();
+
+        handleGrnTypeToggle();
+
+        $('#btn_add_item').removeClass('d-none');
+        // Hide Update and Cancel buttons group
+        $('#edit_action_group').addClass('d-none');
+    });
+
     let itemsList = [];
     let GrnDetails = [];
 
@@ -726,11 +759,11 @@
         }
 
         const itemDescription = $("#item_name").val();
-        const qty = parseFloat($("#qty").val()) || 0;
-        const foc = parseFloat($("#foc").val()) || 0;
+        const qty = parseInt($("#qty").val()) || 0;
+        const foc = parseInt($("#foc").val()) || 0;
         const price = parseFloat($("#price").val()) || 0;
-        const margin = parseFloat($("#margin").val()) || 0;
-        const discount = parseFloat($("#discount").val()) || 0;
+        const margin = parseInt($("#margin").val()) || 0;
+        const discount = parseInt($("#discount").val()) || 0;
 
         let finalPrice = 0;
         if (grnType === 'Profit Margin') {
@@ -743,6 +776,14 @@
         const isDuplicate = itemsList.some(item => item.item_id === itemID);
         if (isDuplicate) {
             alert("Duplicate Item, Item already exists in the GRN list.");
+            return false;
+        }
+        if (qty === 0) {
+            alert("Please enter a quantity");
+            return false;
+        }
+        if (price === 0) {
+            alert("Please enter a purchase price");
             return false;
         }
 
@@ -871,7 +912,7 @@
                             label: item.label,
                             value: item.label,
                             id: item.value,
-                            retail_price: item.retail_price
+                            list_price: item.list_price
                         };
                     });
 
@@ -900,11 +941,9 @@
     function selectItem(item) {
         if (!item || !item.id) return;
 
-        console.log("Item selected:", item);
-
         $("#item_name").val(item.label);
         $("#item_id").val(item.id);
-        $("#price").val(item.retail_price);
+        $("#price").val(item.list_price);
         $("#qty").val(1);
         $("#foc").val(0);
         $("#item_name").data("valid", true); // used for validation
@@ -967,11 +1006,14 @@
 
     $("#item_name").on("input", function () {
         if (!itemSelectedFromAutocomplete) {
-            $("#price").val('');
+            $("#foc").val('');
             $("#qty").val('');
-            $("#item_id").val('');
-            $("#new_stock_qty").text('0');
+            $("#price").val('');
+            $("#margin").val('');
+            $("#discount").val('');
+            $("#discount_amount").val('');
             $("#old_stock_qty").text('0');
+            $("#new_stock_qty").text('0');
             $("#last_cost").text('0.00');
             $("#avg_cost").text('0.00');
         }
@@ -1002,8 +1044,8 @@
                 <td class="text-end">${item.qty}</td>
                 <td class="text-end">${item.foc}</td>
                 <td class="text-end">${parseFloat(item.price).toFixed(2)}</td>
-                <td class="text-end">${item.margin !== null ? parseFloat(item.margin).toFixed(2) : '-'}</td>
-                <td class="text-end">${item.discount !== null ? parseFloat(item.discount).toFixed(2) : '-'}</td>
+                <td class="text-end">${item.margin !== null ? parseInt(item.margin) : '-'}</td>
+                <td class="text-end">${item.discount !== null ? parseInt(item.discount) : '-'}</td>
                 <td class="text-end">${parseFloat(item.final_price).toFixed(2)}</td>
                 <td class="text-end">${parseFloat(item.subtotal).toFixed(2)}</td>
             </tr>
@@ -1065,11 +1107,11 @@
 
         const item = {
             item_name: $('#item_name').val(),
-            qty: parseFloat($('#qty').val()) || 0,
-            foc: parseFloat($('#foc').val()) || 0,
+            qty: parseInt($('#qty').val()) || 0,
+            foc: parseInt($('#foc').val()) || 0,
             price: parseFloat($('#price').val()) || 0,
-            margin: parseFloat($('#margin').val()) || 0,
-            discount: parseFloat($('#discount').val()) || 0
+            margin: parseInt($('#margin').val()) || 0,
+            discount: parseInt($('#discount').val()) || 0
         };
 
         const grnType = $('input[name="grn_type"]:checked').val();
@@ -1945,6 +1987,37 @@
             e.preventDefault();
             saveItem();
         }
+    });
+
+    //text box validations
+    document.addEventListener("DOMContentLoaded", function () {
+        const fields = ['qty', 'foc', 'price', 'margin', 'discount'];
+        fields.forEach(id => {
+            const input = document.getElementById(id);
+            if (!input) return;
+            input.addEventListener('input', function () {
+                let value = parseFloat(this.value);
+                // Prevent negative values
+                if (value < 0) {
+                    this.value = '';
+                }
+                if ((this.id === 'qty' || this.id === 'price') && (value === 0 || isNaN(value))) {
+                    this.value = '';
+                }
+                if (this.id === 'discount') {
+                    if (value >= 100) {
+                        this.value = '';
+                        document.getElementById('discount_amount').value = ''; // Clear discount amount
+                    }
+                }
+            });
+            //  Prevent typing minus key
+            input.addEventListener('keydown', function (e) {
+                if (e.key === '-' || e.keyCode === 189) {
+                    e.preventDefault();
+                }
+            });
+        });
     });
 
 </script>
