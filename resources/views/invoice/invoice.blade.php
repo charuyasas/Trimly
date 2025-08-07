@@ -23,7 +23,7 @@
                                     <div class="col-md-1"></div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="cbo_tokenNo">Token No. <code>*</code></label>
-                                        <select class="form-select" id="cbo_tokenNo" onchange="fetchInvoiceDetails(this.value)" tabindex="-1"></select>
+                                        <select class="nice_Select wide mb_30" id="cbo_tokenNo" onchange="fetchInvoiceDetails(this.value)" tabindex="-1"></select>
                                         <input type="hidden" id="invoice_id">
                                     </div>
                                     <div class="col-md-1">
@@ -51,6 +51,8 @@
                                         <input type="text" class="form-control" id="cbo_item" name="item" placeholder="Select item..." tabindex="3" >
                                         <input type="hidden" id="item_id">
                                         <input type="hidden" id="txt_item_type">
+                                        <input type="hidden" id="max_discount_percentage">
+                                        <input type="hidden" id="max_discount_amount">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="txt_price">Price <code>*</code></label>
@@ -111,6 +113,7 @@
                                             <th scope="col">Dis. %</th>
                                             <th scope="col">Dis. Amount</th>
                                             <th scope="col">Sub Total</th>
+                                            <th scope="col">Delete</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -181,11 +184,11 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="left">
+                                            <td class="left red_color">
                                                 <strong>Balance</strong>
                                             </td>
                                             <td class="right">
-                                                <strong><input type="text" class="form-control text-end" id="txt_balance" disabled tabindex="-1"  value="0.00"></strong>
+                                                <strong><input type="text" class="form-control text-end red_color" id="txt_balance" disabled tabindex="-1"  value="0.00"></strong>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -209,9 +212,12 @@
 
 <script>
     var itemSelectedFromAutocomplete = false;
+    let customerAutoCompleteHasResults = false;
     const apiUrl = '/api/new-invoice';
+    $('#cbo_employee').focus();
 
     $(document).ready(function () {
+        // $('.nice_Select').niceSelect();
         $(document).on('keydown', function (e) {
             if (e.key === '+' || (e.shiftKey && e.key === '=')) {
                 e.preventDefault();
@@ -219,27 +225,37 @@
             }
         });
         loadTotkenNo('');
-    });
+    })
 
-    function loadTotkenNo(tokenID){
+    function loadTotkenNo(tokenID) {
         $.ajax({
             url: '/api/invoice-list-dropdown',
             method: 'GET',
             success: function (data) {
                 var select = $('#cbo_tokenNo');
-                select.empty();
-                select.append('<option value="">New Invoice</option>');
 
-                data.forEach(function (item) {
+                select.empty();
+
+                select.append('<option value="">New Invoice</option>');
+                data.invoices.forEach(function (item) {
                     select.append('<option value="' + item.value + '">' + item.label + '</option>');
                 });
-                $("#cbo_tokenNo").val(tokenID);
+
+                if (tokenID) {
+                    select.val(tokenID);
+                }
+
+                if ($.fn.niceSelect) {
+                    select.niceSelect('update');
+                }
+
+                $('#max_discount_percentage').val(data.max_discount_percentage)
+
             },
             error: function (xhr, status, error) {
-                console.error('Error loading dropdown:', error);
+                console.error('Error loading token numbers:', error);
             }
         });
-
     }
 
     $(function () {
@@ -284,6 +300,8 @@
                         search_key: request.term
                     },
                     success: function (data) {
+                        customerAutoCompleteHasResults = data.length > 0;
+
                         response(data);
 
                         if (data.length === 1) {
@@ -304,6 +322,7 @@
                 return false;
             }
         });
+
 
         $("#cbo_item").autocomplete({
             source: function (request, response) {
@@ -337,6 +356,8 @@
                             itemSelectedFromAutocomplete = true;
                             if(data[0].item_type == 'item') {
                                 loadAvailableStock();
+                                let discountAmount = ((data[0].price)*($("#max_discount_percentage").val()))/100;
+                                $('#max_discount_amount').val(discountAmount);
                             }
                         }
                     }
@@ -357,12 +378,28 @@
                 itemSelectedFromAutocomplete = true;
                 if(ui.item.item_type == 'item') {
                     loadAvailableStock();
+                    let discountAmount = ((ui.item.price)*($("#max_discount_percentage").val()))/100;
+                    $('#max_discount_amount').val(discountAmount);
                 }
                 return false;
             }
         });
 
     });
+
+    $("#cbo_customer").keydown(function(e) {
+        if (e.key === 'Enter') {
+            if (!customerAutoCompleteHasResults) {
+                e.preventDefault(); // prevent form submit or other actions
+                const nameTyped = $("#cbo_customer").val().trim();
+                if (nameTyped !== '') {
+                    // Open customer panel in new tab with name in query string
+                    window.open(`/customers?name=${encodeURIComponent(nameTyped)}`, '_blank');
+                }
+            }
+        }
+    });
+
 
     $("#cbo_item").on("input", function () {
         if (!itemSelectedFromAutocomplete) {
@@ -398,8 +435,16 @@
         let discount = $("#txt_discount").val();
         let discount_amount = $("#txt_discount_amount").val();
         let subTotal = unitPrice*qty;
+        let maxDiscountPercentage = $('#max_discount_percentage').val();
+        let maxDiscountAmount = $('#max_discount_amount').val();
 
         if(type == 'percentage'){
+            if(maxDiscountPercentage < discount){
+                alert(`Discount percentage (${discount}%) cannot be greater than ${maxDiscountPercentage}%.`);
+                $("#txt_discount").val(0);
+                $("#txt_sub_total").val((unitPrice*qty).toFixed(2));
+                return false;
+            }
             $("#txt_discount_amount").prop("disabled", true);
             discount_amount = (subTotal*discount)/100;
             if(discount_amount == 0){
@@ -408,6 +453,12 @@
             $("#txt_discount_amount").val(discount_amount);
             subTotal = subTotal-((subTotal*discount)/100);
         }else if(type == 'amount'){
+            if((unitPrice*qty) <= discount_amount || maxDiscountAmount < discount_amount){
+                alert(`Discount amount (${discount_amount}) cannot be greater than ${unitPrice * qty}.`);
+                $("#txt_discount_amount").val(0);
+                $("#txt_sub_total").val((unitPrice*qty).toFixed(2));
+                return false;
+            }
             if(discount_amount == 0 || discount_amount == ''){
                 $("#txt_discount").prop("disabled", false);
             }else{
@@ -587,10 +638,13 @@
                 <td>${index + 1}</td>
                 <td>${item.item_description}</td>
                 <td class="text-end">${item.amount}</td>
-                <td>${item.quantity}</td>
+                <td  class="text-center-middle">${item.quantity}</td>
                 <td>${item.discount_percentage || ''}</td>
                 <td class="text-end">${item.discount_amount || ''}</td>
                 <td class="text-end">${item.sub_total}</td>
+                <td class="text-center-middle">
+                    <a href="javascript:void(0)" onclick="removeItem(${index})" class="action_btn-danger"> <i class="ti-trash"></i> </a>
+                </td>
             </tr>
         `;
 
@@ -601,6 +655,57 @@
         $("#txt_total").val(subTotal.toFixed(2));
         calculateGrandTotal();
     }
+
+    function removeItem(index) {
+        const item = itemsList[index];
+        // if (itemsList.length <= 1) {
+        //     alert("At least one item must remain in the invoice.");
+        //     return;
+        // }
+        var tokenNo = $("#cbo_tokenNo").val();
+        if (!confirm("Are you sure you want to delete this item from the invoice?")) {
+            return;
+        }
+
+        $.ajax({
+            url: `/api/invoice-item-delete/${tokenNo}/${item.item_id}`,
+            method: 'DELETE',
+            success: function(response) {
+                if(response.message == 'Item deleted successfully.'){
+                    Swal.fire('Deleted!', 'Item has been removed.', 'success');
+
+                    if (response.invoice && response.invoice.items) {
+                        itemsList = response.invoice.items;
+                        renderItemsTable(itemsList);
+                        calculateGrandTotal();
+                    }
+                }else{
+                    Swal.fire({
+                        icon: "error",
+                        title: "Failed to delete item.",
+                        text: xhr.responseJSON?.message || "Something went wrong.",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+
+            },
+            error: function(xhr) {
+                if (xhr.status === 404) {
+                    alert("Item not found in invoice.");
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Failed to delete item.",
+                        text: xhr.responseJSON?.message || "Something went wrong.",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            }
+        });
+    }
+
 
     function calculateGrandTotal(){
         let grandTotal = $("#txt_total").val();
@@ -699,6 +804,17 @@
 
     $(document).on('keydown', 'input, select, textarea, button', function(e) {
         if (e.key === 'Enter') {
+
+            const $el = $(this);
+
+            // Skip if disabled, readonly, or tabindex is -1
+            if (
+                $el.is('[readonly], :disabled') ||
+                $el.attr('tabindex') === '-1'
+            ) {
+                return;
+            }
+
             e.preventDefault();
 
             if (this.id === 'txt_discount_amount') {
@@ -750,12 +866,14 @@
 
                     if (available < 1) {
                         $("#txt_qty").val(0);
-                        $(".btn_add").prop("disabled", true);
+                        $('#txt_qty').prop('disabled', true);
+                        $("#btn_add").prop("disabled", true);
                         $(".available_stock_display").addClass("red_color");
                         $(".available_stock_display").removeClass("text-muted");
 
                     } else {
-                        $(".btn_add").prop("disabled", false);
+                        $('#txt_qty').prop('disabled', false);
+                        $("#btn_add").prop("disabled", false);
                         $(".available_stock_display").addClass("text-muted");
                         $(".available_stock_display").removeClass("red_color");
                     }

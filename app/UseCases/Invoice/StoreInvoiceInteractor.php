@@ -30,7 +30,7 @@ class StoreInvoiceInteractor
                 return ($item->quantity * $item->amount) - ($item->discount_amount ?? 0);
             });
 
-            $invoice = Invoice::where('token_no', $invoiceRequest->token_no)->first();
+            $invoice = Invoice::where('id', $invoiceRequest->token_no)->first();
 
             if ($invoice) {
                 $invoice->update([
