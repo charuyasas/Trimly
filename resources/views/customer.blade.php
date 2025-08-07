@@ -144,6 +144,19 @@
       });
     }
 
+    $(window).on('load', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+
+        if (name) {
+            // Wait a bit to ensure everything is initialized
+            setTimeout(function () {
+                openAddCustomerModal();
+                $('#name').val(name);
+            }, 300); // Wait 300ms after load
+        }
+    });
+
     function saveCustomer() {
         const customer_id = $('#customer_id').val();
         const data = {
@@ -282,6 +295,10 @@
     $('#customer_id').val('');
     $('.modal-title').text('Add Customer');
     $('#saveBtn').text('Save');
+
+        // Ensure the modal opens properly
+        const modal = new bootstrap.Modal(document.getElementById('exampleModalCenter'));
+        modal.show();
     }
 
     //tab navigation for Enter key

@@ -71,6 +71,7 @@ Route::get('/invoice-list-dropdown', [InvoiceController::class, 'loadInvoiceDrop
 Route::post('/new-invoice',[InvoiceController::class, 'store']);
 Route::post('/finish-invoice/{id}',[InvoiceController::class, 'finishInvoice']);
 Route::get('/invoice-items/{id}', [InvoiceController::class, 'getInvoiceItems']);
+Route::delete('/invoice-item-delete/{tokenNo}/{id}', [InvoiceController::class, 'deleteItem']);
 
 Route::get('/main_account_list', [MainAccountController::class, 'loadMainAccountDropdown']);
 Route::get('/heading_account_list/{mainAcc}', [HeadingAccountController::class, 'loadHeadingAccountDropdown']);
