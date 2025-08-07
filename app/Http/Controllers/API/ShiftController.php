@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\UseCases\UserShift\GetOngoingShiftUserDetailsInteractor;
+use App\UseCases\UserShift\GetUserShiftDetailsInteractor;
+use App\UseCases\UserShift\LoadShiftIDDropdownInteractor;
 use App\UseCases\UserShift\Requests\ShiftDetailsRequest;
 use App\UseCases\UserShift\ShowUserShiftEndDetailsInteractor;
 use App\UseCases\UserShift\StartUserShiftInteractor;
@@ -57,6 +59,16 @@ class ShiftController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function loadShiftIDDropdown(LoadShiftIDDropdownInteractor $loadShiftIDDropdownInteractor): JsonResponse
+    {
+        return response()->json($loadShiftIDDropdownInteractor->execute());
+    }
+
+    public function loadShiftDetails(int $shiftID, GetUserShiftDetailsInteractor $getUserShiftDetailsInteractor): JsonResponse
+    {
+        return response()->json($getUserShiftDetailsInteractor->execute($shiftID));
     }
 
 }

@@ -3466,11 +3466,30 @@ table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child::befor
   flex: 32px 0 0;
 }
 
+.action_btn-danger {
+    width: 38px;
+    height: 38px;
+    border-radius: 6px;
+    background: transparent;
+    line-height: 40px;
+    text-align: center;
+    color: red;
+    font-size: 20px;
+    transition: .3s;
+    display: inline-block;
+    flex: 38px 0 0;
+}
+
 /* line 574, G:/admin_project/8 admin/management_html/scss/_button.scss */
 .action_btn:hover {
-  background: #67349D;
-  color: #fff;
-  box-shadow: 0 5px 10px rgba(136, 79, 251, 0.26);
+    background: #67349D;
+    color: #fff;
+    box-shadow: 0 5px 10px rgba(136, 79, 251, 0.26);
+}
+
+.action_btn-danger:hover {
+    background: red;
+    color: #fff;
 }
 
 /* line 581, G:/admin_project/8 admin/management_html/scss/_button.scss */

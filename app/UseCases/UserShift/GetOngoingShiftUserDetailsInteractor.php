@@ -8,7 +8,7 @@ class GetOngoingShiftUserDetailsInteractor
 {
     public function execute(): ?string
     {
-        $activeShift = ShiftDetails::where('status', true)->first();
+        $activeShift = ShiftDetails::where('status', false)->first();
         return $activeShift;
     }
 }

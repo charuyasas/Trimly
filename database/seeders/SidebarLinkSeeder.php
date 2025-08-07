@@ -205,6 +205,14 @@ class SidebarLinkSeeder extends Seeder
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $permissions = Permission::all();
         $adminRole->syncPermissions($permissions);
+
+        $cashierRole = Role::firstOrCreate(['name' => 'cashier']);
+        $cashierPermissions = ['expenses', 'invoice'];
+
+        foreach ($cashierPermissions as $permName) {
+            $permission = Permission::firstOrCreate(['name' => $permName]);
+            $cashierRole->givePermissionTo($permission);
+        }
     }
 
     private function createSidebarLinks(array $links, ?int $parentId = null): void

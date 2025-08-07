@@ -16,7 +16,7 @@ class ShiftDetailsRequest extends Data
     public ?int $shift_id;
 
     #[SpatieRule('boolean')]
-    public bool $status = true;
+    public bool $status = false;
 
     #[SpatieRule('nullable', 'date')]
     public ?string $shift_in_time = null;

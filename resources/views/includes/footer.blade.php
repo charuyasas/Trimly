@@ -92,7 +92,7 @@
                 <!-- Modal Footer -->
                 <div class="modal-footer">
                     <button type="submit" id="saveShiftInCashBalanceBtn" class="btn btn-primary w-100" onclick="startShift()">
-                        Save & Start Shift
+                        Start Shift
                     </button>
                 </div>
             </form>
@@ -112,25 +112,62 @@
             </div>
 
             <!-- Modal Body -->
-            <form id="dayEndCashInHandFrom" onsubmit="ShiftEnd(event)">
-                <div class="modal-body">
-                    <div class="mb-3">
-{{--                        <label for="dayEndCashBalance" class="form-label">Enter Cash in Hand</label>--}}
-                        <input type="number" id="dayEndCashBalance" name="dayEndCashBalance" class="form-control form-control-lg" placeholder="0.00" required>
+            <div class="modal-body">
+
+                <!-- Section 1: Get Shift End Report -->
+                <div class="mb-4 border rounded p-3">
+                    <h6 class="mb-3">Get Previous Shift Details</h6>
+
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-7">
+                            <label for="reportShiftId" class="form-label">Select Shift ID</label>
+                            <select class="nice_Select wide mb_30" id="reportShiftId"></select>
+                        </div>
+
+                        <div class="col-md-5 d-flex align-items-center">
+                            <button type="button" id="btnGetShiftReport" class="btn btn-secondary w-100 h-100" style="margin-top: 10px;" onclick="getShitDetails()">
+                                Shift End Report
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Modal Footer -->
-                <div class="modal-footer">
-                    <button type="submit" id="saveShiftEndCashBalanceBtn" class="btn btn-primary w-100">
-                        Save & End Shift
-                    </button>
-                </div>
-            </form>
+
+                <!-- Section 2: End Shift (Cash in Hand) -->
+                <form id="dayEndCashInHandForm" onsubmit="ShiftEnd(event)">
+                    <div class="mb-3">
+                        <label for="dayEndCashBalance" class="form-label">Confirm Cash in Hand</label>
+                        <input type="number" id="dayEndCashBalance" name="dayEndCashBalance" class="form-control form-control-lg" placeholder="0.00" required />
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" id="saveShiftEndCashBalanceBtn" class="btn btn-primary">
+                            End Shift
+                        </button>
+                    </div>
+                </form>
+
+            </div>
 
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="shiftSummaryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body" id="shiftSummaryContent"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="printShiftReport()">Print</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 <script src="{{ asset('assets/js/popper1.min.js') }}"></script>
 <script src="{{ asset('assets/js/bootstrap1.min.js') }}"></script>
@@ -179,9 +216,8 @@
 <script src="{{ asset('assets/js/dashboard_init.js') }}"></script>
 <script src="{{ asset('assets/js/custom.js') }}"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ asset('assets/vendors/npm/sweetalert2@11') }}"></script>
 
-{{--<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />--}}
 
 
 <script>
@@ -405,7 +441,6 @@ function ShiftEnd(event) {
     <div class="text-center">
         <h5 class="bold">TRIMLY</h5>
         <h6 class="bold">DAILY INCOME & EXPENDITURE REPORT</h6>
-<!--        <p>Kurunegala, Sri Lanka<br>Tel: 0372232079, Fax: 0372232377</p>-->
         <div>${formatDate(shiftOffTime)}</div>
     </div>
 
@@ -512,9 +547,175 @@ function dayEnd(){
     });
 }
 
-function showModal(){
+function showShiftEndModal(){
     $('#dayEndBalance').val('');
+    loadShiftID();
 }
+
+function loadShiftID() {
+    $.ajax({
+        url: '/api/shift-id-dropdown',
+        method: 'GET',
+        success: function (response) {
+            var select = $('#reportShiftId');
+
+            select.empty();
+
+            select.append('<option value="">Select Shift ID</option>');
+            response.forEach(function (item) {
+                select.append('<option value="' + item.value + '">' + item.label + '</option>');
+            });
+
+            if ($.fn.niceSelect) {
+                select.niceSelect('update');
+            }
+
+        },
+        error: function (xhr, status, error) {
+            console.error('Error loading token numbers:', error);
+        }
+    });
+}
+
+function getShitDetails(){
+    let shiftID = $('#reportShiftId').val();
+    $.ajax({
+        url: `/api/load-shift-details/${shiftID}`,
+        method: 'GET',
+        success: function (data) {
+            showShiftSummaryModal(data);
+
+        },
+        error: function (xhr, status, error) {
+            console.error('Error loading token numbers:', error);
+        }
+    });
+}
+
+    function showShiftSummaryModal(data) {
+
+        const formatAmount = (val) => parseFloat(val || 0).toFixed(2);
+        const formatDateTime = (datetime) => {
+            const date = new Date(datetime);
+            return date.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        };
+        const formatDate = (datetime) => {
+            const date = new Date(datetime);
+            return date.toLocaleDateString('en-GB');
+        };
+
+        const openingCash = parseFloat(data.opening_cash_in_hand || 0);
+        const salesTotal = parseFloat(data.total_daily_sales || 0);
+        const expenseTotal = parseFloat(data.total_daily_expenses || 0);
+        const cashInHand = parseFloat(data.day_end_cash_in_hand || 0);
+        const cashShortage = parseFloat(data.cash_shortage || 0);
+        const shiftOffTime = data.shift_off_time;
+        const shiftInTime = data.shift_in_time;
+        const shiftID = data.shift_id;
+        const userName = data.user_name;
+        const cashHandover = cashInHand - cashShortage;
+
+        const hasVariation = cashShortage !== 0;
+        const variationText = cashShortage > 0 ? "Total Cash Excess" : "Total Cash Lost";
+        const variationSign = cashShortage > 0 ? "+" : "(-)";
+
+        const salesHtml = data.sales_entries.map(entry => `
+        <tr>
+            <td>+ ${entry.reference_id || 'N/A'}</td>
+            <td class="text-right">${formatAmount(entry.debit)}</td>
+        </tr>
+    `).join('');
+
+        const expenseHtml = data.expense_entries.map(entry => `
+        <tr>
+            <td>- ${entry.reference_id || 'N/A'}</td>
+            <td class="text-right">${formatAmount(entry.debit)}</td>
+        </tr>
+    `).join('');
+
+        const html = `
+    <div id="shiftReportContent">
+        <style>
+            body {  font-size: 14px; }
+            .text-center { text-align: center; }
+            .text-right { text-align: right; }
+            .bold { font-weight: bold; }
+            hr { border: none; border-top: 2px solid #000; margin: 10px 0; }
+            table { width: 100%; margin-bottom: 10px; border-collapse: collapse; }
+            td { padding: 4px 0; vertical-align: top; }
+        </style>
+
+        <div class="text-center">
+            <h5 class="bold">TRIMLY</h5>
+            <h6 class="bold">DAILY INCOME & EXPENDITURE REPORT</h6>
+            <div>${formatDate(shiftOffTime)}</div>
+        </div>
+
+        <hr>
+
+        <table>
+            <tr><td colspan="2" class="bold">1.0 Cashier Activity Details</td></tr>
+            <tr><td>* Shift ID</td><td>: ${shiftID}</td></tr>
+            <tr><td>* User</td><td>: ${userName}</td></tr>
+            <tr><td>* On Time</td><td>: ${formatDateTime(shiftInTime)}</td></tr>
+            <tr><td>* Opening Cash</td><td>: ${formatAmount(openingCash)}</td></tr>
+        </table>
+
+        <hr>
+
+        <table>
+            <tr><td colspan="2" class="bold">2.0 Sales Collection</td></tr>
+            ${salesHtml}
+            <tr><td class="bold">Total Sales</td><td class="text-right bold">${formatAmount(salesTotal)}</td></tr>
+        </table>
+
+        <hr>
+
+        <table>
+            <tr><td colspan="2" class="bold">3.0 Expenses</td></tr>
+            ${expenseHtml}
+            <tr><td class="bold">Total Expenses</td><td class="text-right bold">${formatAmount(expenseTotal)}</td></tr>
+        </table>
+
+        <hr>
+
+        <table>
+            <tr><td colspan="2" class="bold">4.0 Sign-Off Summary</td></tr>
+            <tr><td>Off Time</td><td class="text-right">${formatDateTime(shiftOffTime)}</td></tr>
+            <tr><td>Printed Time</td><td class="text-right">${formatDateTime(new Date())}</td></tr>
+            <tr><td><b>Cash in Hand</b></td><td class="text-right bold">${formatAmount(cashInHand)}</td></tr>
+            <tr><td><b>Cash Handover</b></td><td class="text-right bold">${formatAmount(cashHandover)}</td></tr>
+            ${hasVariation ? `
+            <tr><td><b>${variationText}</b></td>
+            <td class="text-right bold">${variationSign} ${formatAmount(Math.abs(cashShortage))}</td></tr>` : ''}
+        </table>
+
+        <hr>
+        <div class="text-center">--- END OF REPORT ---</div>
+    </div>
+    `;
+
+        document.getElementById("shiftSummaryContent").innerHTML = html;
+        let modal = new bootstrap.Modal(document.getElementById("shiftSummaryModal"));
+        modal.show();
+    }
+
+    function printShiftReport() {
+        const printContent = document.getElementById("shiftReportContent").innerHTML;
+        const printWindow = window.open('', '_blank');
+        printWindow.document.open();
+        printWindow.document.write(`<html><head><title>Shift Summary</title></head><body>${printContent}</body></html>`);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+    }
+
+
 
 
 </script>

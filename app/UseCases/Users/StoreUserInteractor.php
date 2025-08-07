@@ -14,7 +14,9 @@ class StoreUserInteractor
         $admin = User::create(
             [
                 'name' => $request->name,
+                'username' => $request->username,
                 'email' => $request->email,
+                'employee_id' => $request->employee_id,
                 'password' => Hash::make($request->password),
                 'email_verified_at' => now(),
             ]

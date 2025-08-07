@@ -13,6 +13,8 @@ class UpdateUserInteractor
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
+            'username' => $request->username,
+            'employee_id' => $request->employee_id,
             'password' => $request->password ? Hash::make($request->password) : $user->password,
         ]);
 

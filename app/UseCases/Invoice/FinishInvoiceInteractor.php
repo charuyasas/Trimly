@@ -6,6 +6,7 @@ use App\Constance\AccountsLedgerCodes;
 use App\Models\Invoice;
 use App\Models\JournalEntry;
 use App\Models\StockSheet;
+use App\Models\SystemConfiguration;
 use App\UseCases\Invoice\Requests\InvoiceRequest;
 use App\UseCases\JournalEntry\Requests\JournalEntryRequest;
 use App\UseCases\JournalEntry\StoreJournalEntryInteractor;
@@ -16,11 +17,20 @@ use Illuminate\Support\Facades\DB;
 
 class FinishInvoiceInteractor
 {
-    public function execute(string $id, InvoiceRequest $invoiceRequest, StoreJournalEntryInteractor $storeJournalEntryInteractor, StoreStockSheetInteractor $storeStockSheetInteractor, GetAvailableStockInteractor $getAvailableStockInteractor): array
-    {
+    public function execute(
+        string $id,
+        InvoiceRequest $invoiceRequest,
+        StoreJournalEntryInteractor $storeJournalEntryInteractor,
+        StoreStockSheetInteractor $storeStockSheetInteractor,
+        GetAvailableStockInteractor $getAvailableStockInteractor
+    ): array {
         DB::beginTransaction();
 
         try {
+            // 🔹 Get max discount configuration
+            $config = SystemConfiguration::where('configuration_name', 'Discount Percentages')->first();
+            $maxDiscount = $config?->configuration_data['Maximum Discount Percentage'] ?? null;
+
             $invoice = Invoice::with('items')->findOrFail($id);
             $baseTotal = $invoice->items->sum('sub_total');
 
@@ -29,6 +39,25 @@ class FinishInvoiceInteractor
             $received_cash = $invoiceRequest->received_cash;
             $balance = $invoiceRequest->balance;
 
+            // 🔹 Validate invoice-level discount
+            if ($maxDiscount !== null && $discountPercentage > $maxDiscount) {
+                return [
+                    'message' => "Invoice discount percentage ({$discountPercentage}%) exceeds allowed maximum of {$maxDiscount}%.",
+                    'status'  => 422,
+                ];
+            }
+
+            // 🔹 Validate item-level discounts
+            foreach ($invoice->items as $item) {
+                if ($maxDiscount !== null && $item->discount_percentage > $maxDiscount) {
+                    return [
+                        'message' => "Item '{$item->item_description}' discount percentage ({$item->discount_percentage}%) exceeds allowed maximum of {$maxDiscount}%.",
+                        'status'  => 422,
+                    ];
+                }
+            }
+
+            // 🔹 Apply discount preference
             if ($discountPercentage > 0) {
                 $discountAmount = ($baseTotal * $discountPercentage) / 100;
                 $invoice->discount_percentage = $discountPercentage;
@@ -38,6 +67,7 @@ class FinishInvoiceInteractor
                 $invoice->discount_amount = $discountAmount;
             }
 
+            // 🔹 Stock availability check
             $insufficientItem = collect($invoice->items)->first(function ($item) use ($getAvailableStockInteractor) {
                 if ($item->item_type === 'item') {
                     $requiredQty = $item->quantity ?? 0;
@@ -45,10 +75,8 @@ class FinishInvoiceInteractor
                         $item->item_id,
                         AccountsLedgerCodes::LEDGER_CODES['MainStore']
                     );
-
                     return $availableQty < $requiredQty;
                 }
-
                 return false;
             });
 
@@ -64,20 +92,18 @@ class FinishInvoiceInteractor
 
             $invoiceNumber = $this->generateNextInvoiceNo();
 
+            // 🔹 Stock sheet credit entries
             $stockCreditEntryData = collect($invoice->items)->map(function ($item) use ($invoiceNumber) {
-                $totalQty = ($item->quantity ?? 0);
-
                 if ($item->item_type === 'item') {
                     return [
                         'item_code'      => $item->item_id ?? '',
                         'ledger_code'    => AccountsLedgerCodes::LEDGER_CODES['MainStore'],
                         'description'    => 'Invoice - ' . ($item->item_description ?? ''),
-                        'credit'         => $totalQty,
+                        'credit'         => $item->quantity ?? 0,
                         'reference_type' => StockSheet::STATUS['Sale'],
                         'reference_id'   => 'Invoice - ' . $invoiceNumber,
                     ];
                 }
-
                 return null;
             })->filter()->values()->toArray();
 
@@ -85,9 +111,10 @@ class FinishInvoiceInteractor
                 $this->invoiceItemsToStockTable($storeStockSheetInteractor, $stockCreditEntryData);
             }
 
+            // 🔹 Sales totals
             $serviceCount = 0;
             $itemCount = 0;
-            $totals = collect($invoice->items)->reduce(function ($carry, $item) use ($itemCount, $serviceCount) {
+            $totals = collect($invoice->items)->reduce(function ($carry, $item) use (&$itemCount, &$serviceCount) {
                 $amount = ($item->quantity * $item->amount) - ($item->discount_amount ?? 0);
 
                 if ($item->item_type === 'service') {
@@ -108,6 +135,7 @@ class FinishInvoiceInteractor
                 'item_cost' => 0,
             ]);
 
+            // 🔹 Journal entries
             $journalEntries = [];
 
             if ($totals['service_amount'] > 0) {
@@ -212,6 +240,5 @@ class FinishInvoiceInteractor
             $stockRequest = StockSheetEntryDataRequest::validateAndCreate($entry);
             $storeStockSheetInteractor->execute($stockRequest);
         }
-
     }
 }
