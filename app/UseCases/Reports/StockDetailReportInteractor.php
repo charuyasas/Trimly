@@ -37,9 +37,9 @@ class StockDetailReportInteractor
                 ->where('ledger_code', $store)
                 ->get();
 
-            $transactions = $stockSheets->groupBy('reference_type')->map(function ($group) {
+            $transactions = $stockSheets->groupBy('reference_id')->map(function ($group) {
                 return [
-                    'reference_type' => $group->first()->reference_type,
+                    'reference_type' => $group->first()->reference_id,
                     'debit' => $group->sum('debit'),
                     'credit' => $group->sum('credit'),
                 ];
