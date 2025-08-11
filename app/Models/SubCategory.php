@@ -11,7 +11,7 @@ class SubCategory extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['category_id', 'name'];
+    protected $fillable = ['name'];
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -23,10 +23,5 @@ class SubCategory extends Model
                 $model->id = (string) Str::uuid();
             }
         });
-    }
-
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
     }
 }
