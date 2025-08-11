@@ -10,9 +10,6 @@ class SubCategoryRequest extends Data
 {
     public ?string $id;
 
-    #[SpatieRule('required')]
-    public string $category_id;
-
     #[SpatieRule('required', 'max:255')]
     public string $name;
 

@@ -44,7 +44,6 @@
                                             <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Category</th>
                                                 <th>Sub-Category</th>
                                                 <th>Action</th>
                                             </tr>
@@ -81,12 +80,6 @@
                     <input type="hidden" id="sub_category_id">
                     <div class="white_card_body">
                         <div class="row">
-                            <div class="col-lg-12 mb_15">
-                                <div class="common_input mb_15">
-                                    <input type="text" class="form-control" id="cbo_category" placeholder="Search category..." autocomplete="off">
-                                    <input type="hidden" id="category_id">
-                                </div>
-                            </div>
                             <div class="col-lg-12">
                                 <div class="common_input mb_15">
                                     <input type="text" id="sub_category_name" placeholder="Sub-Category Name" required>
@@ -105,7 +98,6 @@
 
 <script>
     const apiUrl = '/api/sub-categories';
-    const categoryApiUrl = '/api/categories';
 
     $(document).ready(function () {
         loadSubCategories();
@@ -120,7 +112,6 @@
             data.forEach(item => {
                 table.row.add([
                     i++,
-                    item.category?.name ?? '—',
                     item.name,
                     `
                     <button class="btn btn-sm btn-primary" onclick="editSubCategory('${item.id}')">Edit</button>
@@ -135,18 +126,9 @@
 
     function saveSubCategory() {
         const id = $('#sub_category_id').val();
-        const categoryId = $('#category_id').val();
         const name = $('#sub_category_name').val().trim();
 
         // Client-side validation for null/empty
-        if (!categoryId) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Please select a category.',
-                showConfirmButton: true
-            });
-            return;
-        }
         if (!name) {
             Swal.fire({
                 icon: 'warning',
@@ -158,7 +140,6 @@
 
         const data = {
             id: id,
-            category_id: categoryId,
             name: name
         };
 
@@ -195,41 +176,10 @@
         });
     }
 
-    $("#cbo_category").autocomplete({
-        source: function (request, response) {
-            if (request.term.length < 1) return;
-            $.ajax({
-                url: '/api/categories-list',
-                dataType: 'json',
-                data: { search_key: request.term },
-                success: function (data) {
-                    response(data);
-                    if (data.length === 1) {
-                        $("#cbo_category").val(data[0].label);
-                        $("#category_id").val(data[0].value);
-                    }
-                }
-            });
-        },
-        minLength: 1,
-        appendTo: "#subCategoryModal",
-        focus: function (event, ui) {
-            $("#cbo_category").val(ui.item.label);
-            return false;
-        },
-        select: function (event, ui) {
-            $("#cbo_category").val(ui.item.label);
-            $("#category_id").val(ui.item.value);
-            return false;
-        }
-    });
-
     function editSubCategory(id) {
         $.get(`${apiUrl}/${id}`, function (data) {
             $('#sub_category_id').val(data.id);
             $('#sub_category_name').val(data.name);
-            $('#category_id').val(data.category_id);
-            $('#cbo_category').val(data.category?.name || '');
             $('.modal-title').text('Edit Sub-Category');
             $('#saveSubCategoryBtn').text('Update');
 
@@ -269,8 +219,6 @@
     function openAddSubCategoryModal() {
         $('#subCategoryForm')[0].reset();
         $('#sub_category_id').val('');
-        $('#category_id').val('');
-        $('#cbo_category').val('');
         $('.modal-title').text('Add Sub-Category');
         $('#saveSubCategoryBtn').text('Save');
     }
