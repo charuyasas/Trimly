@@ -17,7 +17,12 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label" for="cbo_customer">Customer <code>*</code></label>
-                                        <input type="text" class="form-control" id="cbo_customer" name="customer" placeholder="Select customer..." tabindex="2">
+                                        <div class="button-group position-relative">
+                                            <input type="text" class="form-control" id="cbo_customer" placeholder="Search customer..." autocomplete="off" style="max-width: 100%;" tabindex="2">
+                                            <button type="button" id="addCustomerBtn" class="btn position-absolute top-50 end-0 translate-middle-y me-1 btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#customerModal" style="z-index: 10;" title="Add Customer">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
                                         <input type="hidden" id="customer_id">
                                     </div>
                                     <div class="col-md-1"></div>
@@ -201,6 +206,53 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Add Customer Modal-->
+<div class="modal fade" id="customerModal" tabindex="-1" role="dialog" aria-labelledby="customerModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Customer</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="customerForm">
+                    <input type="hidden" id="customer_id">
+                    <div class="white_card_body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="common_input mb_15">
+                                    <input type="text" id="name" placeholder="Customer Name">
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="common_input mb_15">
+                                    <input type="email" id="email" placeholder="Email">
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="common_input mb_15">
+                                    <input type="text" id="phone" class="contactNo" placeholder="Phone">
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="common_input mb_15">
+                                    <input type="text" id="address" placeholder="Address">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveBtn" onclick="saveCustomer()">Save</button>
                 </div>
             </div>
         </div>
@@ -845,6 +897,25 @@
                 return;
             }
 
+            // customer modal
+            if ($el.closest('#customerModal').length) {
+                const fields = $('#customerModal')
+                    .find('input:not([type="hidden"]), select, textarea')
+                    .filter(':visible:not([readonly]):not([disabled])')
+                    .filter(function () {
+                        return $(this).attr('tabindex') !== '-1';
+                    });
+
+                const index = fields.index(this);
+
+                if (index > -1 && index + 1 < fields.length) {
+                    fields.eq(index + 1).focus();
+                } else {
+                    $('#saveBtn').trigger('click');
+                }
+                return;
+            }
+
             const focusables = $('input, select, textarea, button')
                 .filter(':visible:not([readonly]):not([disabled])')
                 .filter(function () {
@@ -915,6 +986,60 @@
             alert(`Maximum allowed quantity is ${max}`);
         }
     });
+
+    function saveCustomer() {
+        const customer_id = $('#customer_id').val();
+        const data = {
+            id: customer_id,
+            name: $('#name').val(),
+            email: $('#email').val(),
+            phone: $('#phone').val(),
+            address: $('#address').val()
+        };
+            $.ajax({
+                url: `/api/customers`,
+                method: 'POST',
+                data: data,
+                success: function() {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Saved Successfully",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    closeModal();
+                },
+                error: function(xhr) {
+                    if (xhr.status === 422) {
+                        const response = xhr.responseJSON;
+                        Swal.fire({
+                            icon: "error",
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Something went wrong",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                }
+            });
+
+    }
+
+    function closeModal() {
+        const modalElement = document.getElementById('customerModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) {
+            modal.hide();
+            $('#customerForm')[0].reset();
+            $('#customer_id').val('');
+        }
+    }
 
 
 </script>
