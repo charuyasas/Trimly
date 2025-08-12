@@ -8,9 +8,9 @@ class StockValueReportInteractor
 {
     public function execute()
     {
-        return DB::table('categories')
-            ->leftJoin('sub_categories', 'sub_categories.category_id', '=', 'categories.id')
-            ->leftJoin('items', 'items.sub_category_id', '=', 'sub_categories.id')
+        return DB::table('items')
+            ->leftJoin('categories', 'categories.id', '=', 'items.category_id')
+            ->leftJoin('sub_categories', 'sub_categories.id', '=', 'items.sub_category_id')
             ->leftJoin('stock_sheets', 'stock_sheets.item_code', '=', 'items.id')
             ->select(
                 'categories.id as category_id',
