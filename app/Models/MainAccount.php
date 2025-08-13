@@ -13,4 +13,9 @@ class MainAccount extends Model
     protected $guarded = [];
 
     protected $dates = ['deleted_at'];
+
+    public function headingAccounts()
+    {
+        return $this->hasMany(HeadingAccount::class, 'main_code', 'main_code');
+    }
 }

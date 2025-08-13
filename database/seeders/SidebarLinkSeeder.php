@@ -138,6 +138,11 @@ class SidebarLinkSeeder extends Seeder
                         'display_name' => 'Posting Accounts',
                         'url' => '/postingAccount',
                     ],
+                    [
+                        'permission_name' => 'accountStructure',
+                        'display_name' => 'Account Structure',
+                        'url' => '/accountStructure',
+                    ],
                 ],
             ],
             [
