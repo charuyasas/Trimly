@@ -77,6 +77,7 @@ Route::get('/main_account_list', [MainAccountController::class, 'loadMainAccount
 Route::get('/heading_account_list/{mainAcc}', [HeadingAccountController::class, 'loadHeadingAccountDropdown']);
 Route::get('/title_account_list/{mainAcc}/{headingAcc}', [TitleAccountController::class, 'loadTitleAccountDropdown']);
 Route::apiResource('postingAccount', PostingAccountController::class);
+Route::get('/get-account-structure-breakdown',[PostingAccountController::class, 'getAccountStructureBreakdown']);
 
 Route::middleware('auth:sanctum')->apiResource('expenses', ExpensesController::class);
 Route::get('/expenses-account-dropdown', [ExpensesController::class, 'loadExpensesAccountDropdown']);

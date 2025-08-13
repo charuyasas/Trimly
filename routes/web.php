@@ -54,6 +54,10 @@ Route::get('/postingAccount', function () {
     return view('accounts/posting-accounts');
 });
 
+Route::get('/accountStructure', function () {
+    return view('accounts/account-structure-breakdown');
+});
+
 Route::get('/roles', function () {
     return view('users/roles');
 });

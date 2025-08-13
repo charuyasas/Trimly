@@ -21,4 +21,9 @@ class TitleAccount extends Model
     public function headingAccount() {
         return $this->belongsTo(HeadingAccount::class, 'heading_code', 'heading_code');
     }
+
+    public function postingAccounts()
+    {
+        return $this->hasMany(PostingAccount::class, 'title_code', 'title_code');
+    }
 }
