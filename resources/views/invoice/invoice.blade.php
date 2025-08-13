@@ -806,6 +806,7 @@
         }
 
         $("#txt_grandtotal").val(parseFloat(grandTotal).toFixed(2));
+        getBalance();
 
     }
 
@@ -872,15 +873,42 @@
 
     }
 
-    $(document).on('keydown', 'input, select, textarea, button', function(e) {
+    $(document).on('keydown', 'input, select, textarea, button, .nice-select', function(e) {
+        const $el = $(this);
+        const $openModal = $('.modal.show'); // currently open modal
+
+        // ===== MODAL HANDLING =====
+        if ($openModal.length) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+
+                const modalInputs = $openModal.find('input, select, textarea, .nice-select')
+                    .filter(':visible:not([readonly]):not([disabled])')
+                    .filter(function () {
+                        return $(this).attr('tabindex') !== '-1';
+                    });
+
+                const index = modalInputs.index(this);
+
+                if (index === modalInputs.length - 1) {
+                    // Last input → trigger save
+                    $openModal.find('#saveBtn').click();
+                } else if (index > -1 && index + 1 < modalInputs.length) {
+                    modalInputs.eq(index + 1).focus();
+                }
+                return;
+            }
+        }
+
+        // ===== MAIN FORM HANDLING =====
         if (e.key === 'Enter') {
-
-            const $el = $(this);
-
-            // Skip if disabled, readonly, or tabindex is -1
             if (
                 $el.is('[readonly], :disabled') ||
-                $el.attr('tabindex') === '-1'
+                $el.attr('tabindex') === '-1' ||
+                $el.is('#cbo_tokenNo') ||
+                $el.closest('.nice-select').prev('#cbo_tokenNo').length ||
+                $el.hasClass('nice-select') ||
+                $el.is('#addCustomerBtn')
             ) {
                 return;
             }
@@ -897,29 +925,14 @@
                 return;
             }
 
-            // customer modal
-            if ($el.closest('#customerModal').length) {
-                const fields = $('#customerModal')
-                    .find('input:not([type="hidden"]), select, textarea')
-                    .filter(':visible:not([readonly]):not([disabled])')
-                    .filter(function () {
-                        return $(this).attr('tabindex') !== '-1';
-                    });
-
-                const index = fields.index(this);
-
-                if (index > -1 && index + 1 < fields.length) {
-                    fields.eq(index + 1).focus();
-                } else {
-                    $('#saveBtn').trigger('click');
-                }
-                return;
-            }
-
-            const focusables = $('input, select, textarea, button')
+            const focusables = $('input, select, textarea, button, .nice-select')
                 .filter(':visible:not([readonly]):not([disabled])')
                 .filter(function () {
-                    return $(this).attr('tabindex') !== '-1';
+                    return $(this).attr('tabindex') !== '-1' &&
+                        !$(this).is('#cbo_tokenNo') &&
+                        !$(this).closest('.nice-select').prev('#cbo_tokenNo').length &&
+                        !$(this).hasClass('nice-select') &&
+                        !$(this).is('#addCustomerBtn');
                 });
 
             const index = focusables.index(this);
@@ -933,7 +946,6 @@
             }
         }
     });
-
 
 
     function getBalance(){
