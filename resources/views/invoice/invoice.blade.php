@@ -19,7 +19,7 @@
                                         <label class="form-label" for="cbo_customer">Customer <code>*</code></label>
                                         <div class="button-group position-relative">
                                             <input type="text" class="form-control" id="cbo_customer" placeholder="Search customer..." autocomplete="off" style="max-width: 100%;" tabindex="2">
-                                            <button type="button" id="addCustomerBtn" class="btn position-absolute top-50 end-0 translate-middle-y me-1 btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#customerModal" style="z-index: 10;" title="Add Customer">
+                                            <button type="button" id="addCustomerBtn" class="btn position-absolute top-50 end-0 translate-middle-y me-1 btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#customerModal" style="z-index: 10;" title="Add Customer">
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                         </div>
@@ -56,15 +56,16 @@
                                         <input type="text" class="form-control" id="cbo_item" name="item" placeholder="Select item..." tabindex="3" >
                                         <input type="hidden" id="item_id">
                                         <input type="hidden" id="txt_item_type">
+                                        <input type="hidden" id="txt_item_commission">
                                         <input type="hidden" id="max_discount_percentage">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="txt_price">Price <code>*</code></label>
-                                        <input type="text" class="form-control text-end" id="txt_price" disabled>
+                                        <input type="text" class="form-control text-end" id="txt_price" disabled onkeyup="calculateSubTotal('price');">
                                     </div>
                                     <div class="col-md-1">
                                         <label class="form-label" for="txt_qty">Qty <code>*</code></label>
-                                        <input type="number" class="form-control" id="txt_qty" name="qty" tabindex="4" min=1 onchange="calculateSubTotal('qty');">
+                                        <input type="number" class="form-control" id="txt_qty" name="qty" tabindex="4" min=1 onkeyup="calculateSubTotal('qty');">
                                         <span class="text-muted small available_stock_display"></span>
                                     </div>
                                     <div class="col-md-1">
@@ -201,7 +202,7 @@
 
                             <div class="row">
                                 <div class="col-lg-12">
-                                    <button type="button" class="btn btn-primary" onclick="finishInvoice()">Finish Sale</button>
+                                    <button type="button" class="btn btn-secondary" onclick="finishInvoice()">Finish Sale</button>
                                 </div>
                             </div>
                         </div>
@@ -252,7 +253,7 @@
                 </form>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
-                    <button type="button" class="btn btn-primary" id="saveBtn" onclick="saveCustomer()">Save</button>
+                    <button type="button" class="btn btn-secondary" id="saveBtn" onclick="saveCustomer()">Save</button>
                 </div>
             </div>
         </div>
@@ -393,7 +394,9 @@
                                 value: item.value,
                                 id: item.value,
                                 price: item.price,
-                                item_type: item.item_type
+                                item_type: item.item_type,
+                                commission: item.commission,
+                                fixed_price: item.is_fixed_price
                             };
                         }));
 
@@ -404,9 +407,16 @@
                             $("#txt_item_type").val(data[0].item_type);
                             $("#txt_qty").val(1);
                             $("#txt_sub_total").val((data[0].price*1).toFixed(2));
+                            $("#txt_item_commission").val(data[0].commission);
+
                             itemSelectedFromAutocomplete = true;
                             if(data[0].item_type == 'item') {
                                 loadAvailableStock();
+                            }
+                            if(data[0].item_type == 'service') {
+                                if(data[0].fixed_price == 0){
+                                    $("#txt_price").prop('disabled', false);
+                                }
                             }
                         }
                     }
@@ -424,9 +434,16 @@
                 $("#txt_item_type").val(ui.item.item_type);
                 $("#txt_qty").val(1);
                 $("#txt_sub_total").val((ui.item.price*1).toFixed(2));
+                $("#txt_item_commission").val(ui.item.commission);
+
                 itemSelectedFromAutocomplete = true;
                 if(ui.item.item_type == 'item') {
                     loadAvailableStock();
+                }
+                if(ui.item.item_type == 'service') {
+                    if(ui.item.fixed_price == 0){
+                        $("#txt_price").prop('disabled', false);
+                    }
                 }
                 return false;
             }
@@ -454,6 +471,7 @@
             $("#txt_item_type").val('');
             $("#txt_qty").val('');
             $("#txt_sub_total").val('');
+            $("#txt_item_commission").val('');
             $(".available_stock_display").hide();
         }
         itemSelectedFromAutocomplete = false;

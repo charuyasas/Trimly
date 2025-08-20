@@ -4,6 +4,8 @@ namespace App\UseCases\Invoice;
 
 use App\Models\Invoice;
 use App\Models\SystemConfiguration;
+use App\Models\Service;
+use App\Models\Employee;
 use App\UseCases\Invoice\Requests\InvoiceRequest;
 use Illuminate\Support\Facades\DB;
 
@@ -29,7 +31,7 @@ class StoreInvoiceInteractor
                 ];
             }
 
-            // 🔹 Validate invoice-level discount
+            // Validate invoice-level discount
             if ($maxDiscount !== null && $invoiceRequest->discount_percentage > $maxDiscount) {
                 return [
                     'response' => [
@@ -39,7 +41,7 @@ class StoreInvoiceInteractor
                 ];
             }
 
-            // 🔹 Validate each item discount
+            // Validate each item discount
             foreach ($invoiceRequest->items as $item) {
                 if ($maxDiscount !== null && $item->discount_percentage > $maxDiscount) {
                     return [
@@ -81,7 +83,34 @@ class StoreInvoiceInteractor
             }
 
             foreach ($invoiceRequest->items as $item) {
-                $subTotal = $item->quantity * $item->amount;
+                $subTotal = ($item->quantity * $item->amount) - ($item->discount_amount ?? 0);
+
+                // Default values
+                $isFixedPrice = null;
+                $commissionPercentage = 0;
+                $employeeCommission = 0;
+
+                if ($item->item_type === 'service') {
+                    $service = Service::find($item->item_id);
+
+                    if ($service) {
+                        $isFixedPrice = $service->is_fixed_price;
+
+                        if ($isFixedPrice == 0) {
+                            // Use service commission
+                            $commissionPercentage = $service->commission ?? 0;
+                        } else {
+                            // Use employee commission
+                            $employee = Employee::find($invoiceRequest->employee_no);
+                            $commissionPercentage = $employee?->commission ?? 0;
+                        }
+
+                        $employeeCommission = ($subTotal * $commissionPercentage) / 100;
+                    }
+                }
+
+
+
                 $invoice->items()->create([
                     'item_id' => $item->item_id,
                     'item_description' => $item->item_description,
@@ -90,7 +119,10 @@ class StoreInvoiceInteractor
                     'amount' => $item->amount,
                     'discount_percentage' => $item->discount_percentage ?? 0,
                     'discount_amount' => $item->discount_amount ?? 0,
-                    'sub_total' => ($item->quantity * $item->amount) - ($item->discount_amount ?? 0),
+                    'sub_total' => $subTotal,
+                    'is_fixed_price' => $isFixedPrice,
+                    'commission_percentage' => $commissionPercentage,
+                    'employee_commission' => $employeeCommission,
                 ]);
             }
 

@@ -18,7 +18,8 @@ class LoadItemDropdownInteractor
                 'label' => $service->code . ' - ' . $service->description,
                 'value' => $service->id,
                 'price' => $service->price,
-                'item_type'  => 'service'
+                'item_type'  => 'service',
+                'fixed_price'  => $service->is_fixed_price
             ]));
 
         $items = collect(Item::where('code', 'like', "%$search%")
@@ -30,7 +31,8 @@ class LoadItemDropdownInteractor
                 'label' => $item->code . ' - ' . $item->description,
                 'value' => $item->id,
                 'price' => $item->last_grn_price,
-                'item_type'  => 'item'
+                'item_type'  => 'item',
+                'fixed_price'  => 0
             ]));
 
         return $services
