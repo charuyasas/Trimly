@@ -22,10 +22,10 @@ class BookingRequest extends Data
     #[SpatieRule('sometimes','required', 'date')]
     public string $booking_date;
 
-    #[SpatieRule('sometimes','required','after_or_equal:07:00', 'before_or_equal:21:00')]
+    #[SpatieRule('sometimes','required','after_or_equal:07:00', 'before_or_equal:23:00')]
     public string $start_time;
 
-    #[SpatieRule('sometimes','required', 'after:start_time','before_or_equal:21:00')]
+    #[SpatieRule('sometimes','required', 'after:start_time','before_or_equal:23:00')]
     public string $end_time;
 
     #[SpatieRule('sometimes', 'required', 'in:pending,confirmed,completed,cancelled')]
