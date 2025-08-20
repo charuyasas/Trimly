@@ -174,7 +174,7 @@ function loadCalendar() {
     slotDuration: '01:00:00',
     slotLabelInterval: '01:00',
     slotMinTime: "07:00:00",
-    slotMaxTime: "22:00:00",
+    slotMaxTime: "24:00:00",
     slotLabelFormat: {
     hour: 'numeric',
     meridiem: 'short',
@@ -539,7 +539,7 @@ $("#cbo_service").autocomplete({
         const isToday = selectedDate.toDateString() === today.toDateString();
 
         const officeStart = "07:00";
-        const officeEnd = "21:00";
+        const officeEnd = "23:00";
 
         let minTime;
 
