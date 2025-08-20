@@ -23,7 +23,7 @@ body {
   margin: 0;
   font-size: 14px;
   position: relative;
-  background: #F6F7FB;
+  background: #1e1e2d;
 }
 
 @media (min-width: 1200px) {
@@ -3565,11 +3565,12 @@ table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child::befor
   position: relative;
   border-radius: 0px;
   margin: 0;
-  background: #F6F7FB;
+  background: #1e1e2d;
   border-radius: 0;
   margin: 0;
   border-radius: 0px;
   border-bottom: 2px solid #E8E8E8;
+    color: #ffffff;
 }
 
 /* line 29, G:/admin_project/8 admin/management_html/scss/_header.scss */
@@ -5295,7 +5296,7 @@ body::-webkit-scrollbar {
   min-height: 68vh;
   transition: .5s;
   position: relative;
-  background: #F6F7FB;
+  background: #1e1e2d;
   margin: 0;
   z-index: 22;
   border-radius: 0px;
@@ -5566,14 +5567,14 @@ body::-webkit-scrollbar {
 .breadcrumb.page_bradcam li {
   font-size: 14px;
   font-weight: 400;
-  color: #9B9ABA;
+  color: #ffffff;
 }
 
 /* line 271, G:/admin_project/8 admin/management_html/scss/_main_content.scss */
 .breadcrumb.page_bradcam li a {
   font-size: 13px;
   font-weight: 400;
-  color: #9B9ABA;
+  color: #ffffff;
 }
 
 /* line 280, G:/admin_project/8 admin/management_html/scss/_main_content.scss */
@@ -5584,7 +5585,7 @@ body::-webkit-scrollbar {
 
 /* line 286, G:/admin_project/8 admin/management_html/scss/_main_content.scss */
 .page_title_left h3 {
-  color: #242934;
+  color: #ffffff;
   font-size: 25px;
   font-weight: 900;
 }
