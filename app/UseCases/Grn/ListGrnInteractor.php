@@ -9,6 +9,9 @@ class ListGrnInteractor
 {
     public function execute(): Collection
     {
-        return Grn::with(['items', 'supplier'])->latest()->get();
+        return Grn::with(['items', 'supplier'])
+            ->where('status', true)
+            ->latest()
+            ->get();
     }
 }

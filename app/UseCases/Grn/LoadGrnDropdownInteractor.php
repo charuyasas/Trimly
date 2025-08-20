@@ -8,14 +8,19 @@ class LoadGrnDropdownInteractor
 {
     public function execute($search)
     {
-        return Grn::where('grn_number', 'like', "%$search%")
-            ->where('status', 0)
+        $search = (string) $search;
+
+        return Grn::query()
+            ->where('status', false)
+            ->when($search !== '', function ($q) use ($search) {
+                $q->where('token_no', 'like', "%{$search}%");
+            })
+            ->orderByDesc('created_at')
             ->limit(10)
-            ->orderBy('grn_number', 'asc')
             ->get()
             ->map(fn($grn) => [
-                'label' => $grn->grn_number,
-                'value' => $grn->id
+                'label' => $grn->token_no,
+                'value' => $grn->id,
             ]);
     }
 }

@@ -5,7 +5,6 @@ namespace App\UseCases\Grn;
 use App\Models\Grn;
 use App\UseCases\Grn\Requests\GrnRequest;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class StoreGrnInteractor
 {
@@ -29,7 +28,17 @@ class StoreGrnInteractor
                     : $grandTotal - $request->discount_amount;
             }
 
-            $grn = Grn::where('grn_number', $request->grn_number)->first();
+            $grn = null;
+
+            if (!empty($request->id)) {
+                $grn = Grn::where('id', $request->id)->first();
+            }
+
+            if (!$grn && !empty($request->token_no)) {
+                $grn = Grn::where('token_no', $request->token_no)
+                    ->where('status', false)
+                    ->first();
+            }
 
             if ($grn) {
                 $grn->update([
@@ -37,6 +46,7 @@ class StoreGrnInteractor
                     'supplier_id' => $request->supplier_id,
                     'supplier_invoice_number' => $request->supplier_invoice_number,
                     'grn_type' => $request->grn_type,
+                    'note' => $request->note,
                     'total_before_discount' => $totalBefore,
                     'total_foc' => $totalFOC,
                     'grand_total' => $grandTotal,
@@ -46,26 +56,27 @@ class StoreGrnInteractor
 
                 $grn->items()->delete();
             } else {
-                if (Grn::where('grn_number', $request->grn_number)->exists()) {
-                    throw new \Exception("GRN Number already exists.");
-                }
+                $tokenNo = $this->nextTokenNo();
 
                 $grn = Grn::create([
-                    'grn_number' => $request->grn_number,
+                    'token_no' => $tokenNo,
+                    'grn_number' => null,
                     'grn_date' => $request->grn_date,
                     'supplier_id' => $request->supplier_id,
                     'supplier_invoice_number' => $request->supplier_invoice_number,
                     'grn_type' => $request->grn_type,
+                    'note' => $request->note,
                     'total_before_discount' => $totalBefore,
                     'total_foc' => $totalFOC,
                     'grand_total' => $grandTotal,
                     'discount_amount' => $request->discount_amount ?? 0,
                     'is_percentage' => $request->is_percentage,
+                    'status' => false,
                 ]);
             }
 
             foreach ($request->items as $item) {
-                $grnItem = $grn->items()->create([
+                $grn->items()->create([
                     'item_id' => $item->item_id,
                     'item_name' => $item->item_name,
                     'qty' => $item->qty,
@@ -87,6 +98,7 @@ class StoreGrnInteractor
                     'message' => 'GRN saved successfully.',
                     'grn' => [
                         'id' => $grn->id,
+                        'token_no' => $grn->token_no,
                         'grn_number' => $grn->grn_number,
                         'grn_date' => $request->grn_date,
                         'supplier_id' => $request->supplier_id,
@@ -122,6 +134,17 @@ class StoreGrnInteractor
                 'status' => 500
             ];
         }
+    }
+
+    private function nextTokenNo(): string
+    {
+        $last = Grn::withTrashed()
+            ->selectRaw('MAX(CAST(token_no AS UNSIGNED)) as max_token')
+            ->lockForUpdate()
+            ->value('max_token');
+
+        $next = ((int)$last) + 1;
+        return str_pad((string)$next, 4, '0', STR_PAD_LEFT);
     }
 }
 

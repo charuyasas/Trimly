@@ -54,56 +54,7 @@ class GrnController extends Controller
         $grnNumber = $request->grn_number;
         $grandTotal = $request->grand_total;
 
-        $stockDebitEntryData = collect($request->items)->map(function ($item) use ($grnNumber) {
-            $totalQty = ($item->qty ?? 0) + ($item->foc ?? 0);
-            return [
-                'item_code'     => $item->item_id ?? '',
-                'ledger_code'   => AccountsLedgerCodes::LEDGER_CODES['MainStore'],
-                'description'   => 'GRN - ' . ($item->item_name ?? ''),
-                'debit'         => $totalQty,
-                'reference_type' => StockSheet::STATUS['GRN'],
-                'reference_id'   => 'GRN - ' . $grnNumber,
-            ];
-        })->toArray();
-        $this->grnItemsToStockTable($storeStockSheetInteractor, $stockDebitEntryData);
-
-        $journalEntries = [
-            [
-                'ledger_code'    => AccountsLedgerCodes::LEDGER_CODES['MainStore'],
-                'reference_type' => JournalEntry::STATUS['GRN'],
-                'reference_id'   => 'GRN - ' . $grnNumber,
-                'debit'          => $grandTotal,
-                'credit'         => 0,
-            ],
-            [
-                'ledger_code'    => $request->supplier_ledger_code,
-                'reference_type' => JournalEntry::STATUS['GRN'],
-                'reference_id'   => 'GRN - ' . $grnNumber,
-                'debit'          => 0,
-                'credit'         => $grandTotal,
-            ],
-        ];
-
-        $this->storeJournalEntries($storeJournalEntryInteractor, $journalEntries);
-
-        return response()->json($interactor->execute($id, $request));
-    }
-
-    public function grnItemsToStockTable(StoreStockSheetInteractor $storeStockSheetInteractor, array $entries): void
-    {
-        foreach ($entries as $entry) {
-            $stockRequest = StockSheetEntryDataRequest::validateAndCreate($entry);
-            $storeStockSheetInteractor->execute($stockRequest);
-        }
-
-    }
-
-    public function storeJournalEntries(StoreJournalEntryInteractor $storeJournalEntryInteractor, array $entries): void
-    {
-        foreach ($entries as $entry) {
-            $journalRequest = JournalEntryRequest::validateAndCreate($entry);
-            $storeJournalEntryInteractor->execute($journalRequest);
-        }
+        return response()->json($interactor->execute($id, $request, $storeJournalEntryInteractor, $storeStockSheetInteractor));
     }
 
     public function deleteItem(string $id): JsonResponse

@@ -2,10 +2,18 @@
 @include('includes.sidebar', ['pageTitle' => 'GRN'])
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-<!-- GRN Modal Button -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<style>
+    #grnModal .select2-container--default .select2-selection--single {
+        height: 38px;
+        padding: .375rem .75rem;
+    }
+</style>
+
 <div class="main_content_iner overly_inner ">
     <div class="container-fluid p-0 ">
         <div class="row">
@@ -42,7 +50,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Filter GRNs Toggle Header -->
                                     <div class="d-flex justify-content-between align-items-center mb-3 border rounded px-4 py-3 bg-white shadow-sm">
                                         <h6 class="fw-semibold text-dark mb-0 fs-6">Filter GRNs</h6>
                                         <button class="btn btn-light border d-flex align-items-center justify-content-center rounded-circle shadow-sm"
@@ -56,8 +63,6 @@
                                         </button>
                                     </div>
 
-
-                                    <!-- Collapsible Filters Panel -->
                                     <div class="collapse mb-3" id="grnFilters">
                                         <div class="card card-body shadow-sm p-4">
                                             <div class="row g-3">
@@ -123,7 +128,6 @@
 
 @include('includes.footer')
 
-<!-- GRN Modal -->
 <div class="modal fade" id="grnModal" tabindex="-1" aria-labelledby="grnModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 90%; height: 90vh;">
         <div class="modal-content" style="height: 100%; overflow-y: auto;">
@@ -134,7 +138,6 @@
                 </div>
 
                 <div class="modal-body">
-                    <!-- Step Tabs -->
                     <div class="mb-4 d-flex justify-content-center">
                         <ul class="nav nav-pills step-tabs" id="grnTabs">
                             <li class="nav-item">
@@ -150,14 +153,12 @@
                         </ul>
                     </div>
 
-                    <!-- Tab Content -->
                     <div class="tab-content px-3">
-                        <!-- STEP 1 - HEADER -->
                         <div class="tab-pane fade show active" id="grnStep1">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label>GRN Number</label>
-                                    <input type="text" class="form-control" id="grn_number">
+                                    <label>Token Number</label>
+                                    <select class="form-select" id="token_no"></select>
                                     <input type="hidden" id="grn_id">
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -193,52 +194,41 @@
                             </div>
                         </div>
 
-                        <!-- STEP 2 – ITEM ENTRY -->
                         <div class="tab-pane fade" id="grnStep2">
                             <div class="row">
-                                <!-- Left Side: Item Form and Table (col-md-9) -->
                                 <div class="col-md-9">
-                                    <!-- Item Entry Form -->
                                     <div class="border p-3 rounded mb-3">
                                         <div class="row g-2 align-items-start">
-                                            <!-- Item Name -->
                                             <div class="col-md-2">
                                                 <label for="item_name" class="form-label">Item</label>
                                                 <input type="text" class="form-control" id="item_name" placeholder="Search Item..." autocomplete="off">
                                                 <input type="hidden" id="item_id">
                                                 <input type="hidden" id="grn_item_id">
                                             </div>
-                                            <!-- Quantity -->
                                             <div class="col-md-2">
                                                 <label for="qty" class="form-label">Qty</label>
                                                 <input type="number" id="qty" class="form-control" min="1" step="1">
                                             </div>
-                                            <!-- FOC -->
                                             <div class="col-md-2">
                                                 <label for="foc" class="form-label">FOC</label>
                                                 <input type="number" id="foc" class="form-control">
                                             </div>
-                                            <!-- Purchase Price -->
                                             <div class="col-md-2">
                                                 <label for="price" class="form-label">Purchase Price</label>
                                                 <input type="number" id="price" class="form-control">
                                             </div>
-                                            <!-- Margin -->
                                             <div class="col-md-2" id="margin_group">
                                                 <label for="margin" class="form-label">Margin (%)</label>
                                                 <input type="number" id="margin" class="form-control">
                                             </div>
-                                            <!-- Discount -->
                                             <div class="col-md-1 d-none" id="discount_group">
                                                 <label for="discount" class="form-label">Disc.(%)</label>
                                                 <input type="number" id="discount" class="form-control">
                                             </div>
-                                            <!-- Discount Amount -->
                                             <div class="col-md-2 d-none" id="discount_amount_group">
                                                 <label for="discount_amount" class="form-label">Discount Amount</label>
                                                 <input type="text" id="discount_amount" class="form-control" disabled>
                                             </div>
-                                            <!-- Action Buttons -->
                                             <div class="col-md-1 text-center" id="item-action-buttons">
                                                 <label class="form-label d-block invisible">Action</label>
                                                 <button type="button" class="btn btn-outline-secondary" id="btn_add_item" onclick="addItem()">+</button>
@@ -254,7 +244,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Item Table -->
                                     <div class="mb-2">
                                         <input type="text" id="grnTableFilter" class="form-control" placeholder="Filter items..." onkeyup="filterGrnTable()" />
                                     </div>
@@ -279,7 +268,6 @@
                                     </div>
                                     <br>
                                     <div class="d-flex justify-content-between gap-4 mt-4 align-items-center">
-                                        <!-- Bill Discount Section -->
                                         <div id="discountSection" class="border rounded p-2 flex-fill" style="max-width: 50%; min-height: 100px;">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <strong>Add Discount For Bill Value</strong>
@@ -298,7 +286,6 @@
                                             </div>
                                         </div>
 
-                                        <!-- Totals -->
                                         <div class="text-end pe-2 flex-fill" style="max-width: 50%; min-height: 100px;">
                                             <p class="fs-5 mb-1">Total Before Discount: LKR <span id="totalBefore" class="fw-semibold text-dark">0.00</span></p>
                                             <p class="fs-5 mb-1">Total FOC: LKR <span id="totalFOC" class="fw-semibold text-dark">0.00</span></p>
@@ -307,7 +294,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Right Side: Stock Info Panel -->
                                 <div class="col-md-3">
                                     <div class="p-4 bg-white rounded-2 border border-opacity-25 shadow-sm">
                                         <h6 class="fw-bold text-center mb-4 border-bottom pb-3 text-muted fs-5 text-secondary">
@@ -340,7 +326,6 @@
                                         <textarea id="note" class="form-control" rows="4" placeholder="Optional notes"></textarea>
                                     </div>
                                     <br><br><br><br><br><br><br>
-                                    <!-- Finalization Section -->
                                     <div class="d-flex justify-content-end mt-3" >
                                         <button type="submit" class="btn btn-dark" id="grn_finalize_btn">Finalize GRN</button>
                                     </div>
@@ -362,8 +347,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-
-                <!-- Summary Section -->
                 <div class="row mb-4 px-4 py-3 rounded shadow-sm" style="background-color: #f8f9fa;">
                     <div class="col-md-3 mb-3">
                         <p class="mb-1 text-muted fw-semibold">GRN Number</p>
@@ -387,7 +370,6 @@
                     </div>
                 </div>
 
-                <!-- Table Section -->
                 <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                     <table class="table table-bordered text-center align-middle">
                         <thead class="table-light">
@@ -411,7 +393,6 @@
                 </div>
                 <br><br>
 
-                <!-- Totals Section -->
                 <div class="text-end fs-5">
                     <p><strong>Total Before Discount:</strong> LKR <span id="modalTotalBefore" class="fw-semibold text-dark">0.00</span></p>
                     <p><strong>Total Discount:</strong> (<span id="modalTotalDiscount" class="fw-semibold text-primary">0.00</span>)</p>
@@ -431,7 +412,6 @@
     </div>
 </div>
 
-<!-- Add Item Modal -->
 <div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="itemModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content" style="max-height: 95vh; overflow-y: auto;">
@@ -443,8 +423,6 @@
             <div class="modal-body">
                 <form id="itemForm">
                     <input type="hidden" id="item_id">
-
-                    <!--  Item Details -->
                     <h5 class="mb-3">🧾 Item Details</h5>
                     <div class="row g-3">
                         <div class="col-md-4">
@@ -505,7 +483,6 @@
                         </div>
                     </div>
 
-                    <!--  Bundle Section -->
                     <h5 class="mt-5 mb-3">📦 Bundle</h5>
                     <div class="row g-3">
                         <div class="col-md-4">
@@ -527,7 +504,6 @@
                         </div>
                     </div>
 
-                    <!-- Submit Buttons -->
                     <div class="modal-footer mt-4">
                         <button type="button" class="btn btn-primary" id="saveItemBtn" onclick="saveItem()">Save</button>
                     </div>
@@ -573,20 +549,17 @@
     $(document).ready(function () {
         const table = $('.lms_table_active').DataTable();
 
-        // Live search
         $('.searchBox').on('keyup', function () {
             const searchValue = $(this).val();
             table.search(searchValue).draw();
         });
 
-        // Reload GRN list after modal close
         $('#grnModal').on('hidden.bs.modal', function () {
             loadGRN();
         });
 
     });
 
-    // Real-time update: qty + foc = new_stock_qty
     function updateNewStockQty() {
         const qty = parseFloat($('#qty').val()) || 0;
         const foc = parseFloat($('#foc').val()) || 0;
@@ -601,9 +574,7 @@
         }, 300);
     }
 
-    // Bind real-time update to both inputs
     $('#qty, #foc').on('input', updateNewStockQty);
-
 
     function viewGrnDetails(grnId) {
         $.ajax({
@@ -613,14 +584,14 @@
                 const grn = res.grn;
                 const items = grn.items || [];
 
-                $('#modalGrnNumber').text(grn.grn_number);
-                $('#modalGrnNumberDisplay').text(grn.grn_number);
+                const displayNo = grn.grn_number || grn.token_no || 'Draft';
+                $('#modalGrnNumber').text(displayNo);
+                $('#modalGrnNumberDisplay').text(displayNo);
                 $('#modalGrnDate').text(grn.grn_date);
                 $('#modalNote').text(grn.note || '-');
                 $('#modalSupplierAndInvoice').text(`${grn.supplier_name ?? 'N/A'} - ${grn.supplier_invoice_number}`);
                 $('#modalDiscountType').text(grn.grn_type);
 
-                // Render item table
                 const tbody = $('#grnDetailTableBody').empty();
                 let grandTotal = 0;
                 let totalBefore = 0;
@@ -698,6 +669,37 @@
     var itemSelectedFromAutocomplete = false;
     var SupplierSelectedFromAutocomplete = false;
 
+    function initTokenSelect2() {
+        if ($('#token_no').data('select2')) $('#token_no').select2('destroy');
+        $('#token_no')
+            .select2({
+                dropdownParent: $('#grnModal'),
+                width: '100%',
+                placeholder: 'New GRN',
+                minimumResultsForSearch: 0
+            })
+            .on('select2:select', function () {
+                $('#grn_date').focus();
+            })
+            .on('select2:close', function () {
+                if ($('#grnModal').hasClass('show')) $('#grn_date').focus();
+            });
+    }
+
+
+    function loadDraftTokens(selectedId = null) {
+        $.get('/api/grn-list-dropdown', function(data) {
+            const $sel = $('#token_no');
+            $sel.empty();
+            $sel.append(`<option value="__new__">+ New GRN</option>`);
+            data.forEach(item => {
+                $sel.append(`<option value="${item.value}" data-token="${item.label}">${item.label}</option>`);
+            });
+            if (selectedId) $sel.val(selectedId);
+            initTokenSelect2();
+        });
+    }
+
     function openAddGRNModal() {
         $('#grnForm')[0].reset();
         $('#supplier_id').val('');
@@ -707,17 +709,46 @@
         editingIndex = null;
         renderGrnItems();
         calculateGrnTotals();
+        loadDraftTokens();
         switchTab(1);
     }
 
     $('#grnModal').on('shown.bs.modal', function () {
-        $('#grn_number').focus();
-
+        itemsList = [];
+        GrnDetails = {};
+        $('#grn_id').val('');
+        $('#supplier_id').val('');
+        $('#supplier_name').val('');
+        $('#supplier_invoice_number').val('');
+        $('#supplier_ledger_code').val('');
+        $('#note').val('');
+        $('#bill_discount_amount').val('0.00');
+        $('#is_percentage').prop('checked', false);
+        renderGrnItems();
+        calculateGrnTotals();
         handleGrnTypeToggle();
-
         $('#btn_add_item').removeClass('d-none');
-        // Hide Update and Cancel buttons group
         $('#edit_action_group').addClass('d-none');
+        $('#grn_date').focus();
+    });
+
+    $('#token_no').on('change', function () {
+        const val = $(this).val();
+        if (val === '__new__') {
+            $('#grn_id').val('');
+            itemsList = [];
+            renderGrnItems();
+            calculateGrnTotals();
+            $("#supplier_id").val('');
+            $("#supplier_name").val('');
+            $("#supplier_invoice_number").val('');
+            $("#supplier_ledger_code").val('');
+            $("#note").val('');
+            $('#is_percentage').prop('checked', false);
+            $('#bill_discount_amount').val('0.00');
+        } else {
+            fetchGrnDetails(val);
+        }
     });
 
     let itemsList = [];
@@ -725,17 +756,11 @@
 
     function addItem() {
 
-        const grnNumber = $("#grn_number").val();
         const grnID = $("#grn_id").val();
         const grnDate = $("#grn_date").val();
         const supplierID = $("#supplier_id").val();
         const supplierInvoiceNumber = $("#supplier_invoice_number").val();
         const grnType = $("input[name='grn_type']:checked").val();
-
-        if (!grnNumber) {
-            alert("Please enter 'GRN Number'!");
-            return false;
-        }
 
         if (!grnDate) {
             alert("Please enter 'GRN Date'!");
@@ -752,7 +777,7 @@
             return false;
         }
 
-       const itemID = $("#item_id").val();
+        const itemID = $("#item_id").val();
         if (!itemID) {
             alert("Please select a valid item.");
             return false;
@@ -800,9 +825,13 @@
             subtotal: subtotal
         });
 
-         GrnDetails = {
+        const selectedTokenVal  = $("#token_no").val();
+        const selectedTokenText = $("#token_no option:selected").data('token') || null;
+
+        GrnDetails = {
             id: grnID,
-            grn_number: grnNumber,
+            token_no: selectedTokenVal === '__new__' ? null : selectedTokenText,
+            grn_number: null,
             grn_date: $("#grn_date").val(),
             supplier_id: supplierID,
             supplier_invoice_number: $("#supplier_invoice_number").val(),
@@ -824,7 +853,6 @@
 
                 renderGrnItems();
 
-                // Reset item fields
                 $("#item_id").val('');
                 $("#item_name").val('');
                 $("#qty").val('');
@@ -837,8 +865,8 @@
                 $("#new_stock_qty").text('0');
                 $("#last_cost").text('0.00');
                 $("#avg_cost").text('0.00');
-                $("#grn_number").val(grnDataRes.grn_number);
                 $("#grn_id").val(grnDataRes.id);
+                loadDraftTokens(grnDataRes.id);
             },
             error: function(xhr) {
                 if (xhr.status === 422) {
@@ -851,7 +879,6 @@
         });
     }
 
-    // Autocomplete for supplier
     $("#supplier_name").autocomplete({
         source: function (request, response) {
             if (request.term.length < 1) return;
@@ -897,7 +924,6 @@
         SupplierSelectedFromAutocomplete = false;
     });
 
-    // Autocomplete for item
     $("#item_name").autocomplete({
         source: function (request, response) {
             if (request.term.length < 1) return;
@@ -918,10 +944,9 @@
 
                     response(mappedItems);
 
-                    // Auto-select if only one result — also load stock
                     if (mappedItems.length === 1) {
                         const item = mappedItems[0];
-                        selectItem(item); // will also call loadAvailableStock
+                        selectItem(item);
                     }
                 },
                 error: function (xhr, status, error) {
@@ -932,12 +957,11 @@
         minLength: 1,
         appendTo: "#grnModal",
         select: function (event, ui) {
-            selectItem(ui.item); // unified handler
+            selectItem(ui.item);
             return false;
         }
     });
 
-    //  Unified selection function: sets values + loads stock
     function selectItem(item) {
         if (!item || !item.id) return;
 
@@ -946,14 +970,12 @@
         $("#price").val(item.list_price);
         $("#qty").val(1);
         $("#foc").val(0);
-        $("#item_name").data("valid", true); // used for validation
+        $("#item_name").data("valid", true);
 
-        // Load available stock automatically
         loadAvailableStock(item.id);
         loadItemCostDetails(item.id);
         updateNewStockQty();
 
-        // Optional UI effect (new stock qty animation)
         $('#new_stock_qty')
             .text(1)
             .addClass('highlight-change');
@@ -979,7 +1001,6 @@
         });
     }
 
-    // LOAD STOCK FUNCTION
     function loadAvailableStock(itemId = null) {
         const item_id = itemId || $("#item_id").val();
         const store = '1-2-6-1000';
@@ -992,7 +1013,6 @@
         $.get('/api/available-stock', { item_id, store }, function (data) {
             const available = data.available_stock ?? 0;
 
-            // Update old quantity display
             $("#old_stock_qty").text(available).addClass('highlight-change');
 
             setTimeout(() => {
@@ -1020,7 +1040,6 @@
         itemSelectedFromAutocomplete = false;
     });
 
-    //filter GRN Items
     function filterGrnTable() {
         const filterValue = $('#grnTableFilter').val().toLowerCase();
         $('#itemTable tr').each(function () {
@@ -1085,12 +1104,10 @@
         $('#margin').val(item.margin);
         $('#discount').val(item.discount);
 
-        // Show discount amount live
         const base = item.price * item.qty;
         const discAmt = (base * item.discount) / 100;
         $('#discount_amount').val(discAmt.toFixed(2));
 
-        // Toggle button groups
         $('#btn_add_item').addClass('d-none');
         $('#edit_action_group').removeClass('d-none');
 
@@ -1098,7 +1115,7 @@
     }
 
     function updateItem() {
-        const itemDBId = $('#grn_item_id').val();  // GRN Item DB id
+        const itemDBId = $('#grn_item_id').val();
 
         if (!itemDBId) {
             Swal.fire('Error', 'Missing item ID for update', 'error');
@@ -1170,7 +1187,6 @@
     function removeItem(index) {
         const item = itemsList[index];
 
-        // Confirm deletion
         Swal.fire({
             title: 'Are you sure?',
             text: "You are about to remove this item from the GRN.",
@@ -1182,7 +1198,6 @@
         }).then((result) => {
             if (!result.isConfirmed) return;
 
-            // If item has a DB id (i.e. already saved), delete from backend
             if (item.id) {
                 $.ajax({
                     url: `/api/grn-item-delete/${item.id}`,
@@ -1199,7 +1214,6 @@
                     }
                 });
             } else {
-                // Frontend only (unsaved item)
                 itemsList.splice(index, 1);
                 renderGrnItems();
                 calculateGrnTotals();
@@ -1208,7 +1222,7 @@
     }
 
     function applyDiscount() {
-        const val = parseFloat($('#bill_discount_amount').val()); // changed
+        const val = parseFloat($('#bill_discount_amount').val());
         if (isNaN(val)) return Swal.fire('Error', 'Invalid discount value', 'error');
 
         discountConfig = {
@@ -1219,7 +1233,6 @@
     }
 
     function clearDiscount() {
-        // $('#bill_discount_amount').val('');
         $('#is_percentage').prop('checked', false);
         discountConfig = { amount: 0, isPercentage: false };
         calculateGrnTotals();
@@ -1238,7 +1251,6 @@
 
         switchTab(step);
 
-        // Focus search item input when entering step 2
         if (step === 2) {
             setTimeout(() => $('#item_name').focus(), 150);
         }
@@ -1247,7 +1259,7 @@
 
     function validateStep1() {
         let valid = true;
-        ['grn_number', 'grn_date', 'supplier_id', 'supplier_invoice_number'].forEach(id => {
+        ['grn_date', 'supplier_id', 'supplier_invoice_number'].forEach(id => {
             const input = $(`#${id}`);
             if (!input.val()) {
                 input.addClass('is-invalid');
@@ -1288,10 +1300,8 @@
     });
 
     $(document).ready(function () {
-        // On initial load
         handleGrnTypeToggle();
 
-        // On toggle
         $('input[name="grn_type"]').on('change', function () {
             handleGrnTypeToggle();
         });
@@ -1333,7 +1343,6 @@
         isDiscountVisible = !isDiscountVisible;
     }
 
-    // Whenever discount % changes, compute and show discount amount
     $('#discount').on('input', function() {
         const pct   = parseFloat($(this).val()) || 0;
         const qty   = parseFloat($('#qty').val()) || 0;
@@ -1343,11 +1352,9 @@
         const amt = (base * pct) / 100;
         $('#discount_amount').val(amt.toFixed(2));
 
-        // keep form in sync if you're doing live totals
         calculateGrnTotals();
     });
 
-    // Ensure discount_amount field appears when discount_group is shown
     function handleGrnTypeToggle() {
         const isMargin = $('#type_margin').is(':checked');
 
@@ -1362,64 +1369,6 @@
         }
     }
 
-    let selectedGrnLabel = '';
-
-    $("#grn_number").autocomplete({
-        source: function (request, response) {
-            if (request.term.length < 1) return;
-
-            $.ajax({
-                url: '/api/grn-list-dropdown',
-                dataType: 'json',
-                data: { q: request.term },
-                success: function (data) {
-                    // Format: each item should have label (display) and value (id)
-                    response($.map(data, function (item) {
-                        return {
-                            label: item.label,  // This is the GRN number shown in the list & textbox
-                            value: item.label,  // This ensures only GRN number is inserted into the text box
-                            id: item.value      // The actual GRN id (e.g. UUID or numeric id)
-                        };
-                    }));
-                }
-            });
-        },
-        minLength: 1,
-        appendTo: "#grnModal",
-        select: function (event, ui) {
-            // Set visible GRN number only
-            $("#grn_number").val(ui.item.label);
-
-            // Set hidden GRN ID field
-            $("#grn_id").val(ui.item.id);
-
-            // Save selected label for input tracking
-            selectedGrnLabel = ui.item.label;
-
-            // Fetch full GRN details
-            fetchGrnDetails(ui.item.id);
-            return false;
-        }
-    });
-
-    // Reset if user types over the selected value
-    $("#grn_number").on("input", function () {
-        if ($(this).val() !== selectedGrnLabel) {
-            $("#grn_id").val('');
-            selectedGrnLabel = '';
-            itemsList = [];
-            renderGrnItems();
-            calculateGrnTotals();
-
-            // Optionally clear header fields
-            $("#supplier_id").val('');
-            $("#supplier_name").val('');
-            $("#supplier_invoice_number").val('');
-            $("#note").val('');
-            $('#is_percentage').prop('checked', false);
-        }
-    });
-
     function fetchGrnDetails(grnId) {
         $.ajax({
             url: `/api/grn-details/${grnId}`,
@@ -1427,9 +1376,8 @@
             success: function (res) {
                 GrnDetails = res.grn;
 
-                // Fill header fields
                 $("#grn_id").val(res.grn.id);
-                $("#grn_number").val(res.grn.grn_number);
+                $("#token_no").val(res.grn.id);
                 $("#grn_date").val(res.grn.grn_date);
                 $("#supplier_id").val(res.grn.supplier_id);
                 $("#supplier_name").val(res.grn.supplier_name);
@@ -1439,7 +1387,6 @@
                 $("#bill_discount_amount").val(res.grn.discount_amount);
                 $('#is_percentage').prop('checked', res.grn.is_percentage === 1);
 
-                // Set GRN type radio button
                 if (res.grn.grn_type === 'Discount Based') {
                     $('#type_discount').prop('checked', true);
                 } else {
@@ -1448,7 +1395,6 @@
 
                 handleGrnTypeToggle();
 
-                // Load items
                 itemsList = GrnDetails.items;
                 renderGrnItems();
                 calculateGrnTotals();
@@ -1473,25 +1419,21 @@
             const id = $(this).attr('id');
             const $currentTab = $('.tab-pane.show.active');
 
-            // GRN Type → trigger NEXT
             if ($(this).is(':radio') && id?.startsWith('type_')) {
                 $('#grnStep1 button:contains("NEXT")').click();
                 return;
             }
 
-            // After GRN Date → focus Supplier
             if (id === 'grn_date') {
                 $('#supplier_name').focus();
                 return;
             }
 
-            // Step 1 NEXT button
             if (id === 'grn_step1_next' || ($(this).text().trim() === 'NEXT' && $('#grnStep1').is(':visible'))) {
                 $('#grnStep1 button:contains("NEXT")').click();
                 return;
             }
 
-            // Step 2 – Add or Update Item (only if all required fields are filled)
             if ($('#grnStep2').is(':visible')) {
                 const grnType = $('input[name="grn_type"]:checked').val();
                 const itemID = $('#item_id').val();
@@ -1509,15 +1451,14 @@
 
                 if (requiredFilled && isOnLastField) {
                     if ($('#edit_action_group').is(':visible')) {
-                        updateItem();  // Edit mode
+                        updateItem();
                     } else {
-                        addItem();     // Add mode
+                        addItem();
                     }
                     return;
                 }
             }
 
-            // Bill Discount logic with double-Enter
             if (id === 'bill_discount_amount') {
                 const discountVal = $('#bill_discount_amount').val();
                 if (discountVal !== '') {
@@ -1532,7 +1473,6 @@
                 return;
             }
 
-            // Step 2 NEXT
             if (id === 'grn_step2_next' || ($(this).text().trim() === 'NEXT' && $('#grnStep2').is(':visible'))) {
                 $('#grnStep2 button:contains("NEXT")').click();
                 return;
@@ -1543,14 +1483,12 @@
                 return;
             }
 
-            // Default: Move to next field
             if (index > -1 && index + 1 < focusables.length) {
                 focusables.eq(index + 1).focus();
             }
         }
     });
 
-    // Close SweetAlert2 "OK" boxes when Enter is pressed
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && Swal.isVisible()) {
             const confirmButton = Swal.getConfirmButton();
@@ -1641,7 +1579,6 @@
                         };
                     }));
 
-                    // Auto select if exactly one match
                     if (data.length === 1) {
                         $("#filter_supplier_name").val(data[0].label);
                         $("#filter_supplier_id").val(data[0].value);
@@ -1651,7 +1588,7 @@
             });
         },
         minLength: 1,
-        appendTo: "#grnFilters", // match the filter collapsible wrapper
+        appendTo: "#grnFilters",
         select: function (event, ui) {
             $("#filter_supplier_name").val(ui.item.label);
             $("#filter_supplier_id").val(ui.item.value);
@@ -1660,14 +1597,12 @@
         }
     });
 
-
     $("#filter_supplier_name").on("input", function () {
         if (!filterSupplierSelected) {
             $("#filter_supplier_id").val('');
         }
         filterSupplierSelected = false;
     });
-
 
     $(function () {
         $('#filter_date_range').daterangepicker({
@@ -1686,32 +1621,27 @@
         });
     });
 
-
     function printGrnDetails() {
         const modalBody = document.querySelector('#grnDetailModal .modal-body');
         const clonedContent = modalBody.cloneNode(true);
 
-        // Remove modal summary block
         const summaryRow = clonedContent.querySelector('.row.mb-4');
         if (summaryRow) {
             summaryRow.remove();
         }
 
-        // Clear scroll limits for printing
         const tableWrapper = clonedContent.querySelector('.table-responsive');
         if (tableWrapper) {
             tableWrapper.style.maxHeight = 'unset';
             tableWrapper.style.overflow = 'unset';
         }
 
-        // Fetch summary values
         const grnNumber = document.getElementById('modalGrnNumberDisplay').innerText.trim();
         const grnDate = document.getElementById('modalGrnDate').innerText.trim();
         const supplier = document.getElementById('modalSupplierAndInvoice').innerText.trim();
         const discountType = document.getElementById('modalDiscountType').innerText.trim();
         const note = document.getElementById('modalNote').innerText.trim();
 
-        // Plain, neatly spaced GRN detail view
         const detailSection = `
         <div class="grn-summary">
             <div class="grn-line">GRN Number: ${grnNumber}</div>
@@ -1722,7 +1652,6 @@
         </div>
     `;
 
-        // Print styling
         const styles = `
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap');
@@ -1764,10 +1693,10 @@
             .text-danger { color: #dc3545; }
             .text-dark { color: #000 !important; }
 
-            td:nth-child(1) { text-align: left; } /* Item Name */
-            td:nth-child(4), /* Purchase Price */
-            td:nth-child(7), /* Final Retail Price */
-            td:nth-child(8)  /* Sub Total */ {
+            td:nth-child(1) { text-align: left; }
+            td:nth-child(4),
+            td:nth-child(7),
+            td:nth-child(8) {
                 text-align: right;
             }
         </style>
@@ -1799,24 +1728,19 @@
         }, 500);
     }
 
-    //Add item modal functions
-
     document.addEventListener('keydown', function(event) {
-        // Check if the '+' key is pressed (Shift + '=' or Numpad '+')
         if ((event.key === '+' || event.code === 'NumpadAdd') && !event.target.matches('input, textarea')) {
-            event.preventDefault(); // Prevent any default browser behavior
-            // Clear all fields in the form inside the modal
+            event.preventDefault();
             $('#itemModal').on('shown.bs.modal', function () {
-                $(this).find('form')[0].reset(); // Reset the form
-                $(this).find('select').val('').trigger('change'); // If you're using select2 or want to reset selects
-                $(this).find('input[type=checkbox]').prop('checked'); // Reset checkboxes
+                $(this).find('form')[0].reset();
+                $(this).find('select').val('').trigger('change');
+                $(this).find('input[type=checkbox]').prop('checked');
             });
             const itemModal = new bootstrap.Modal(document.getElementById('itemModal'));
             itemModal.show();
         }
     });
 
-    // Category Autocomplete
     $("#category_name").autocomplete({
         source: function (request, response) {
             if (request.term.length < 1) return;
@@ -1846,7 +1770,6 @@
         }
     });
 
-    // Sub-Category Autocomplete
     $("#sub_category_name").autocomplete({
         source: function (request, response) {
             if (request.term.length < 1) return;
@@ -1876,7 +1799,6 @@
         }
     });
 
-    // Item Modal - Supplier Autocomplete
     $("#item_supplier_name").autocomplete({
         source: function (request, response) {
             if (request.term.length < 1) return;
@@ -1913,7 +1835,7 @@
     let isSaving = false;
 
     function saveItem() {
-        if (isSaving) return; // prevent duplicate submission
+        if (isSaving) return;
         isSaving = true;
 
         const itemData = {
@@ -1954,7 +1876,6 @@
         });
     }
 
-    //tab navigation for Enter key-item modal
     $(document).on('keydown', 'input, select, textarea', function (e) {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -1989,7 +1910,6 @@
         }
     });
 
-    //text box validations
     document.addEventListener("DOMContentLoaded", function () {
         const fields = ['qty', 'foc', 'price', 'margin', 'discount'];
         fields.forEach(id => {
@@ -1997,7 +1917,6 @@
             if (!input) return;
             input.addEventListener('input', function () {
                 let value = parseFloat(this.value);
-                // Prevent negative values
                 if (value < 0) {
                     this.value = '';
                 }
@@ -2007,11 +1926,10 @@
                 if (this.id === 'discount') {
                     if (value >= 100) {
                         this.value = '';
-                        document.getElementById('discount_amount').value = ''; // Clear discount amount
+                        document.getElementById('discount_amount').value = '';
                     }
                 }
             });
-            //  Prevent typing minus key
             input.addEventListener('keydown', function (e) {
                 if (e.key === '-' || e.keyCode === 189) {
                     e.preventDefault();

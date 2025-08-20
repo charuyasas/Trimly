@@ -12,8 +12,11 @@ use Illuminate\Http\Request;
 
 class GrnRequest extends Data
 {
-    #[SpatieRule('required', 'string')]
-    public string $grn_number;
+    #[SpatieRule('sometimes', 'nullable', 'string')]
+    public ?string $grn_number = null;
+
+    #[SpatieRule('nullable', 'string')]
+    public ?string $token_no = null;
 
     #[SpatieRule('required', 'date')]
     public string $grn_date;
@@ -48,17 +51,22 @@ class GrnRequest extends Data
 
     public static function rules(Request $request, array $params = []): array
     {
-        $id = $params['id'] ?? $request->route('id');
+        $id = $params['id'] ?? $request->route('id') ?? $request->input('id');
 
         return [
             'grn_number' => [
-                'required',
+                'nullable',
                 'string',
                 Rule::unique('grns', 'grn_number')
                     ->ignore($id)
                     ->where(function ($query) {
-                        return $query->where('status', true); // Only validate against finalized GRNs
+                        return $query->where('status', true);
                     }),
+            ],
+            'token_no' => [
+                'nullable',
+                'string',
+                Rule::unique('grns', 'token_no')->ignore($id),
             ],
         ];
     }
