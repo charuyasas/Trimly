@@ -10,17 +10,24 @@ use Spatie\LaravelData\Attributes\Validation\Max;
 class EmployeeRequest extends Data
 {
     public ?string $id;
+
     public string $employee_id;
+
     #[SpatieRule('required')]
     #[Max(255)]
     public string $name;
+
     #[SpatieRule('required')]
     #[Max(255)]
     public string $address;
+
     #[SpatieRule('required', 'digits:10')]
     public string $contact_no;
+
     #[SpatieRule('sometimes','required')]
     public string $ledger_code;
+
+    public ?string $commission;
 
     public static function rules(): array
     {

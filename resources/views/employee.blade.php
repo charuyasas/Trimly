@@ -84,22 +84,32 @@
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="common_input mb_15">
-                                                <input type="text" id="employeeID" placeholder="Employee ID">
+                                                <label class="form-label">Employee ID</label>
+                                                <input type="text" id="employeeID" placeholder="Enter ...">
                                             </div>
                                         </div>
                                         <div class="col-lg-12">
                                             <div class="common_input mb_15">
-                                                <input type="text" id="employee_name" placeholder="Name">
+                                                <label class="form-label">Name</label>
+                                                <input type="text" id="employee_name" placeholder="Enter ...">
                                             </div>
                                         </div>
                                         <div class="col-lg-12">
                                             <div class="common_input mb_15">
-                                                <input type="text" id="employee_address" placeholder="Address">
+                                                <label class="form-label">Address</label>
+                                                <input type="text" id="employee_address" placeholder="Enter ...">
                                             </div>
                                         </div>
                                         <div class="col-lg-12">
                                             <div class="common_input mb_15">
-                                                <input type="text" id="employee_contactno" class="contactNo" placeholder="Contact Number">
+                                                <label class="form-label">Contact Number</label>
+                                                <input type="text" id="employee_contactno" class="contactNo" placeholder="Enter ...">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <div class="common_input mb_15">
+                                                <label class="form-label">Commission (%)</label>
+                                                <input type="number" id="employee_commission" placeholder="Enter ..." onkeyup="validateCommission()">
                                             </div>
                                         </div>
                                     </div>
@@ -149,7 +159,8 @@
                             employee_id: $('#employeeID').val(),
                             name: $('#employee_name').val(),
                             address: $('#employee_address').val(),
-                            contact_no: $('#employee_contactno').val()
+                            contact_no: $('#employee_contactno').val(),
+                            commission: $('#employee_commission').val()
                         };
 
                         if (employee_id) {
@@ -248,6 +259,7 @@
                             $('#employee_name').val(employee.name);
                             $('#employee_address').val(employee.address);
                             $('#employee_contactno').val(employee.contact_no);
+                            $('#employee_commission').val(employee.commission);
                             $('#exampleModalLongTitle').text('Edit Employee');
                             $('#saveBtn').text('Update');
                         });
@@ -268,6 +280,14 @@
                                     loadEmployees();
                                 }
                             });
+                        }
+                    }
+
+                    function validateCommission(){
+                        let commission = parseFloat($('#employee_commission').val()) || 0;
+                        if(commission < 0 || commission > 100) {
+                            alert(`Commission percentage must be between 0 and 100.`);
+                            $("#employee_commission").val('');
                         }
                     }
 
