@@ -5,6 +5,7 @@ namespace App\UseCases\Reports;
 use App\Models\Item;
 use App\Models\StockSheet;
 use Illuminate\Support\Collection;
+use Carbon\Carbon;
 
 class StockDetailReportInteractor
 {
@@ -38,8 +39,11 @@ class StockDetailReportInteractor
                 ->get();
 
             $transactions = $stockSheets->groupBy('reference_id')->map(function ($group) {
+                $first = $group->sortBy('created_at')->first();
+                $dateShort = Carbon::parse($first->created_at)->format('n/j/y');
                 return [
                     'reference_type' => $group->first()->reference_id,
+                    'reference_date' => $dateShort,
                     'debit' => $group->sum('debit'),
                     'credit' => $group->sum('credit'),
                 ];
