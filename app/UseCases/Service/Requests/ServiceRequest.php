@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\UseCases\Service\Requests;
 
@@ -10,12 +10,20 @@ use Spatie\LaravelData\Attributes\Validation\Max;
 class ServiceRequest extends Data{
 
     public ?string $id;
+
     public string $code;
+
     #[SpatieRule('required')]
     #[Max(255)]
     public string $description;
+
     #[SpatieRule('required')]
     public string $price;
+
+    public ?string $commission;
+
+    #[SpatieRule('required')]
+    public string $is_fixed_price;
 
     public static function rules(): array
     {
@@ -26,5 +34,5 @@ class ServiceRequest extends Data{
             ],
         ];
     }
-    
+
 }
