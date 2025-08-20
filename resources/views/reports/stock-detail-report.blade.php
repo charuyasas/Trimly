@@ -137,7 +137,7 @@
     }
 
     .fixed-table th, .fixed-table td {
-        padding: 8px 12px;
+        padding: 4px 10px;
         vertical-align: middle;
         text-align: left;
     }
@@ -371,11 +371,15 @@
             const creditEntries = [];
 
             (item.transactions || []).forEach(tx => {
+                const label = tx.reference_date
+                    ? `${tx.reference_date} |  ${tx.reference_type}`
+                    : tx.reference_type;
+
                 if (tx.debit && tx.debit != 0) {
-                    debitEntries.push({ ref: tx.reference_type, qty: tx.debit });
+                    debitEntries.push({ ref: label, qty: tx.debit });
                 }
                 if (tx.credit && tx.credit != 0) {
-                    creditEntries.push({ ref: tx.reference_type, qty: tx.credit });
+                    creditEntries.push({ ref: label, qty: tx.credit });
                 }
             });
 
