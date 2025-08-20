@@ -12,7 +12,7 @@ class Service extends Model
     use SoftDeletes;
     use HasFactory;
 
-    protected $fillable = ['code', 'description', 'price'];
+    protected $fillable = ['code', 'description', 'price' ,'commission', 'is_fixed_price'];
 
     protected $dates = ['deleted_at'];
 

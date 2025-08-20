@@ -85,17 +85,32 @@
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="common_input mb_15">
-                                                <input type="text" id="code" placeholder="Service Code">
+                                                <label class="form-label">Service Code</label>
+                                                <input type="text" id="code" placeholder="Enter ...">
                                             </div>
                                         </div>
                                         <div class="col-lg-12">
                                             <div class="common_input mb_15">
-                                                <input type="text" id="description" placeholder="Description">
+                                                <label class="form-label">Description</label>
+                                                <input type="text" id="description" placeholder="Enter ...">
                                             </div>
                                         </div>
                                         <div class="col-lg-12">
                                             <div class="common_input mb_15">
-                                                <input type="number" class="decimal-input" step="0.01" id="price" placeholder="Price">
+                                                <label class="form-label">Price</label>
+                                                <input type="number" class="decimal-input" step="0.01" id="price" placeholder="Enter ...">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <div class="common_input mb_15">
+                                                <label class="form-label">Commission (%)</label>
+                                                <input type="number" id="commission"  placeholder="Enter ..." max="100" min="0" onkeyup="validateCommission()">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="is_fixed_price" data-parsley-multiple="groups" data-parsley-mincheck="2" checked/>
+                                                <label class="form-label form-check-label" for="horizontalCheckbox">Fixed Price</label>
                                             </div>
                                         </div>
                                     </div>
@@ -143,8 +158,12 @@
                             id: $('#service_id').val(),
                             code: $('#code').val(),
                             description: $('#description').val(),
-                            price: $('#price').val()
+                            price: $('#price').val(),
+                            commission: $('#commission').val(),
+                            is_fixed_price: $('#is_fixed_price').is(':checked') ? 1 : 0
                         };
+
+                        console.log(data);
 
                         if (service_id) {
                             $.ajax({
@@ -241,6 +260,8 @@
                             $('#code').val(service.code);
                             $('#description').val(service.description);
                             $('#price').val(service.price);
+                            $('#commission').val(service.commission);
+                            $('#is_fixed_price').prop('checked', service.is_fixed_price == 1);
                             $('#exampleModalLongTitle').text('Edit Service');
                             $('#saveBtn').text('Update');
                         });
@@ -261,6 +282,14 @@
                                     loadServices();
                                 }
                             });
+                        }
+                    }
+
+                    function validateCommission(){
+                        let commission = parseFloat($('#commission').val()) || 0;
+                        if(commission < 0 || commission > 100) {
+                            alert(`Commission percentage must be between 0 and 100.`);
+                            $("#commission").val('');
                         }
                     }
 
