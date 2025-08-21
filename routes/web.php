@@ -74,8 +74,6 @@ Route::get('/expenses', function () {
     return view('expenses');
 });
 
-
-
 Route::get('/item-list-report', function () {
     return view('reports/item-list-report');
 });
@@ -90,6 +88,14 @@ Route::get('/stock-summary-report', function () {
 
 Route::get('/stock-detail-report', function () {
     return view('reports.stock-detail-report');
+});
+
+Route::get('/employee-wise-sales-summary-report', function () {
+    return view('reports/employee-wise-sales-summary-report');
+});
+
+Route::get('/sales-summary-report', function () {
+    return view('reports/sales-summary-report');
 });
 
 Route::middleware([

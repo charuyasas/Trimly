@@ -86,7 +86,7 @@ class StoreInvoiceInteractor
                 $subTotal = ($item->quantity * $item->amount) - ($item->discount_amount ?? 0);
 
                 // Default values
-                $isFixedPrice = null;
+                $isFixedPrice = 0;
                 $commissionPercentage = 0;
                 $employeeCommission = 0;
 

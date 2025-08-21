@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\UseCases\JournalEntry\StoreJournalEntryInteractor;
+use App\UseCases\Reports\GetSalesSummaryInteractor;
 use App\UseCases\StockSheet\GetAvailableStockInteractor;
 use App\UseCases\StockSheet\StoreStockSheetInteractor;
 use Illuminate\Http\JsonResponse;
@@ -17,6 +18,7 @@ use App\UseCases\Invoice\{DeleteInvoiceItemInteractor,
     ListInvoiceInteractor,
     ShowInvoiceInteractor};
 use App\UseCases\Invoice\Requests\InvoiceRequest;
+use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
@@ -66,5 +68,17 @@ class InvoiceController extends Controller
         $result = $deleteInvoiceItemInteractor->execute($tokenNo, $itemID);
 
         return response()->json($result['response'], $result['status']);
+    }
+
+    public function salesmanSummary(Request $request, GetSalesSummaryInteractor $getSalesSummaryInteractor): JsonResponse
+    {
+        $startDate = $request->query('start_date');
+        $endDate   = $request->query('end_date');
+        $item_type = $request->query('item_type');
+        $report_type = $request->query('report_type');
+
+        $result = $getSalesSummaryInteractor->execute($startDate, $endDate, $item_type, $report_type);
+
+        return response()->json($result, $result['status']);
     }
 }

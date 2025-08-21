@@ -3,8 +3,10 @@
 namespace App\UseCases\Invoice;
 
 use App\Constance\AccountsLedgerCodes;
+use App\Models\Employee;
 use App\Models\Invoice;
 use App\Models\JournalEntry;
+use App\Models\Service;
 use App\Models\StockSheet;
 use App\Models\SystemConfiguration;
 use App\UseCases\Invoice\Requests\InvoiceRequest;
@@ -27,7 +29,7 @@ class FinishInvoiceInteractor
         DB::beginTransaction();
 
         try {
-            // 🔹 Get max discount configuration
+            // Get max discount configuration
             $config = SystemConfiguration::where('configuration_name', 'Discount Percentages')->first();
             $maxDiscount = $config?->configuration_data['Maximum Discount Percentage'] ?? null;
 
@@ -39,7 +41,7 @@ class FinishInvoiceInteractor
             $received_cash = $invoiceRequest->received_cash;
             $balance = $invoiceRequest->balance;
 
-            // 🔹 Validate invoice-level discount
+            // Validate invoice-level discount
             if ($maxDiscount !== null && $discountPercentage > $maxDiscount) {
                 return [
                     'message' => "Invoice discount percentage ({$discountPercentage}%) exceeds allowed maximum of {$maxDiscount}%.",
@@ -47,7 +49,7 @@ class FinishInvoiceInteractor
                 ];
             }
 
-            // 🔹 Validate item-level discounts
+            // Validate item-level discounts
             foreach ($invoice->items as $item) {
                 if ($maxDiscount !== null && $item->discount_percentage > $maxDiscount) {
                     return [
@@ -57,7 +59,7 @@ class FinishInvoiceInteractor
                 }
             }
 
-            // 🔹 Apply discount preference
+            // Apply discount preference
             if ($discountPercentage > 0) {
                 $discountAmount = ($baseTotal * $discountPercentage) / 100;
                 $invoice->discount_percentage = $discountPercentage;
@@ -67,7 +69,7 @@ class FinishInvoiceInteractor
                 $invoice->discount_amount = $discountAmount;
             }
 
-            // 🔹 Stock availability check
+            // Stock availability check
             $insufficientItem = collect($invoice->items)->first(function ($item) use ($getAvailableStockInteractor) {
                 if ($item->item_type === 'item') {
                     $requiredQty = $item->quantity ?? 0;
@@ -92,7 +94,7 @@ class FinishInvoiceInteractor
 
             $invoiceNumber = $this->generateNextInvoiceNo();
 
-            // 🔹 Stock sheet credit entries
+            //Stock sheet credit entries
             $stockCreditEntryData = collect($invoice->items)->map(function ($item) use ($invoiceNumber) {
                 if ($item->item_type === 'item') {
                     return [
@@ -111,7 +113,7 @@ class FinishInvoiceInteractor
                 $this->invoiceItemsToStockTable($storeStockSheetInteractor, $stockCreditEntryData);
             }
 
-            // 🔹 Sales totals
+            // Sales totals
             $serviceCount = 0;
             $itemCount = 0;
             $totals = collect($invoice->items)->reduce(function ($carry, $item) use (&$itemCount, &$serviceCount) {
@@ -135,8 +137,37 @@ class FinishInvoiceInteractor
                 'item_cost' => 0,
             ]);
 
-            // 🔹 Journal entries
+            // Journal entries
             $journalEntries = [];
+            $employee = Employee::findOrFail($invoiceRequest->employee_no);
+
+//            dd($invoice->items);
+            foreach ($invoice->items as $item) {
+
+                if ($item->item_type == 'service' && !empty($item->employee_commission)) {
+                    $commission = round($item->employee_commission, 2);
+                    $service = Service::findOrFail($item->item_id);
+
+                    if ($commission > 0) {
+                        $journalEntries[] = [
+                            'ledger_code'    => AccountsLedgerCodes::LEDGER_CODES['Commission Expenses'],
+                            'reference_type' => JournalEntry::STATUS['Expenses'],
+                            'reference_id'   => "Commission Expenses-{$invoiceNumber}-{$service->code}",
+                            'debit'          => $commission,
+                            'credit'         => 0,
+                        ];
+
+                        // Credit employee posting ledger
+                        $journalEntries[] = [
+                            'ledger_code'    => $employee->ledger_code,
+                            'reference_type' => JournalEntry::STATUS['Expenses'],
+                            'reference_id'   => "Commission Expenses-{$invoiceNumber}-{$service->code}",
+                            'debit'          => 0,
+                            'credit'         => $commission,
+                        ];
+                    }
+                }
+            }
 
             if ($totals['service_amount'] > 0) {
                 $discount = $itemCount == 0 ? $discountAmount : 0;

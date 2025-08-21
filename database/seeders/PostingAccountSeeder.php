@@ -14,5 +14,6 @@ class PostingAccountSeeder extends Seeder
         PostingAccount::create(['posting_code' => 1002, 'posting_account' => 'Income', 'main_code' => 4, 'heading_code' => 8, 'title_code' => 18]);
         PostingAccount::create(['posting_code' => 1003, 'posting_account' => 'Expenses', 'main_code' => 4, 'heading_code' => 8, 'title_code' => 10]);
         PostingAccount::create(['posting_code' => 1004, 'posting_account' => 'Sales Revenue', 'main_code' => 5, 'heading_code' => 16, 'title_code' => 19]);
+        PostingAccount::create(['posting_code' => 1005, 'posting_account' => 'Salary Expenses', 'main_code' => 4, 'heading_code' => 8, 'title_code' => 9]);
     }
 }
