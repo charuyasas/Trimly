@@ -26,6 +26,7 @@ use App\Http\Controllers\API\StockDetailReportController;
 
 Route::apiResource('items', ItemController::class);
 Route::get('/items-list', [ItemController::class, 'loadItemDropdown']);
+Route::get('/stock-value-report', [ItemController::class, 'stockValueReport']);
 
 Route::apiResource('sub-categories', SubCategoryController::class);
 Route::get('/sub-categories-list', [SubCategoryController::class, 'loadSubCategoryDropdown']);
@@ -106,7 +107,6 @@ Route::post('/update-password', [UserController::class, 'updateUserPassword']);
 Route::apiResource('sidebar-links', SidebarLinkController::class)->middleware('auth:sanctum');
 Route::middleware('auth:sanctum')->get('/sidebar-links', [SidebarLinkController::class, 'index']);
 
-Route::get('/stock-value-report', [ItemController::class, 'stockValueReport']);
 Route::post('/stock-detail-report', [StockDetailReportController::class, 'execute']);
 
 Route::get('/user', function (Request $request) {
