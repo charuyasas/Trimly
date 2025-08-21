@@ -1,11 +1,8 @@
 @include('includes.header')
 @include('includes.sidebar', ['pageTitle' => 'GRN'])
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"/>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link rel="stylesheet" href="{{ asset('assets/css/daterangepicker.css') }}" />
+<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}" />
 
 <style>
     #grnModal .select2-container--default .select2-selection--single {
@@ -1940,5 +1937,7 @@
 
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script src="{{ asset('assets/js/axios.min.js') }}"></script>
+<script src="{{ asset('assets/js/select2.min.js') }}"></script>
+<script src="{{ asset('assets/js/moment.min.js') }}"></script>
+<script src="{{ asset('assets/js/daterangepicker.min.js') }}"></script>
