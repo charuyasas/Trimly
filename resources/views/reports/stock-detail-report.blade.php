@@ -1,9 +1,8 @@
 @include('includes.header')
 @include('includes.sidebar', ['pageTitle' => 'Stock Detail Report'])
 
-<!-- Styles -->
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="{{ asset('assets/css/jquery-ui.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/daterangepicker.css') }}">
 
 <style>
     @media print {
@@ -200,7 +199,7 @@
                         <div class="col-md-3 d-flex gap-2">
                             <button class="btn btn-primary" onclick="filterStockDetail()">Filter</button>
                             <button class="btn btn-secondary" onclick="resetFilters()" title="Reset Filters">
-                                <i class="fa fa-refresh"></i>
+                                <i class="fas fa-sync-alt"></i>
                             </button>
                             <button class="btn btn-primary ms-2" onclick="printReport()">Print Report</button>
                         </div>
@@ -220,8 +219,8 @@
 @include('includes.footer')
 
 <!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script src="{{ asset('assets/js/jquery-3.7.1.min.js') }}"></script>
+<script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
 
 <script>
     // ===== Item Autocomplete =====
@@ -491,8 +490,5 @@
 
 </script>
 
-<!-- Moment.js and Daterangepicker -->
-<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
-
+<script src="{{ asset('assets/js/moment.min.js') }}"></script>
+<script src="{{ asset('assets/js/daterangepicker.min.js') }}"></script>
