@@ -17,11 +17,16 @@
     text-transform: uppercase;
     letter-spacing: 1px;
   }
+  .white_card {
+      padding: 20px;
+  }
 </style>
 
 <div class="main_content_iner overly_inner">
     <div class="container-fluid p-0">
-        <div id="calendar"> </div>
+        <div class="white_card card_height_100 mb_30">
+            <div id="calendar"> </div>
+        </div>
     </div>
 </div>
 

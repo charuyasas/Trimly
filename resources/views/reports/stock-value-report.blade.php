@@ -54,7 +54,7 @@
             width: 100% !important;
             font-size: 11pt;
             color: #000;
-            table-layout: fixed;
+            table-layout: auto !important;
             page-break-inside: auto;
             page-break-after: auto;
         }
