@@ -10,5 +10,6 @@ class AccountsLedgerCodes
         'Income' => '4-8-18-1002',
         'Expenses' => '4-8-10-1003',
         'Sales Revenue' => '5-16-19-1004',
+        'Commission Expenses' => '4-8-9-1005',
     ];
 }

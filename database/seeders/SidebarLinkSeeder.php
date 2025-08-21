@@ -189,6 +189,16 @@ class SidebarLinkSeeder extends Seeder
                         'display_name' => 'Stock Detail Report',
                         'url' => '/stock-detail-report',
                     ],
+                    [
+                        'permission_name' => 'employee-wise-sales-summary-report',
+                        'display_name' => 'Employee wise Sales Summary Report',
+                        'url' => '/employee-wise-sales-summary-report',
+                    ],
+                    [
+                        'permission_name' => 'sales-summary-report',
+                        'display_name' => 'Sales Summary Report',
+                        'url' => '/sales-summary-report',
+                    ],
                 ],
             ],
 

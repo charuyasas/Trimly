@@ -726,10 +726,6 @@
 
     function removeItem(index) {
         const item = itemsList[index];
-        // if (itemsList.length <= 1) {
-        //     alert("At least one item must remain in the invoice.");
-        //     return;
-        // }
         var tokenNo = $("#cbo_tokenNo").val();
         if (!confirm("Are you sure you want to delete this item from the invoice?")) {
             return;
