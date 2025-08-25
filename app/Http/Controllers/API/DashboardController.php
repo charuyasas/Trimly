@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\UseCases\Booking\ListBookingInteractor;
+use App\UseCases\Booking\TodayBookingsInteractor;
 use App\UseCases\Customer\ListCustomerInteractor;
 use App\UseCases\Employee\ListEmployeeInteractor;
 use App\UseCases\Invoice\GetDailySalesInteractor;
@@ -11,7 +11,6 @@ use App\UseCases\Item\ListItemInteractor;
 use App\UseCases\Service\ListServiceInteractor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 class DashboardController extends Controller
 {
@@ -25,16 +24,10 @@ class DashboardController extends Controller
         return response()->json($sales);
     }
 
-    public function todayBookings(ListBookingInteractor $listBookingInteractor): JsonResponse
+    public function todayBookings(TodayBookingsInteractor $todayBookingsInteractor): JsonResponse
     {
-        $today = Carbon::today()->toDateString();
-        $bookings = $listBookingInteractor->execute();
-
-        $todayBookings = $bookings->where('booking_date', $today)
-            ->sortBy('start_time')
-            ->values();
-
-        return response()->json($todayBookings);
+        $bookings = $todayBookingsInteractor->execute();
+        return response()->json($bookings);
     }
 
     public function getSummaryCounts(ListEmployeeInteractor $listEmployeeInteractor, ListCustomerInteractor $listCustomerInteractor, ListServiceInteractor $listServiceInteractor, ListItemInteractor $listItemInteractor): JsonResponse

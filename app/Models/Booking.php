@@ -15,7 +15,7 @@ class Booking extends Model
     protected $fillable = [
         'customer_id',
         'employee_id',
-        'service_id',
+        'service_ids',
         'booking_date',
         'start_time',
         'end_time',
@@ -37,7 +37,14 @@ class Booking extends Model
         });
     }
 
+    protected $casts = [
+        'service_ids' => 'array',
+    ];
+
     public function customer() { return $this->belongsTo(Customer::class); }
     public function employee() { return $this->belongsTo(Employee::class); }
-    public function service() { return $this->belongsTo(Service::class); }
+    public function services()
+    {
+        return Service::whereIn('id', $this->service_ids ?? [])->get();
+    }
 }

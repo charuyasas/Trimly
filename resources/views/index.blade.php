@@ -123,6 +123,7 @@
                                     <th scope="col">Time</th>
                                     <th scope="col">Employee</th>
                                     <th scope="col">Customer</th>
+                                    <th scope="col">Services</th>
                                 </tr>
                                 </thead>
                                 <tbody id="bookingTable">
@@ -224,11 +225,16 @@
 
                 let rowID = 1;
                 data.forEach(booking => {
+                    let services = (booking.services_collection || [])
+                        .map(s => s.description + ' (Rs.' + parseFloat(s.price).toFixed(2) + ')')
+                        .join(', ');
+
                     table.row.add([
                         rowID,
                         booking.start_time+ '-' +booking.end_time,
                         booking.employee.name,
-                        booking.customer.name
+                        booking.customer.name,
+                        services
                     ]);
                     rowID++;
                 });

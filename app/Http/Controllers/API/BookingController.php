@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
-use Illuminate\Http\Request;
 use App\UseCases\Booking\Requests\BookingRequest;
 use App\UseCases\Booking\ListBookingInteractor;
 use App\UseCases\Booking\StoreBookingInteractor;
@@ -65,4 +64,5 @@ class BookingController extends Controller
         $result = $calendarEmployee->execute();
         return response()->json($result);
     }
+
 }

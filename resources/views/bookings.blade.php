@@ -73,8 +73,10 @@
             <div class="common_input mb_15">
                 <label>Service</label>
                 <input type="text" class="form-control" id="cbo_service" placeholder="Search service..." autocomplete="off">
-                <input type="hidden" id="service_id">
+                <input type="hidden" id="service_ids">
+                <div id="selected_services" class="mt-2"></div>
             </div>
+
             <div class="common_input mb_15">
                 <label>Notes</label>
                 <textarea class="form-control" id="notes"></textarea>
@@ -152,11 +154,13 @@ function loadCalendar() {
       click: function () {
         $('#bookingForm')[0].reset();
         $('#booking_id').val('');
-        $('#customer_id, #employee_id, #service_id').val('');
+        $('#customer_id, #employee_id, #service_ids').val('');
         $('#status').val('pending');
         $('#notes').val('');
         $('#bookingModalTitle').text('Add Booking');
         $('#btnBooking').text('Save');
+        selectedServices = [];
+        $('#selected_services').empty();
         $('#bookingModal').modal('show');
       }
      }
@@ -289,9 +293,21 @@ function loadCalendar() {
         // Employee
         $('#employee_id').val(b.employee_id);
         $('#cbo_employee').val(`${b.employee?.employee_id} - ${b.employee?.name}`);
-        // Service
-        $('#service_id').val(b.service_id);
-        $('#cbo_service').val(`${b.service?.description} - Rs.${parseFloat(b.service?.price).toFixed(2)}`);
+          // Services (multiple)
+          selectedServices = b.service_ids || [];
+          $('#service_ids').val(JSON.stringify(selectedServices));
+          $('#selected_services').empty();
+          if (b.services_collection?.length) {
+              b.services_collection.forEach(service => {
+                  $('#selected_services').append(
+                      `<span class="badge bg-primary me-1 mb-1" data-id="${service.id}">
+                    ${service.description} - Rs.${parseFloat(service.price).toFixed(2)}
+                    <i class="fas fa-times remove-service" style="cursor:pointer;"></i>
+                 </span>`
+                  );
+              });
+          }
+        // $('#cbo_service').val(`${b.service?.description} - Rs.${parseFloat(b.service?.price).toFixed(2)}`);
         $('#booking_date').val(b.booking_date);
         $('#start_time').val(b.start_time);
         $('#end_time').val(b.end_time);
@@ -323,6 +339,7 @@ $('#bookingModal').on('hidden.bs.modal', function () {
   $('#bookingForm select, #bookingForm input, #bookingForm textarea').removeAttr('disabled');
   $('#btnBooking').show();
   $('#addCustomerBtn').show();
+    selectedServices = [];
 });
 
 
@@ -384,7 +401,7 @@ function saveBooking() {
     const data = {
         customer_id: $('#customer_id').val(),
         employee_id: $('#employee_id').val(),
-        service_id: $('#service_id').val(),
+        service_ids: selectedServices,
         booking_date: bookingDate,
         start_time: startTime,
         end_time: endTime,
@@ -399,6 +416,7 @@ function saveBooking() {
         success: function() {
             $('#bookingModal').modal('hide');
             loadCalendar(); // Reload calendar only
+            selectedServices = [];
             $('#bookingForm')[0].reset();
             $('#booking_id').val('');
             $('#start_time').empty();
@@ -490,6 +508,8 @@ $("#cbo_customer").autocomplete({
     }
 });
 
+let selectedServices = [];
+
 $("#cbo_service").autocomplete({
     source: function (request, response) {
         if (request.term.length < 1) return;
@@ -499,10 +519,6 @@ $("#cbo_service").autocomplete({
             data: { search_key: request.term },
             success: function (data) {
                 response(data);
-                if (data.length === 1) {
-                    $("#cbo_service").val(data[0].label);
-                    $("#service_id").val(data[0].value);
-                }
             }
         });
     },
@@ -513,11 +529,29 @@ $("#cbo_service").autocomplete({
         return false;
     },
     select: function (event, ui) {
-        $("#cbo_service").val(ui.item.label);
-        $("#service_id").val(ui.item.value);
+        // add to selectedServices if not already added
+        if (!selectedServices.includes(ui.item.value)) {
+            selectedServices.push(ui.item.value);
+            $('#service_ids').val(JSON.stringify(selectedServices));
+
+            // Display selected services
+            $('#selected_services').append(`<span class="badge bg-primary me-1 mb-1" data-id="${ui.item.value}">${ui.item.label} <i class="fas fa-times remove-service" style="cursor:pointer;"></i></span>`);
+        }
+
+        $("#cbo_service").val(''); // clear input
         return false;
     }
 });
+
+// Remove service when clicking the X
+$(document).on('click', '.remove-service', function() {
+    const span = $(this).closest('span');
+    const id = span.data('id');
+    selectedServices = selectedServices.filter(s => s !== id);
+    $('#service_ids').val(JSON.stringify(selectedServices));
+    span.remove();
+});
+
 
 
 // Reset form when Add Booking button is clicked
@@ -526,9 +560,11 @@ $("#cbo_service").autocomplete({
       $('#booking_id').val('');     // Clear hidden ID
       $('#customer_id').removeData('selected-id'); // Clear selected data
       $('#employee_id').removeData('selected-id');
-      $('#service_id').removeData('selected-id');
+      $('#service_ids').removeData('selected-id');
       $('#notes').val('');
       $('#status').val('pending'); // Reset status
+      $('#selected_services').empty();
+      selectedServices = [];
   });
 
 

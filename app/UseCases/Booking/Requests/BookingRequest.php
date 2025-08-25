@@ -4,7 +4,6 @@ namespace App\UseCases\Booking\Requests;
 
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Attributes\Validation\Rule as SpatieRule;
-use Spatie\LaravelData\Attributes\Validation\Required;
 
 class BookingRequest extends Data
 {
@@ -16,8 +15,8 @@ class BookingRequest extends Data
     #[SpatieRule('sometimes','required', 'uuid', 'exists:employees,id')]
     public string $employee_id;
 
-    #[SpatieRule('sometimes','required', 'uuid', 'exists:services,id')]
-    public string $service_id;
+    #[SpatieRule('sometimes','required','array')]
+    public array $service_ids;
 
     #[SpatieRule('sometimes','required', 'date')]
     public string $booking_date;
