@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\API\ExpensesController;
 use App\Http\Controllers\API\ShiftController;
 use App\Http\Controllers\API\UserController;
@@ -108,6 +109,10 @@ Route::apiResource('sidebar-links', SidebarLinkController::class)->middleware('a
 Route::middleware('auth:sanctum')->get('/sidebar-links', [SidebarLinkController::class, 'index']);
 
 Route::post('/stock-detail-report', [StockDetailReportController::class, 'execute']);
+
+Route::get('/dashboard/daily-sales', [DashboardController::class, 'dailySales']);
+Route::get('/loadTodayBookings', [DashboardController::class, 'todayBookings']);
+Route::get('/loadSummaryCounts', [DashboardController::class, 'getSummaryCounts']);
 
 Route::get('/user', function (Request $request) {
     return $request->user();
