@@ -1726,7 +1726,7 @@
     }
 
     document.addEventListener('keydown', function(event) {
-        if ((event.key === '+' || event.code === 'NumpadAdd') && !event.target.matches('input, textarea')) {
+        if (event.key === '+' || (event.shiftKey && event.key === '=')) {
             event.preventDefault();
             $('#itemModal').on('shown.bs.modal', function () {
                 $(this).find('form')[0].reset();
@@ -1735,6 +1735,7 @@
             });
             const itemModal = new bootstrap.Modal(document.getElementById('itemModal'));
             itemModal.show();
+            $('#item_code').focus();
         }
     });
 
@@ -1859,7 +1860,14 @@
                     title: 'Item Saved',
                     text: response.message || 'Item saved successfully!',
                 });
+
+                selectItem(response);
+                $('#item_name').val(response.code + "-" + response.description);
+                $('#item_id').val(response.id);
+                $('#grn_item_id').val(response.id);
                 $('#itemModal').modal('hide');
+
+                $("#margin").focus();
                 isSaving = false;
             },
             error: function (xhr) {
