@@ -94,4 +94,11 @@
       0 => 'Spatie\\StructureDiscoverer\\StructureDiscovererServiceProvider',
     ),
   ),
+  'sureshhemal/laravel-sms-sri-lanka' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Sureshhemal\\SmsSriLanka\\Providers\\SmsServiceProvider',
+    ),
+  ),
 );

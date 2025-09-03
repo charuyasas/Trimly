@@ -36,10 +36,11 @@
     32 => 'Spatie\\LaravelData\\LaravelDataServiceProvider',
     33 => 'Spatie\\Permission\\PermissionServiceProvider',
     34 => 'Spatie\\StructureDiscoverer\\StructureDiscovererServiceProvider',
-    35 => 'App\\Providers\\RouteServiceProvider',
-    36 => 'App\\Providers\\AppServiceProvider',
-    37 => 'App\\Providers\\FortifyServiceProvider',
-    38 => 'App\\Providers\\JetstreamServiceProvider',
+    35 => 'Sureshhemal\\SmsSriLanka\\Providers\\SmsServiceProvider',
+    36 => 'App\\Providers\\RouteServiceProvider',
+    37 => 'App\\Providers\\AppServiceProvider',
+    38 => 'App\\Providers\\FortifyServiceProvider',
+    39 => 'App\\Providers\\JetstreamServiceProvider',
   ),
   'eager' => 
   array (
@@ -64,10 +65,11 @@
     18 => 'Spatie\\LaravelData\\LaravelDataServiceProvider',
     19 => 'Spatie\\Permission\\PermissionServiceProvider',
     20 => 'Spatie\\StructureDiscoverer\\StructureDiscovererServiceProvider',
-    21 => 'App\\Providers\\RouteServiceProvider',
-    22 => 'App\\Providers\\AppServiceProvider',
-    23 => 'App\\Providers\\FortifyServiceProvider',
-    24 => 'App\\Providers\\JetstreamServiceProvider',
+    21 => 'Sureshhemal\\SmsSriLanka\\Providers\\SmsServiceProvider',
+    22 => 'App\\Providers\\RouteServiceProvider',
+    23 => 'App\\Providers\\AppServiceProvider',
+    24 => 'App\\Providers\\FortifyServiceProvider',
+    25 => 'App\\Providers\\JetstreamServiceProvider',
   ),
   'deferred' => 
   array (
