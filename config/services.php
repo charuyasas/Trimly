@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'hutch_sms' => [
+        'base_url' => env('HUTCH_SMS_BASE_URL', 'https://bsms.hutch.lk/api'),
+        'username' => env('HUTCH_SMS_USERNAME'),
+        'password' => env('HUTCH_SMS_PASSWORD'),
+        'default_mask' => env('HUTCH_SMS_DEFAULT_MASK', 'ECHODATA'),
+        'default_campaign_name' => env('HUTCH_SMS_DEFAULT_CAMPAIGN_NAME', 'Laravel SMS'),
+    ],
+
 ];
