@@ -3,18 +3,21 @@
 namespace App\UseCases\Invoice;
 
 use App\Constance\AccountsLedgerCodes;
+use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\Invoice;
 use App\Models\JournalEntry;
 use App\Models\Service;
 use App\Models\StockSheet;
 use App\Models\SystemConfiguration;
+use App\SMS\Contracts\SmsServiceInterface;
 use App\UseCases\Invoice\Requests\InvoiceRequest;
 use App\UseCases\JournalEntry\Requests\JournalEntryRequest;
 use App\UseCases\JournalEntry\StoreJournalEntryInteractor;
 use App\UseCases\StockSheet\GetAvailableStockInteractor;
 use App\UseCases\StockSheet\Requests\StockSheetEntryDataRequest;
 use App\UseCases\StockSheet\StoreStockSheetInteractor;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class FinishInvoiceInteractor
@@ -230,6 +233,19 @@ class FinishInvoiceInteractor
 
             DB::commit();
 
+            $invoiceMessage = $this->generateInvoiceMessage($invoice);
+
+            $customer = Customer::findOrFail($invoiceRequest->customer_no);
+
+            $rawPhone = $customer->phone;
+            $formattedPhone = $this->formatPhoneNumber($rawPhone);
+
+            $smsService = app(SmsServiceInterface::class);
+            $smsService->send($formattedPhone, $invoiceMessage, [
+                'mask' => 'DreamBarber',
+                'campaign_name' => 'Dream Barber ' . now()->format('Y-m-d')
+            ]);
+
             return [
                 'message' => 'Invoice finalized successfully.',
                 'invoice' => $invoice->makeHidden(['created_at', 'updated_at', 'deleted_at']),
@@ -272,4 +288,44 @@ class FinishInvoiceInteractor
             $storeStockSheetInteractor->execute($stockRequest);
         }
     }
+
+    private function generateInvoiceMessage(Invoice $invoice): string
+    {
+        $date        = \Carbon\Carbon::parse($invoice->created_at)->format('Y-m-d');
+        $invoiceNo   = $invoice->invoice_no;
+        $grandTotal  = number_format($invoice->grand_total, 2);
+
+        // Generate item list vertically
+        $itemList = collect($invoice->items)->map(function ($item) {
+            $description = $item->item_description ?? 'Item';
+            $price       = number_format($item->sub_total ?? 0, 2);
+            return "- {$description}: Rs. {$price}";
+        })->implode("\n");
+
+        // Build the message
+        $message = <<<MSG
+Invoice Confirmation
+
+Date: {$date}
+Invoice No: {$invoiceNo}
+{$itemList}
+Total: Rs. {$grandTotal}
+
+Thanks for choosing us!
+MSG;
+
+        return $message;
+    }
+
+    private function formatPhoneNumber(string $localNumber): string
+    {
+        $cleaned = preg_replace('/\D/', '', $localNumber);
+
+        if (str_starts_with($cleaned, '0')) {
+            return '94' . substr($cleaned, 1);
+        }
+
+        return $cleaned;
+    }
+
 }

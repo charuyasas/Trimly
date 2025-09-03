@@ -3,8 +3,11 @@
 namespace App\UseCases\Booking;
 
 use App\Models\Booking;
+use App\Models\Customer;
 use App\Models\Service;
+use App\SMS\Contracts\SmsServiceInterface;
 use App\UseCases\Booking\Requests\BookingRequest;
+use Carbon\Carbon;
 
 class StoreBookingInteractor
 {
@@ -49,6 +52,59 @@ class StoreBookingInteractor
         // Attach services collection for JSON response
         $booking->services_collection = Service::whereIn('id', $servicesArray)->get();
 
+        $bookingMessage = $this->generateBookingMessage($booking);
+
+        $customer = Customer::findOrFail($bookingData->customer_id);
+
+        $rawPhone = $customer->phone;
+        $formattedPhone = $this->formatPhoneNumber($rawPhone);
+
+        $smsService = app(SmsServiceInterface::class);
+        $smsService->send($formattedPhone, $bookingMessage, [
+            'mask' => 'DreamBarber',
+            'campaign_name' => 'Dream Barber ' . now()->format('Y-m-d')
+        ]);
+
         return $booking;
     }
+
+    private function generateBookingMessage(Booking $booking): string
+    {
+        $bookingDate     = now()->format('Y-m-d'); // When booking was made
+        $appointmentDate = Carbon::parse($booking->booking_date)->format('Y-m-d');
+        $startTime       = Carbon::parse($booking->start_time)->format('H:i');
+        $endTime         = Carbon::parse($booking->end_time)->format('H:i');
+        $employeeName    = $booking->employee->name ?? 'Staff';
+
+        // Format services list
+        $services = collect($booking->services_collection ?? [])->map(function ($service) {
+            return "- {$service->description}";
+        })->implode("\n");
+
+        $message = <<<MSG
+Booking Confirmation
+
+Appointment Date: {$appointmentDate}
+Time: {$startTime} - {$endTime}
+Employee: {$employeeName}
+Services:
+{$services}
+
+Thank you for booking with us!
+MSG;
+
+        return $message;
+    }
+
+    private function formatPhoneNumber(string $localNumber): string
+    {
+        $cleaned = preg_replace('/\D/', '', $localNumber);
+
+        if (str_starts_with($cleaned, '0')) {
+            return '94' . substr($cleaned, 1);
+        }
+
+        return $cleaned;
+    }
+
 }
