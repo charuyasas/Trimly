@@ -129,7 +129,7 @@
             table.row.add([
                 rowID,
                 customer.name,
-                customer.email,
+                customer.email ?? '',
                 customer.phone ?? '',
                 customer.address ?? '',
                 `

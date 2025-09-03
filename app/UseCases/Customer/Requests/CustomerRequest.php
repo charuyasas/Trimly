@@ -14,8 +14,8 @@ class CustomerRequest extends Data
     #[SpatieRule('required'), Max(255)]
     public string $name;
 
-    #[SpatieRule('required'), Max(255)]
-    public string $email;
+    #[SpatieRule('nullable'), Max(255)]
+    public ?string $email;
 
     #[SpatieRule('nullable', 'string', 'max:10')]
     public ?string $phone;
@@ -29,11 +29,6 @@ class CustomerRequest extends Data
     public static function rules(): array
    {
     return [
-        'email' => [
-            'required',
-            'email',
-            Rule::unique('customers', 'email')->ignore(request()->input('id')), // <- this needs 'id'
-        ],
         'phone' => [
             'nullable',
             Rule::unique('customers', 'phone')->ignore(request()->input('id')),
