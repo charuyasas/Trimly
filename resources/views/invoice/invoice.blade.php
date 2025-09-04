@@ -396,7 +396,7 @@
                                 price: item.price,
                                 item_type: item.item_type,
                                 commission: item.commission,
-                                fixed_price: item.is_fixed_price
+                                fixed_price: item.fixed_price
                             };
                         }));
 
@@ -416,6 +416,8 @@
                             if(data[0].item_type == 'service') {
                                 if(data[0].fixed_price == 0){
                                     $("#txt_price").prop('disabled', false);
+                                }else{
+                                    $("#txt_price").prop('disabled', true);
                                 }
                             }
                         }
@@ -428,6 +430,7 @@
                 return false;
             },
             select: function (event, ui) {
+
                 $("#cbo_item").val(ui.item.label);
                 $("#item_id").val(ui.item.value);
                 $("#txt_price").val(ui.item.price);
@@ -440,9 +443,12 @@
                 if(ui.item.item_type == 'item') {
                     loadAvailableStock();
                 }
+
                 if(ui.item.item_type == 'service') {
                     if(ui.item.fixed_price == 0){
                         $("#txt_price").prop('disabled', false);
+                    }else{
+                        $("#txt_price").prop('disabled', true);
                     }
                 }
                 return false;
