@@ -128,6 +128,13 @@ class SidebarLinkSeeder extends Seeder
                 ],
             ],
             [
+                'permission_name' => 'cash-transfer',
+                'display_name' => 'Cash Transfer',
+                'url' => '/cash-transfer',
+                'icon_path' => 'assets/img/menu-icon/7.svg',
+                'parent_id' => null,
+            ],
+            [
                 'permission_name' => 'accounts',
                 'display_name' => 'Accounts',
                 'url' => '#',
