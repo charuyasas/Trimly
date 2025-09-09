@@ -31,6 +31,7 @@ class PermissionSeeder extends Seeder
             'postingAccount',
             'userCreation',
             'roles',
+            'cash-transfer',
             'userCreate'
         ];
 

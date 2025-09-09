@@ -98,6 +98,10 @@ Route::get('/sales-summary-report', function () {
     return view('reports/sales-summary-report');
 });
 
+Route::get('/cash-transfer', function () {
+    return view('cash-transfer');
+});
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
