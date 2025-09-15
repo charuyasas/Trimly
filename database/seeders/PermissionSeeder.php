@@ -32,7 +32,8 @@ class PermissionSeeder extends Seeder
             'userCreation',
             'roles',
             'cash-transfer',
-            'userCreate'
+            'userCreate',
+            'supplier-payment-list'
         ];
 
         foreach ($permissions as $permission) {

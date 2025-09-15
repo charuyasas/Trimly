@@ -135,6 +135,13 @@ class SidebarLinkSeeder extends Seeder
                 'parent_id' => null,
             ],
             [
+                'permission_name' => 'supplier-payment',
+                'display_name' => 'Supplier Payment',
+                'url' => 'supplier-payment-list',
+                'icon_path' => 'assets/img/menu-icon/20.svg',
+                'parent_id' => null,
+            ],
+            [
                 'permission_name' => 'accounts',
                 'display_name' => 'Accounts',
                 'url' => '#',
@@ -242,7 +249,7 @@ class SidebarLinkSeeder extends Seeder
         foreach ($links as $link) {
             $children = $link['children'] ?? null;
 
-            $sidebarLink = SidebarLink::create([
+            $sidebarLink = SidebarLink::updateOrCreate([
                 'permission_name' => $link['permission_name'],
                 'display_name' => $link['display_name'],
                 'url' => $link['url'],

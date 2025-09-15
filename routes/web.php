@@ -102,6 +102,15 @@ Route::get('/cash-transfer', function () {
     return view('cash-transfer');
 });
 
+Route::get('/supplier-payment-list', function () {
+    return view('supplierPayments/supplier-payment-list');
+});
+
+Route::get('/supplier-payment', function () {
+    return view('supplierPayments/supplier-payment');
+})->name('supplier.payment');
+
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

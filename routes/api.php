@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\API\BankController;
 use App\Http\Controllers\API\CashTransferController;
 use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\API\ExpensesController;
 use App\Http\Controllers\API\ShiftController;
+use App\Http\Controllers\API\SupplierPaymentController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\StockController;
 use Illuminate\Http\Request;
@@ -117,6 +119,12 @@ Route::get('/loadSummaryCounts', [DashboardController::class, 'getSummaryCounts'
 
 Route::middleware('auth:sanctum')->apiResource('cashTransfer', CashTransferController::class);
 Route::get('/cashTransfer-account-dropdown', [CashTransferController::class, 'loadCashTransferAccountDropdown']);
+
+Route::get('/supplier-payments/{code}/grns', [SupplierPaymentController::class, 'getSupplierGrns']);
+Route::post('/supplier-payments', [SupplierPaymentController::class, 'store']);
+Route::get('/supplier-payments-list', [SupplierPaymentController::class, 'index']);
+
+Route::get('loadBanks', [BankController::class, 'loadBanksDropdown']);
 
 Route::get('/user', function (Request $request) {
     return $request->user();
