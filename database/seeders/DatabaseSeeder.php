@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             TitleAccountSeeder::class,
             PostingAccountSeeder::class,
             SystemConfigurationSeeder::class,
+            BankSeeder::class,
 //            EmployeeSeeder::class,
 //            CustomerSeeder::class,
 //            ServicesSeeder::class,

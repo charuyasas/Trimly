@@ -23,6 +23,7 @@ class JournalEntry extends Model
         'GRN' => 'GRN',
         'Expenses' => 'Expenses',
         'CashTransfer' => 'Cash Transfer',
+        'SupplierPayment' => 'Supplier Payment',
     ];
 
     protected static function boot(): void
