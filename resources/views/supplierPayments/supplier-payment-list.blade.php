@@ -32,7 +32,7 @@
                                                 </div>
                                             </div>
                                             <div class="add_button ms-2">
-                                                <a href="/supplier-payment" class="btn btn-primary">Make Payments</a>
+                                                <a href="/supplier-payment" class="btn btn-primary" onclick="sessionStorage.removeItem('supplier_id')">Make Payments</a>
                                             </div>
                                         </div>
                                     </div>
@@ -83,8 +83,7 @@
                     supplierPayment.name,
                     supplierPayment.total_amount,
                     supplierPayment.balance,
-                    `<a href="/supplier-payment?supplier_id=${supplierPayment.id}" target="_blank" class="btn btn-sm btn-primary">View</a>`
-
+                    `<a href="#" class="btn btn-sm btn-primary view-payment" data-id="${supplierPayment.id}">View</a>`
                 ]);
                 rowID++;
             });
@@ -92,4 +91,11 @@
             table.draw();
         });
     }
+
+    $(document).on('click', '.view-payment', function (e) {
+        e.preventDefault();
+        const supplierID = $(this).data('id');
+        sessionStorage.setItem('supplier_id', supplierID);
+        window.open('/supplier-payment', '_blank');
+    });
 </script>
