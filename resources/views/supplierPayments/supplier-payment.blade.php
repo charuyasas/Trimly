@@ -480,6 +480,7 @@
                 showConfirmButton: false,
                 timer: 1500
             }).then(() => {
+                sessionStorage.removeItem('supplier_id');
                 window.location.href = "{{ route('supplier.payment') }}";
             });
 
@@ -551,16 +552,15 @@
 
         });
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const supplierIDFromURL = urlParams.get('supplier_id');
-        if (supplierIDFromURL) {
+        const supplierIDFromStorage = sessionStorage.getItem('supplier_id');
+        if (supplierIDFromStorage) {
             $.ajax({
-                url: '/api/suppliers-list',
+                url: '/api/suppliers',
                 dataType: 'json'
             }).done(function(data) {
-                const supplier = data.find(s => s.value == supplierIDFromURL);
+                const supplier = data.find(s => s.id == supplierIDFromStorage);
                 if (supplier) {
-                    var option = new Option(supplier.label, supplier.value, true, true);
+                    var option = new Option(supplier.name, supplier.id, true, true);
                     $('#supplierSelect').append(option).trigger('change');
                     setTimeout(() => $('#autoPayAmount').focus(), 300);
                 }
