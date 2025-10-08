@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Performance optimizations */
 [x-cloak] {
-    display: none;
+    display: none !important;
+}
+
+/* Improve font rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Optimize images */
+img {
+    height: auto;
+    max-width: 100%;
+}
+
+/* Enable GPU acceleration for transforms and animations */
+@layer utilities {
+    .gpu-accelerated {
+        transform: translateZ(0);
+        will-change: transform;
+    }
 }

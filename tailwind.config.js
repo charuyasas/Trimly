@@ -9,6 +9,7 @@ export default {
         './vendor/laravel/jetstream/**/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
+        './resources/js/**/*.js',
     ],
 
     theme: {
@@ -20,4 +21,11 @@ export default {
     },
 
     plugins: [forms, typography],
+    
+    // Safelist for dynamically generated classes
+    safelist: [
+        'bg-gray-100',
+        'bg-white',
+        'text-gray-800',
+    ],
 };
