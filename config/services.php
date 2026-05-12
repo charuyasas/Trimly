@@ -35,12 +35,10 @@ return [
         ],
     ],
 
-    'hutch_sms' => [
-        'base_url' => env('HUTCH_SMS_BASE_URL', 'https://bsms.hutch.lk/api'),
-        'username' => env('HUTCH_SMS_USERNAME'),
-        'password' => env('HUTCH_SMS_PASSWORD'),
-        'default_mask' => env('HUTCH_SMS_DEFAULT_MASK', 'ECHODATA'),
-        'default_campaign_name' => env('HUTCH_SMS_DEFAULT_CAMPAIGN_NAME', 'Laravel SMS'),
+    'textifys_sms' => [
+        'base_url' => env('TEXTIFYS_SMS_BASE_URL', 'https://app.textifys.com/api'),
+        'api_key' => env('TEXTIFYS_SMS_API_KEY'),
+        'default_mask' => env('TEXTIFYS_SMS_DEFAULT_MASK', 'DreamBarber'),
     ],
 
 ];

@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Service;
 use App\SMS\Contracts\SmsServiceInterface;
+use App\SMS\Support\SmsSender;
 use App\UseCases\Booking\Requests\BookingRequest;
 use Carbon\Carbon;
 
@@ -57,13 +58,10 @@ class StoreBookingInteractor
         $customer = Customer::findOrFail($bookingData->customer_id);
 
         $rawPhone = $customer->phone;
-        $formattedPhone = $this->formatPhoneNumber($rawPhone);
 
-        $smsService = app(SmsServiceInterface::class);
-        $smsService->send($formattedPhone, $bookingMessage, [
-            'mask' => 'DreamBarber',
-            'campaign_name' => 'Dream Barber ' . now()->format('Y-m-d')
-        ]);
+        if (! empty($rawPhone) && ! empty($bookingMessage)) {
+            SmsSender::send($rawPhone, $bookingMessage);
+        }
 
         return $booking;
     }
@@ -96,15 +94,5 @@ MSG;
         return $message;
     }
 
-    private function formatPhoneNumber(string $localNumber): string
-    {
-        $cleaned = preg_replace('/\D/', '', $localNumber);
-
-        if (str_starts_with($cleaned, '0')) {
-            return '94' . substr($cleaned, 1);
-        }
-
-        return $cleaned;
-    }
 
 }

@@ -11,6 +11,7 @@ use App\Models\Service;
 use App\Models\StockSheet;
 use App\Models\SystemConfiguration;
 use App\SMS\Contracts\SmsServiceInterface;
+use App\SMS\Support\SmsSender;
 use App\UseCases\Invoice\Requests\InvoiceRequest;
 use App\UseCases\JournalEntry\Requests\JournalEntryRequest;
 use App\UseCases\JournalEntry\StoreJournalEntryInteractor;
@@ -238,13 +239,9 @@ class FinishInvoiceInteractor
             $customer = Customer::findOrFail($invoiceRequest->customer_no);
 
             $rawPhone = $customer->phone;
-            $formattedPhone = $this->formatPhoneNumber($rawPhone);
-
-            $smsService = app(SmsServiceInterface::class);
-            $smsService->send($formattedPhone, $invoiceMessage, [
-                'mask' => 'DreamBarber',
-                'campaign_name' => 'Dream Barber ' . now()->format('Y-m-d')
-            ]);
+            if (! empty($rawPhone) && ! empty($invoiceMessage)) {
+                SmsSender::send($rawPhone, $invoiceMessage);
+            }
 
             return [
                 'message' => 'Invoice finalized successfully.',
@@ -317,15 +314,5 @@ MSG;
         return $message;
     }
 
-    private function formatPhoneNumber(string $localNumber): string
-    {
-        $cleaned = preg_replace('/\D/', '', $localNumber);
-
-        if (str_starts_with($cleaned, '0')) {
-            return '94' . substr($cleaned, 1);
-        }
-
-        return $cleaned;
-    }
 
 }
