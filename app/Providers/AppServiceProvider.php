@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\SMS\Contracts\SmsServiceInterface;
-use App\SMS\Services\HutchSmsService;
+use App\SMS\Services\TextifysSmsService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(SmsServiceInterface::class, HutchSmsService::class);
+        $this->app->bind(SmsServiceInterface::class, TextifysSmsService::class);
     }
 
     /**
