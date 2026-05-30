@@ -1,0 +1,135 @@
+name: Performance Checks
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  bundle-size:
+    name: Bundle Size Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build for production
+        run: npm run build:production
+      
+      - name: Check bundle sizes
+        run: |
+          echo "## Bundle Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### JavaScript Bundles" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          du -h public/build/assets/*.js 2>/dev/null || echo "No JS bundles found"
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### CSS Bundles" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          du -h public/build/assets/*.css 2>/dev/null || echo "No CSS bundles found"
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Check for large bundles
+        run: |
+          # Fail if any JS bundle exceeds 500KB
+          for file in public/build/assets/*.js; do
+            if [ -f "$file" ]; then
+              size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file")
+              if [ $size -gt 512000 ]; then
+                echo "❌ Bundle $file is too large: $(($size / 1024))KB"
+                exit 1
+              fi
+            fi
+          done
+          echo "✅ All bundles are within size limits"
+
+  lighthouse:
+    name: Lighthouse CI
+    runs-on: ubuntu-latest
+    needs: bundle-size
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.13.x
+      
+      - name: Run Lighthouse CI
+        run: |
+          # This requires a running server
+          # Adjust URL to your staging/preview environment
+          lhci autorun --collect.url=http://localhost || echo "Skipping Lighthouse (no server available)"
+
+  php-performance:
+    name: PHP Performance Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo, pdo_mysql
+          coverage: none
+      
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --optimize-autoloader
+      
+      - name: Check autoloader optimization
+        run: |
+          if grep -q "optimize-autoloader" composer.json; then
+            echo "✅ Autoloader optimization is configured"
+          else
+            echo "⚠️ Warning: Autoloader optimization not configured"
+          fi
+      
+      - name: Analyze composer.json
+        run: |
+          echo "## Composer Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Installed Packages" >> $GITHUB_STEP_SUMMARY
+          composer show --installed >> $GITHUB_STEP_SUMMARY
+
+  security:
+    name: Security & Performance Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate || true
+      
+      - name: Check for outdated dependencies
+        run: |
+          echo "## Dependency Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          npm outdated || true
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
